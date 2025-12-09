@@ -1,28 +1,447 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
+import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { z } from "zod";
+import * as db from "./db";
+import { TRPCError } from "@trpc/server";
+import { invokeLLM } from "./_core/llm";
+import { notifyOwner } from "./_core/notification";
+import { storagePut, storageGet } from "./storage";
+import { nanoid } from "nanoid";
+
+// ==================== ROUTERS ====================
 
 export const appRouter = router({
-    // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
+  
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return {
-        success: true,
-      } as const;
+      return { success: true } as const;
     }),
   }),
 
-  // TODO: add feature routers here, e.g.
-  // todo: router({
-  //   list: protectedProcedure.query(({ ctx }) =>
-  //     db.getUserTodos(ctx.user.id)
-  //   ),
-  // }),
+  // ==================== WALLET ROUTER ====================
+  wallet: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return db.getWalletsByUserId(ctx.user.id);
+    }),
+
+    create: protectedProcedure
+      .input(z.object({
+        address: z.string().length(42),
+        chainId: z.number(),
+        walletType: z.string(),
+        label: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        return db.createWallet({
+          userId: ctx.user.id,
+          address: input.address,
+          chainId: input.chainId,
+          walletType: input.walletType,
+          label: input.label,
+        });
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        return db.deleteWallet(input.id, ctx.user.id);
+      }),
+
+    setDefault: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.setDefaultWallet(input.id, ctx.user.id);
+        return { success: true };
+      }),
+  }),
+
+  // ==================== PROJECT ROUTER ====================
+  project: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return db.getProjectsByUserId(ctx.user.id);
+    }),
+
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const project = await db.getProjectById(input.id, ctx.user.id);
+        if (!project) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Project not found" });
+        }
+        return project;
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string().min(1).max(100),
+        description: z.string().optional(),
+        chainId: z.number().default(1),
+        rpcProvider: z.string().optional(),
+        rpcUrl: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        return db.createProject({
+          userId: ctx.user.id,
+          name: input.name,
+          description: input.description,
+          chainId: input.chainId,
+          rpcProvider: input.rpcProvider,
+          rpcUrl: input.rpcUrl,
+        });
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().min(1).max(100).optional(),
+        description: z.string().optional(),
+        chainId: z.number().optional(),
+        rpcProvider: z.string().optional(),
+        rpcUrl: z.string().optional(),
+        status: z.enum(["active", "archived", "draft"]).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        return db.updateProject(id, ctx.user.id, data);
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        return db.deleteProject(input.id, ctx.user.id);
+      }),
+  }),
+
+  // ==================== CONTRACT ROUTER ====================
+  contract: router({
+    list: protectedProcedure
+      .input(z.object({ projectId: z.number().optional() }).optional())
+      .query(async ({ ctx, input }) => {
+        if (input?.projectId) {
+          return db.getContractsByProjectId(input.projectId, ctx.user.id);
+        }
+        return db.getContractsByUserId(ctx.user.id);
+      }),
+
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const contract = await db.getContractById(input.id, ctx.user.id);
+        if (!contract) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Contract not found" });
+        }
+        return contract;
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        projectId: z.number(),
+        name: z.string().min(1).max(100),
+        description: z.string().optional(),
+        sourceCode: z.string().optional(),
+        templateType: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        return db.createContract({
+          projectId: input.projectId,
+          userId: ctx.user.id,
+          name: input.name,
+          description: input.description,
+          sourceCode: input.sourceCode,
+          templateType: input.templateType,
+        });
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().min(1).max(100).optional(),
+        description: z.string().optional(),
+        sourceCode: z.string().optional(),
+        abi: z.any().optional(),
+        bytecode: z.string().optional(),
+        contractAddress: z.string().optional(),
+        chainId: z.number().optional(),
+        status: z.enum(["draft", "compiled", "deployed", "verified"]).optional(),
+        aiDocumentation: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        return db.updateContract(id, ctx.user.id, data);
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        return db.deleteContract(input.id, ctx.user.id);
+      }),
+
+    // Save contract to S3
+    saveToS3: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        sourceCode: z.string().optional(),
+        abi: z.string().optional(),
+        bytecode: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const contract = await db.getContractById(input.id, ctx.user.id);
+        if (!contract) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Contract not found" });
+        }
+
+        const timestamp = Date.now();
+        const prefix = `contracts/${ctx.user.id}/${contract.id}/${timestamp}`;
+        const updates: Record<string, string | null> = {};
+
+        if (input.sourceCode) {
+          const sourceKey = `${prefix}/source.sol`;
+          await storagePut(sourceKey, input.sourceCode, "text/plain");
+          updates.s3SourceKey = sourceKey;
+        }
+
+        if (input.abi) {
+          const abiKey = `${prefix}/abi.json`;
+          await storagePut(abiKey, input.abi, "application/json");
+          updates.s3AbiKey = abiKey;
+        }
+
+        if (input.bytecode) {
+          const bytecodeKey = `${prefix}/bytecode.txt`;
+          await storagePut(bytecodeKey, input.bytecode, "text/plain");
+          updates.s3BytecodeKey = bytecodeKey;
+        }
+
+        if (Object.keys(updates).length > 0) {
+          await db.updateContract(input.id, ctx.user.id, updates);
+        }
+
+        return { success: true, keys: updates };
+      }),
+
+    // Generate AI documentation
+    generateDocumentation: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const contract = await db.getContractById(input.id, ctx.user.id);
+        if (!contract) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Contract not found" });
+        }
+
+        if (!contract.sourceCode) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "No source code available" });
+        }
+
+        const response = await invokeLLM({
+          messages: [
+            {
+              role: "system",
+              content: `You are an expert Solidity developer. Generate comprehensive technical documentation for smart contracts. Include:
+1. Contract overview and purpose
+2. State variables explanation
+3. Function documentation with parameters and return values
+4. Events documentation
+5. Security considerations
+6. Usage examples
+
+Format the output in Markdown.`
+            },
+            {
+              role: "user",
+              content: `Generate documentation for this Solidity contract:\n\n${contract.sourceCode}`
+            }
+          ]
+        });
+
+        const content = response.choices[0]?.message?.content;
+        const documentation = typeof content === "string" ? content : "";
+        
+        await db.updateContract(input.id, ctx.user.id, { aiDocumentation: documentation });
+
+        return { documentation };
+      }),
+  }),
+
+  // ==================== TRANSACTION ROUTER ====================
+  transaction: router({
+    list: protectedProcedure
+      .input(z.object({ 
+        projectId: z.number().optional(),
+        limit: z.number().default(50),
+      }).optional())
+      .query(async ({ ctx, input }) => {
+        if (input?.projectId) {
+          return db.getTransactionsByProjectId(input.projectId, ctx.user.id);
+        }
+        return db.getTransactionsByUserId(ctx.user.id, input?.limit);
+      }),
+
+    get: protectedProcedure
+      .input(z.object({ txHash: z.string() }))
+      .query(async ({ ctx, input }) => {
+        const tx = await db.getTransactionByHash(input.txHash);
+        if (!tx || tx.userId !== ctx.user.id) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Transaction not found" });
+        }
+        return tx;
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        txHash: z.string().length(66),
+        chainId: z.number(),
+        fromAddress: z.string().length(42),
+        toAddress: z.string().length(42).optional(),
+        value: z.string().optional(),
+        txType: z.enum(["deploy", "call", "transfer", "approve", "other"]).default("other"),
+        contractId: z.number().optional(),
+        projectId: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        return db.createTransaction({
+          userId: ctx.user.id,
+          txHash: input.txHash,
+          chainId: input.chainId,
+          fromAddress: input.fromAddress,
+          toAddress: input.toAddress,
+          value: input.value,
+          txType: input.txType,
+          contractId: input.contractId,
+          projectId: input.projectId,
+        });
+      }),
+
+    updateStatus: protectedProcedure
+      .input(z.object({
+        txHash: z.string(),
+        status: z.enum(["pending", "confirmed", "failed"]),
+        blockNumber: z.number().optional(),
+        gasUsed: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const tx = await db.getTransactionByHash(input.txHash);
+        if (!tx || tx.userId !== ctx.user.id) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Transaction not found" });
+        }
+
+        await db.updateTransactionStatus(input.txHash, input.status, {
+          blockNumber: input.blockNumber,
+          gasUsed: input.gasUsed,
+          confirmedAt: input.status === "confirmed" ? new Date() : undefined,
+        });
+
+        // Send notification if confirmed and not already sent
+        if (input.status === "confirmed" && !tx.notificationSent) {
+          await notifyOwner({
+            title: `Transaction Confirmed: ${input.txHash.slice(0, 10)}...`,
+            content: `Transaction ${input.txHash} has been confirmed on chain ${tx.chainId}. Block: ${input.blockNumber}`,
+          });
+          await db.markNotificationSent(input.txHash);
+        }
+
+        return { success: true };
+      }),
+  }),
+
+  // ==================== TEMPLATE ROUTER ====================
+  template: router({
+    list: publicProcedure.query(async () => {
+      return db.getContractTemplates();
+    }),
+
+    get: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const template = await db.getContractTemplateById(input.id);
+        if (!template) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Template not found" });
+        }
+        return template;
+      }),
+  }),
+
+  // ==================== GAS PRICE ROUTER ====================
+  gasPrice: router({
+    latest: publicProcedure.query(async () => {
+      return db.getLatestGasPrices();
+    }),
+
+    history: publicProcedure
+      .input(z.object({ chainId: z.number(), limit: z.number().default(100) }))
+      .query(async ({ input }) => {
+        return db.getGasPriceHistory(input.chainId, input.limit);
+      }),
+  }),
+
+  // ==================== NETWORK ROUTER ====================
+  network: router({
+    list: publicProcedure.query(async () => {
+      return db.getNetworks();
+    }),
+
+    get: publicProcedure
+      .input(z.object({ chainId: z.number() }))
+      .query(async ({ input }) => {
+        const network = await db.getNetworkByChainId(input.chainId);
+        if (!network) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Network not found" });
+        }
+        return network;
+      }),
+  }),
+
+  // ==================== STATS ROUTER ====================
+  stats: router({
+    user: protectedProcedure.query(async ({ ctx }) => {
+      return db.getUserStats(ctx.user.id);
+    }),
+  }),
+
+  // ==================== ABI GENERATOR ROUTER ====================
+  abi: router({
+    generateTypeScript: protectedProcedure
+      .input(z.object({ abi: z.string() }))
+      .mutation(async ({ input }) => {
+        try {
+          const abiJson = JSON.parse(input.abi);
+          let tsCode = "// Auto-generated TypeScript interface from ABI\n\n";
+          
+          // Generate interface for each function
+          for (const item of abiJson) {
+            if (item.type === "function") {
+              const inputs = item.inputs?.map((i: any) => `${i.name}: ${solidityToTsType(i.type)}`).join(", ") || "";
+              const outputs = item.outputs?.map((o: any) => solidityToTsType(o.type)).join(" | ") || "void";
+              tsCode += `export async function ${item.name}(${inputs}): Promise<${outputs}>;\n`;
+            }
+          }
+          
+          return { typescript: tsCode };
+        } catch (error) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid ABI JSON" });
+        }
+      }),
+  }),
 });
+
+// Helper function to convert Solidity types to TypeScript
+function solidityToTsType(solidityType: string): string {
+  if (solidityType.startsWith("uint") || solidityType.startsWith("int")) {
+    return "bigint";
+  }
+  if (solidityType === "address") return "string";
+  if (solidityType === "bool") return "boolean";
+  if (solidityType === "string") return "string";
+  if (solidityType.startsWith("bytes")) return "string";
+  if (solidityType.endsWith("[]")) {
+    return `${solidityToTsType(solidityType.slice(0, -2))}[]`;
+  }
+  return "unknown";
+}
 
 export type AppRouter = typeof appRouter;
