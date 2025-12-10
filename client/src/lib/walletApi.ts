@@ -1,6 +1,11 @@
 // ============================================
 // ARC SAFEWALLET - WALLET API SERVICE
+// CONFIGURAÇÃO CUSTOM PARA MANUS
+// Arc Testnet + Sepolia (Redes não nativas)
 // ============================================
+
+// IMPORTANTE: Na Manus, selecione "Ethereum Mainnet" como rede base
+// Este código vai sobrescrever e adicionar Arc + Sepolia
 
 // Tipos para TypeScript - usando any para compatibilidade
 interface EthereumProvider {
@@ -14,30 +19,19 @@ interface EthereumProvider {
 declare global {
   interface Window {
     ethereum?: EthereumProvider;
+    ManusCustomNetworks?: typeof ManusCustomNetworks;
+    ethers?: any;
+    Web3?: any;
   }
 }
 
 // ============================================
-// CONFIGURAÇÕES DAS REDES
+// CONFIGURAÇÕES DAS REDES CUSTOMIZADAS
 // ============================================
 
-export interface NetworkConfig {
-  chainId: string;
-  chainIdDecimal: number;
-  chainName: string;
-  nativeCurrency: {
-    name: string;
-    symbol: string;
-    decimals: number;
-  };
-  rpcUrls: string[];
-  blockExplorerUrls: string[];
-  faucetUrl: string;
-}
-
-export const NETWORKS: Record<string, NetworkConfig> = {
+export const NETWORKS = {
   arcTestnet: {
-    chainId: '0x4CEF52',
+    chainId: '0x4CEF52', // 5042002 em decimal
     chainIdDecimal: 5042002,
     chainName: 'Arc Testnet',
     nativeCurrency: {
@@ -47,10 +41,14 @@ export const NETWORKS: Record<string, NetworkConfig> = {
     },
     rpcUrls: ['https://rpc.testnet.arc.network'],
     blockExplorerUrls: ['https://testnet.arcscan.app'],
-    faucetUrl: 'https://faucet.circle.com/'
+    iconUrls: [],
+    // Informações extras
+    faucetUrl: 'https://faucet.circle.com/',
+    isTestnet: true,
+    isCustom: true
   },
   sepolia: {
-    chainId: '0xaa36a7',
+    chainId: '0xaa36a7', // 11155111 em decimal
     chainIdDecimal: 11155111,
     chainName: 'Sepolia Testnet',
     nativeCurrency: {
@@ -60,38 +58,27 @@ export const NETWORKS: Record<string, NetworkConfig> = {
     },
     rpcUrls: ['https://ethereum-sepolia-rpc.publicnode.com'],
     blockExplorerUrls: ['https://sepolia.etherscan.io'],
-    faucetUrl: 'https://sepoliafaucet.com/'
+    iconUrls: [],
+    // Informações extras
+    faucetUrl: 'https://sepoliafaucet.com/',
+    isTestnet: true,
+    isCustom: true
   }
 };
 
+export type NetworkKey = keyof typeof NETWORKS;
+export type NetworkConfig = typeof NETWORKS[NetworkKey];
+
 // ============================================
-// ESTADO DA APLICAÇÃO
+// TIPOS E INTERFACES
 // ============================================
 
 export interface WalletState {
-  account: string | null;
-  currentNetwork: string | null;
-  balance: string;
   isConnected: boolean;
-  networkInfo: NetworkConfig | null;
-}
-
-interface InternalWalletState {
   account: string | null;
-  currentNetwork: string | null;
   balance: string;
-  transactions: TransactionRecord[];
-}
-
-export interface TransactionRecord {
-  hash: string;
-  from: string;
-  to: string;
-  value: string;
-  symbol: string;
-  network: string;
-  timestamp: string;
-  blockNumber: number;
+  currentNetwork: NetworkKey | null;
+  networkInfo: NetworkConfig | null;
 }
 
 export interface GasEstimate {
@@ -101,232 +88,56 @@ export interface GasEstimate {
   symbol: string;
 }
 
-let walletState: InternalWalletState = {
+export interface TransactionRecord {
+  hash: string;
+  from: string;
+  to: string;
+  value: string;
+  symbol: string;
+  network: NetworkKey;
+  timestamp: number;
+  status: 'pending' | 'confirmed' | 'failed';
+}
+
+export interface DetectedNetwork {
+  key?: NetworkKey;
+  network?: NetworkConfig;
+  chainId?: string;
+  isCustom: boolean;
+}
+
+// ============================================
+// ESTADO INTERNO
+// ============================================
+
+let walletState: WalletState = {
+  isConnected: false,
   account: null,
-  currentNetwork: null,
   balance: '0',
-  transactions: []
+  currentNetwork: null,
+  networkInfo: null
 };
 
-// Event listeners storage
-const eventListeners: {
-  accountsChanged: ((accounts: string[]) => void) | null;
-  chainChanged: ((chainId: string) => void) | null;
-} = {
-  accountsChanged: null,
-  chainChanged: null
-};
+let transactionHistory: TransactionRecord[] = [];
 
 // ============================================
-// FUNÇÕES AUXILIARES
+// FUNÇÃO: ADICIONAR REDE CUSTOMIZADA
 // ============================================
 
-export function isMetaMaskInstalled(): boolean {
-  return typeof window !== 'undefined' && typeof window.ethereum !== 'undefined';
-}
-
-export function shortenAddress(address: string): string {
-  if (!address) return '';
-  return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
-}
-
-function detectNetwork(chainId: number): void {
-  const chainIdHex = '0x' + chainId.toString(16);
-  
-  if (chainIdHex.toLowerCase() === NETWORKS.arcTestnet.chainId.toLowerCase()) {
-    walletState.currentNetwork = 'arcTestnet';
-  } else if (chainIdHex.toLowerCase() === NETWORKS.sepolia.chainId.toLowerCase()) {
-    walletState.currentNetwork = 'sepolia';
-  } else {
-    walletState.currentNetwork = null;
-  }
-}
-
-// ============================================
-// HANDLERS DE EVENTOS
-// ============================================
-
-function handleAccountsChanged(accounts: unknown): void {
-  const accountsArray = accounts as string[];
-  if (accountsArray.length === 0) {
-    console.log('Conta desconectada');
-    disconnectWallet();
-  } else {
-    console.log('Conta mudou para:', accountsArray[0]);
-    walletState.account = accountsArray[0];
-    updateBalance();
-  }
-}
-
-async function handleChainChanged(chainId: unknown): Promise<void> {
-  const chainIdStr = chainId as string;
-  console.log('Rede mudou para:', chainIdStr);
-  detectNetwork(parseInt(chainIdStr, 16));
-  await updateBalance();
-}
-
-// ============================================
-// CONEXÃO COM WALLET
-// ============================================
-
-export async function connectWallet(): Promise<string> {
-  if (!isMetaMaskInstalled()) {
-    throw new Error('MetaMask não está instalado! Por favor, instale a extensão MetaMask.');
-  }
-
-  try {
-    // Solicitar contas
-    const accounts = await window.ethereum!.request({
-      method: 'eth_requestAccounts'
-    }) as string[];
-
-    walletState.account = accounts[0];
-
-    // Detectar rede atual
-    const chainId = await window.ethereum!.request({
-      method: 'eth_chainId'
-    }) as string;
-    
-    detectNetwork(parseInt(chainId, 16));
-
-    // Configurar listeners
-    eventListeners.accountsChanged = handleAccountsChanged;
-    eventListeners.chainChanged = handleChainChanged as (chainId: string) => void;
-    
-    window.ethereum!.on('accountsChanged', handleAccountsChanged);
-    window.ethereum!.on('chainChanged', handleChainChanged);
-
-    // Atualizar saldo
-    await updateBalance();
-
-    console.log('Carteira conectada:', walletState.account);
-    return walletState.account;
-  } catch (error) {
-    console.error('Erro ao conectar carteira:', error);
-    throw error;
-  }
-}
-
-// ============================================
-// DESCONEXÃO
-// ============================================
-
-export function disconnectWallet(): void {
-  walletState.account = null;
-  walletState.currentNetwork = null;
-  walletState.balance = '0';
-  walletState.transactions = [];
-  
-  if (window.ethereum && eventListeners.accountsChanged) {
-    window.ethereum.removeListener('accountsChanged', eventListeners.accountsChanged);
-  }
-  if (window.ethereum && eventListeners.chainChanged) {
-    window.ethereum.removeListener('chainChanged', eventListeners.chainChanged);
-  }
-  
-  eventListeners.accountsChanged = null;
-  eventListeners.chainChanged = null;
-  
-  console.log('Carteira desconectada');
-}
-
-// ============================================
-// ATUALIZAR SALDO
-// ============================================
-
-export async function updateBalance(): Promise<string> {
-  if (!walletState.account) {
-    throw new Error('Carteira não conectada');
-  }
-
-  try {
-    const balance = await window.ethereum!.request({
-      method: 'eth_getBalance',
-      params: [walletState.account, 'latest']
-    }) as string;
-    
-    const network = NETWORKS[walletState.currentNetwork || ''];
-    
-    if (network) {
-      // Converter de hex para decimal e formatar
-      const balanceWei = BigInt(balance);
-      const divisor = BigInt(10 ** network.nativeCurrency.decimals);
-      const balanceFormatted = Number(balanceWei) / Number(divisor);
-      walletState.balance = balanceFormatted.toFixed(6);
-    } else {
-      // Fallback para ETH (18 decimais)
-      const balanceWei = BigInt(balance);
-      const divisor = BigInt(10 ** 18);
-      const balanceFormatted = Number(balanceWei) / Number(divisor);
-      walletState.balance = balanceFormatted.toFixed(6);
-    }
-    
-    console.log('Saldo atualizado:', walletState.balance);
-    return walletState.balance;
-  } catch (error) {
-    console.error('Erro ao buscar saldo:', error);
-    throw error;
-  }
-}
-
-// ============================================
-// TROCAR DE REDE
-// ============================================
-
-export async function switchNetwork(networkKey: string): Promise<boolean> {
-  if (!isMetaMaskInstalled()) {
-    throw new Error('MetaMask não está instalado!');
-  }
-
+async function addCustomNetwork(networkKey: NetworkKey): Promise<boolean> {
   const network = NETWORKS[networkKey];
-  if (!network) {
-    throw new Error('Rede inválida. Use "arcTestnet" ou "sepolia".');
-  }
   
-  try {
-    // Tentar trocar para a rede
-    await window.ethereum!.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: network.chainId }],
-    });
-    
-    walletState.currentNetwork = networkKey;
-    console.log(`Conectado à ${network.chainName}`);
-    
-    // Atualizar saldo após trocar de rede
-    if (walletState.account) {
-      await updateBalance();
-    }
-    
-    return true;
-  } catch (error: unknown) {
-    const err = error as { code?: number };
-    // Se a rede não existe (erro 4902), adicionar
-    if (err.code === 4902) {
-      return await addNetwork(networkKey);
-    } else {
-      console.error('Erro ao trocar rede:', error);
-      throw error;
-    }
-  }
-}
-
-// ============================================
-// ADICIONAR REDE AO METAMASK
-// ============================================
-
-export async function addNetwork(networkKey: string): Promise<boolean> {
-  if (!isMetaMaskInstalled()) {
-    throw new Error('MetaMask não está instalado!');
-  }
-
-  const network = NETWORKS[networkKey];
   if (!network) {
-    throw new Error('Rede inválida. Use "arcTestnet" ou "sepolia".');
+    throw new Error(`Rede ${networkKey} não encontrada`);
+  }
+
+  if (typeof window.ethereum === 'undefined') {
+    throw new Error('MetaMask não detectado');
   }
 
   try {
-    await window.ethereum!.request({
+    // Tentar adicionar a rede
+    await window.ethereum.request({
       method: 'wallet_addEthereumChain',
       params: [{
         chainId: network.chainId,
@@ -336,366 +147,463 @@ export async function addNetwork(networkKey: string): Promise<boolean> {
         blockExplorerUrls: network.blockExplorerUrls
       }]
     });
-    
-    walletState.currentNetwork = networkKey;
-    console.log(`Rede ${network.chainName} adicionada com sucesso`);
+
+    console.log(`✅ Rede ${network.chainName} adicionada com sucesso!`);
     return true;
   } catch (error) {
-    console.error('Erro ao adicionar rede:', error);
+    console.error(`❌ Erro ao adicionar ${network.chainName}:`, error);
     throw error;
   }
 }
 
 // ============================================
-// VALIDAR ENDEREÇO
+// FUNÇÃO: TROCAR PARA REDE CUSTOMIZADA
 // ============================================
 
-export function isValidAddress(address: string): boolean {
-  return /^0x[a-fA-F0-9]{40}$/.test(address);
-}
-
-// ============================================
-// ENVIAR TRANSAÇÃO
-// ============================================
-
-export async function sendTransaction(recipientAddress: string, amount: string): Promise<TransactionRecord> {
-  if (!walletState.account) {
-    throw new Error('Carteira não conectada');
+async function switchToCustomNetwork(networkKey: NetworkKey): Promise<boolean> {
+  const network = NETWORKS[networkKey];
+  
+  if (!network) {
+    throw new Error(`Rede ${networkKey} não encontrada`);
   }
 
-  if (!walletState.currentNetwork) {
-    throw new Error('Rede não suportada. Conecte-se ao Arc Testnet ou Sepolia');
-  }
-
-  // Validar endereço
-  if (!isValidAddress(recipientAddress)) {
-    throw new Error('Endereço do destinatário inválido');
-  }
-
-  // Validar quantidade
-  const amountNum = parseFloat(amount);
-  if (isNaN(amountNum) || amountNum <= 0) {
-    throw new Error('Quantidade inválida');
+  if (typeof window.ethereum === 'undefined') {
+    throw new Error('MetaMask não detectado');
   }
 
   try {
-    const network = NETWORKS[walletState.currentNetwork];
-    
-    // Converter amount para wei/unidades menores
-    const multiplier = BigInt(10 ** network.nativeCurrency.decimals);
-    const amountBigInt = BigInt(Math.floor(amountNum * Number(multiplier)));
-    const valueHex = '0x' + amountBigInt.toString(16);
+    // Tentar trocar para a rede
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: network.chainId }]
+    });
 
-    // Enviar transação
-    const txHash = await window.ethereum!.request({
+    console.log(`✅ Conectado à ${network.chainName}`);
+    
+    // Atualizar estado
+    walletState.currentNetwork = networkKey;
+    walletState.networkInfo = network;
+    
+    // Atualizar saldo
+    if (walletState.account) {
+      await updateBalance();
+    }
+    
+    return true;
+  } catch (error: any) {
+    // Se a rede não existe (erro 4902), adicionar primeiro
+    if (error.code === 4902) {
+      console.log(`⚠️ Rede não encontrada. Adicionando ${network.chainName}...`);
+      await addCustomNetwork(networkKey);
+      // Tentar trocar novamente após adicionar
+      return switchToCustomNetwork(networkKey);
+    } else {
+      console.error(`❌ Erro ao trocar para ${network.chainName}:`, error);
+      throw error;
+    }
+  }
+}
+
+// ============================================
+// FUNÇÃO: DETECTAR REDE ATUAL
+// ============================================
+
+async function detectCurrentNetwork(): Promise<DetectedNetwork | null> {
+  if (typeof window.ethereum === 'undefined') {
+    return null;
+  }
+
+  try {
+    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+    
+    // Verificar se é uma das nossas redes customizadas
+    for (const [key, network] of Object.entries(NETWORKS)) {
+      if (network.chainId.toLowerCase() === chainId.toLowerCase()) {
+        walletState.currentNetwork = key as NetworkKey;
+        walletState.networkInfo = network;
+        return {
+          key: key as NetworkKey,
+          network: network,
+          isCustom: true
+        };
+      }
+    }
+
+    // Se não for customizada, retornar info genérica
+    walletState.currentNetwork = null;
+    walletState.networkInfo = null;
+    return {
+      chainId: chainId,
+      isCustom: false
+    };
+  } catch (error) {
+    console.error('Erro ao detectar rede:', error);
+    return null;
+  }
+}
+
+// ============================================
+// FUNÇÃO: SETUP INICIAL
+// ============================================
+
+async function setupCustomNetworks(): Promise<boolean> {
+  console.log('🚀 Iniciando setup de redes customizadas...');
+
+  if (typeof window.ethereum === 'undefined') {
+    console.warn('⚠️ MetaMask não detectado');
+    return false;
+  }
+
+  // Detectar rede atual
+  const currentNetwork = await detectCurrentNetwork();
+  
+  if (currentNetwork && currentNetwork.isCustom) {
+    console.log(`✅ Já conectado em rede customizada: ${currentNetwork.network?.chainName}`);
+  } else {
+    console.log('ℹ️ Conectado em rede padrão. Use switchToCustomNetwork() para trocar.');
+  }
+
+  // Escutar mudanças de rede
+  window.ethereum.on('chainChanged', async (chainId: string) => {
+    console.log('🔄 Rede mudou:', chainId);
+    const network = await detectCurrentNetwork();
+    if (network && network.isCustom) {
+      console.log(`Agora conectado em: ${network.network?.chainName}`);
+    }
+    // Atualizar saldo quando mudar de rede
+    if (walletState.account) {
+      await updateBalance();
+    }
+  });
+
+  // Escutar mudanças de conta
+  window.ethereum.on('accountsChanged', async (accounts: string[]) => {
+    console.log('🔄 Conta mudou:', accounts);
+    if (accounts.length > 0) {
+      walletState.account = accounts[0];
+      walletState.isConnected = true;
+      await updateBalance();
+    } else {
+      walletState.account = null;
+      walletState.isConnected = false;
+      walletState.balance = '0';
+    }
+  });
+
+  return true;
+}
+
+// ============================================
+// FUNÇÃO: OBTER PROVIDER DA REDE ATUAL
+// ============================================
+
+async function getCurrentProvider(): Promise<any> {
+  if (typeof window.ethereum === 'undefined') {
+    throw new Error('MetaMask não detectado');
+  }
+
+  // Se você usa ethers.js
+  if (typeof window.ethers !== 'undefined') {
+    return new window.ethers.providers.Web3Provider(window.ethereum);
+  }
+
+  // Se você usa web3.js
+  if (typeof window.Web3 !== 'undefined') {
+    return new window.Web3(window.ethereum);
+  }
+
+  // Provider nativo
+  return window.ethereum;
+}
+
+// ============================================
+// FUNÇÕES DE CARTEIRA
+// ============================================
+
+async function connectWallet(): Promise<string> {
+  if (typeof window.ethereum === 'undefined') {
+    throw new Error('MetaMask não detectado. Por favor, instale a extensão.');
+  }
+
+  try {
+    const accounts = await window.ethereum.request({
+      method: 'eth_requestAccounts'
+    });
+
+    if (accounts && accounts.length > 0) {
+      walletState.account = accounts[0];
+      walletState.isConnected = true;
+      
+      // Detectar rede e atualizar saldo
+      await detectCurrentNetwork();
+      await updateBalance();
+      
+      console.log(`✅ Carteira conectada: ${shortenAddress(accounts[0])}`);
+      return accounts[0];
+    }
+
+    throw new Error('Nenhuma conta encontrada');
+  } catch (error: any) {
+    console.error('Erro ao conectar carteira:', error);
+    throw error;
+  }
+}
+
+function disconnectWallet(): void {
+  walletState = {
+    isConnected: false,
+    account: null,
+    balance: '0',
+    currentNetwork: null,
+    networkInfo: null
+  };
+  console.log('✅ Carteira desconectada');
+}
+
+async function updateBalance(): Promise<string> {
+  if (!walletState.account || typeof window.ethereum === 'undefined') {
+    return '0';
+  }
+
+  try {
+    const balance = await window.ethereum.request({
+      method: 'eth_getBalance',
+      params: [walletState.account, 'latest']
+    });
+
+    const decimals = walletState.networkInfo?.nativeCurrency.decimals || 18;
+    const balanceInUnits = parseInt(balance, 16) / Math.pow(10, decimals);
+    walletState.balance = balanceInUnits.toFixed(decimals === 6 ? 2 : 4);
+    
+    return walletState.balance;
+  } catch (error) {
+    console.error('Erro ao obter saldo:', error);
+    return '0';
+  }
+}
+
+// ============================================
+// FUNÇÕES DE TRANSAÇÃO
+// ============================================
+
+async function sendTransaction(to: string, amount: string): Promise<TransactionRecord> {
+  if (!walletState.account || typeof window.ethereum === 'undefined') {
+    throw new Error('Carteira não conectada');
+  }
+
+  if (!walletState.networkInfo) {
+    throw new Error('Rede não detectada');
+  }
+
+  const decimals = walletState.networkInfo.nativeCurrency.decimals;
+  const valueInWei = Math.floor(parseFloat(amount) * Math.pow(10, decimals));
+  const valueHex = '0x' + valueInWei.toString(16);
+
+  try {
+    const txHash = await window.ethereum.request({
       method: 'eth_sendTransaction',
       params: [{
         from: walletState.account,
-        to: recipientAddress,
+        to: to,
         value: valueHex
       }]
-    }) as string;
+    });
 
-    console.log('Transação enviada:', txHash);
-
-    // Criar registro da transação
     const txRecord: TransactionRecord = {
       hash: txHash,
       from: walletState.account,
-      to: recipientAddress,
+      to: to,
       value: amount,
-      symbol: network.nativeCurrency.symbol,
-      network: walletState.currentNetwork,
-      timestamp: new Date().toISOString(),
-      blockNumber: 0 // Será atualizado quando confirmado
+      symbol: walletState.networkInfo.nativeCurrency.symbol,
+      network: walletState.currentNetwork!,
+      timestamp: Date.now(),
+      status: 'pending'
     };
 
-    // Adicionar ao histórico
-    walletState.transactions.push(txRecord);
-
-    // Atualizar saldo
-    await updateBalance();
-
+    transactionHistory.unshift(txRecord);
+    console.log(`✅ Transação enviada: ${txHash}`);
+    
+    // Atualizar saldo após transação
+    setTimeout(() => updateBalance(), 3000);
+    
     return txRecord;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro ao enviar transação:', error);
     throw error;
   }
 }
 
-// ============================================
-// ESTIMAR GAS
-// ============================================
-
-export async function estimateGas(recipientAddress: string, amount: string): Promise<GasEstimate> {
-  if (!walletState.account) {
+async function estimateGas(to: string, amount: string): Promise<GasEstimate> {
+  if (!walletState.account || typeof window.ethereum === 'undefined') {
     throw new Error('Carteira não conectada');
   }
 
-  if (!isValidAddress(recipientAddress)) {
-    throw new Error('Endereço inválido');
+  if (!walletState.networkInfo) {
+    throw new Error('Rede não detectada');
   }
 
+  const decimals = walletState.networkInfo.nativeCurrency.decimals;
+  const valueInWei = Math.floor(parseFloat(amount) * Math.pow(10, decimals));
+  const valueHex = '0x' + valueInWei.toString(16);
+
   try {
-    const network = NETWORKS[walletState.currentNetwork || ''];
-    const decimals = network?.nativeCurrency.decimals || 18;
-    
-    // Converter amount para wei
-    const amountNum = parseFloat(amount);
-    const multiplier = BigInt(10 ** decimals);
-    const amountBigInt = BigInt(Math.floor(amountNum * Number(multiplier)));
-    const valueHex = '0x' + amountBigInt.toString(16);
+    const [gasEstimate, gasPrice] = await Promise.all([
+      window.ethereum.request({
+        method: 'eth_estimateGas',
+        params: [{
+          from: walletState.account,
+          to: to,
+          value: valueHex
+        }]
+      }),
+      window.ethereum.request({
+        method: 'eth_gasPrice'
+      })
+    ]);
 
-    // Estimar gas
-    const gasEstimate = await window.ethereum!.request({
-      method: 'eth_estimateGas',
-      params: [{
-        from: walletState.account,
-        to: recipientAddress,
-        value: valueHex
-      }]
-    }) as string;
-
-    // Obter preço do gas
-    const gasPrice = await window.ethereum!.request({
-      method: 'eth_gasPrice'
-    }) as string;
-
-    // Calcular custo total
-    const gasEstimateBigInt = BigInt(gasEstimate);
-    const gasPriceBigInt = BigInt(gasPrice);
-    const gasCostBigInt = gasEstimateBigInt * gasPriceBigInt;
-    
-    const gasCostFormatted = Number(gasCostBigInt) / Number(multiplier);
-
-    console.log('Gas estimado:', parseInt(gasEstimate, 16));
-    console.log('Custo do gas:', gasCostFormatted.toFixed(8), network?.nativeCurrency.symbol || 'ETH');
+    const gasEstimateNum = parseInt(gasEstimate, 16);
+    const gasPriceNum = parseInt(gasPrice, 16);
+    const gasCostWei = gasEstimateNum * gasPriceNum;
+    const gasCost = gasCostWei / Math.pow(10, decimals);
 
     return {
-      gasEstimate: parseInt(gasEstimate, 16).toString(),
-      gasPrice: parseInt(gasPrice, 16).toString(),
-      gasCost: gasCostFormatted.toFixed(8),
-      symbol: network?.nativeCurrency.symbol || 'ETH'
+      gasEstimate: gasEstimateNum.toString(),
+      gasPrice: (gasPriceNum / 1e9).toFixed(2) + ' Gwei',
+      gasCost: gasCost.toFixed(decimals === 6 ? 4 : 6),
+      symbol: walletState.networkInfo.nativeCurrency.symbol
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro ao estimar gas:', error);
     throw error;
   }
 }
 
 // ============================================
-// OBTER HISTÓRICO DE TRANSAÇÕES
+// FUNÇÕES DE ASSINATURA
 // ============================================
 
-export function getTransactionHistory(): TransactionRecord[] {
-  return [...walletState.transactions];
-}
-
-// ============================================
-// OBTER INFORMAÇÕES DA REDE ATUAL
-// ============================================
-
-export function getCurrentNetworkInfo(): NetworkConfig | null {
-  if (!walletState.currentNetwork) {
-    return null;
-  }
-  return NETWORKS[walletState.currentNetwork];
-}
-
-// ============================================
-// OBTER ESTADO DA CARTEIRA
-// ============================================
-
-export function getWalletState(): WalletState {
-  return {
-    account: walletState.account,
-    currentNetwork: walletState.currentNetwork,
-    balance: walletState.balance,
-    isConnected: !!walletState.account,
-    networkInfo: getCurrentNetworkInfo()
-  };
-}
-
-// ============================================
-// VERIFICAR SE ESTÁ CONECTADO
-// ============================================
-
-export function isConnected(): boolean {
-  return !!walletState.account;
-}
-
-// ============================================
-// OBTER BLOCK NUMBER ATUAL
-// ============================================
-
-export async function getCurrentBlockNumber(): Promise<number> {
-  if (!isMetaMaskInstalled()) {
-    throw new Error('MetaMask não disponível');
-  }
-
-  try {
-    const blockNumber = await window.ethereum!.request({
-      method: 'eth_blockNumber'
-    }) as string;
-    
-    const blockNum = parseInt(blockNumber, 16);
-    console.log('Block number atual:', blockNum);
-    return blockNum;
-  } catch (error) {
-    console.error('Erro ao obter block number:', error);
-    throw error;
-  }
-}
-
-// ============================================
-// ASSINAR MENSAGEM
-// ============================================
-
-export async function signMessage(message: string): Promise<string> {
-  if (!walletState.account) {
+async function signMessage(message: string): Promise<string> {
+  if (!walletState.account || typeof window.ethereum === 'undefined') {
     throw new Error('Carteira não conectada');
   }
 
   try {
-    const signature = await window.ethereum!.request({
+    const signature = await window.ethereum.request({
       method: 'personal_sign',
       params: [message, walletState.account]
-    }) as string;
-    
-    console.log('Mensagem assinada:', signature);
+    });
+
+    console.log(`✅ Mensagem assinada`);
     return signature;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro ao assinar mensagem:', error);
     throw error;
   }
 }
 
 // ============================================
-// VERIFICAR SALDO DE ENDEREÇO
+// FUNÇÕES UTILITÁRIAS
 // ============================================
 
-export async function checkAddressBalance(address: string): Promise<string> {
-  if (!isMetaMaskInstalled()) {
-    throw new Error('MetaMask não disponível');
-  }
+function shortenAddress(address: string): string {
+  if (!address) return '';
+  return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+}
 
-  if (!isValidAddress(address)) {
-    throw new Error('Endereço inválido');
-  }
+function isValidAddress(address: string): boolean {
+  return /^0x[a-fA-F0-9]{40}$/.test(address);
+}
 
-  try {
-    const balance = await window.ethereum!.request({
-      method: 'eth_getBalance',
-      params: [address, 'latest']
-    }) as string;
-    
-    const network = NETWORKS[walletState.currentNetwork || ''];
-    const decimals = network?.nativeCurrency.decimals || 18;
-    
-    const balanceWei = BigInt(balance);
-    const divisor = BigInt(10 ** decimals);
-    const balanceFormatted = Number(balanceWei) / Number(divisor);
-    
-    return balanceFormatted.toFixed(6);
-  } catch (error) {
-    console.error('Erro ao verificar saldo:', error);
-    throw error;
-  }
+function isMetaMaskInstalled(): boolean {
+  return typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask === true;
+}
+
+function getWalletState(): WalletState {
+  return { ...walletState };
+}
+
+function getTransactionHistory(): TransactionRecord[] {
+  return [...transactionHistory];
 }
 
 // ============================================
-// OBTER TRANSAÇÃO POR HASH
+// INTERFACE SIMPLIFICADA PARA MANUS
 // ============================================
 
-export async function getTransaction(txHash: string): Promise<{
-  hash: string;
-  from: string;
-  to: string;
-  value: string;
-  blockNumber: number | null;
-  status: 'pending' | 'confirmed' | 'failed';
-}> {
-  if (!isMetaMaskInstalled()) {
-    throw new Error('MetaMask não disponível');
-  }
-
-  try {
-    const tx = await window.ethereum!.request({
-      method: 'eth_getTransactionByHash',
-      params: [txHash]
-    }) as {
-      hash: string;
-      from: string;
-      to: string;
-      value: string;
-      blockNumber: string | null;
-    } | null;
-
-    if (!tx) {
-      throw new Error('Transação não encontrada');
-    }
-
-    const receipt = await window.ethereum!.request({
-      method: 'eth_getTransactionReceipt',
-      params: [txHash]
-    }) as { status: string; blockNumber: string } | null;
-
-    let status: 'pending' | 'confirmed' | 'failed' = 'pending';
-    if (receipt) {
-      status = receipt.status === '0x1' ? 'confirmed' : 'failed';
-    }
-
-    return {
-      hash: tx.hash,
-      from: tx.from,
-      to: tx.to,
-      value: tx.value,
-      blockNumber: tx.blockNumber ? parseInt(tx.blockNumber, 16) : null,
-      status
-    };
-  } catch (error) {
-    console.error('Erro ao buscar transação:', error);
-    throw error;
-  }
-}
+export const ManusCustomNetworks = {
+  // Redes disponíveis
+  networks: NETWORKS,
+  
+  // Funções principais
+  addArcTestnet: () => addCustomNetwork('arcTestnet'),
+  addSepolia: () => addCustomNetwork('sepolia'),
+  switchToArc: () => switchToCustomNetwork('arcTestnet'),
+  switchToSepolia: () => switchToCustomNetwork('sepolia'),
+  detectNetwork: detectCurrentNetwork,
+  getProvider: getCurrentProvider,
+  
+  // Setup inicial
+  setup: setupCustomNetworks
+};
 
 // ============================================
-// EXPORTAR API COMPLETA
+// WALLET API EXPORT
 // ============================================
 
 export const WalletAPI = {
   // Conexão
   connectWallet,
   disconnectWallet,
-  isConnected,
   isMetaMaskInstalled,
   
-  // Redes
-  switchNetwork,
-  addNetwork,
-  getCurrentNetworkInfo,
-  
-  // Saldo e informações
-  updateBalance,
+  // Estado
   getWalletState,
-  checkAddressBalance,
-  getCurrentBlockNumber,
+  getTransactionHistory,
+  updateBalance,
+  
+  // Redes
+  switchNetwork: switchToCustomNetwork,
+  addNetwork: addCustomNetwork,
+  detectNetwork: detectCurrentNetwork,
+  setupNetworks: setupCustomNetworks,
+  getProvider: getCurrentProvider,
   
   // Transações
   sendTransaction,
   estimateGas,
-  getTransaction,
-  getTransactionHistory,
-  
-  // Assinatura
   signMessage,
   
   // Utilitários
   shortenAddress,
   isValidAddress,
   
-  // Constantes
+  // Redes disponíveis
   NETWORKS
 };
+
+// ============================================
+// AUTO-INICIALIZAÇÃO
+// ============================================
+
+// Executar setup quando a página carregar
+if (typeof window !== 'undefined') {
+  // Registrar interface global
+  window.ManusCustomNetworks = ManusCustomNetworks;
+  
+  // Auto-setup quando DOM estiver pronto
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', async () => {
+      await setupCustomNetworks();
+      console.log('✅ Redes customizadas prontas!');
+      console.log('📖 Use: ManusCustomNetworks.switchToArc() ou ManusCustomNetworks.switchToSepolia()');
+    });
+  } else {
+    // DOM já carregado
+    setupCustomNetworks().then(() => {
+      console.log('✅ Redes customizadas prontas!');
+      console.log('📖 Use: ManusCustomNetworks.switchToArc() ou ManusCustomNetworks.switchToSepolia()');
+    });
+  }
+}
 
 export default WalletAPI;

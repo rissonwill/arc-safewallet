@@ -104,3 +104,12 @@
 - [x] Criar backtests para validar todas as funções da WalletAPI
 - [x] Testar configurações de rede Arc Testnet (Chain ID 5042002)
 - [x] Testar configurações de rede Sepolia (Chain ID 11155111)
+
+
+## Ajustes de Configuração de Rede (v6)
+- [x] Atualizar walletApi.ts com código customizado ManusCustomNetworks
+- [x] Implementar interface window.ManusCustomNetworks
+- [x] Adicionar auto-inicialização de redes customizadas
+- [x] Adicionar listener para mudanças de rede (chainChanged)
+- [x] Implementar funções switchToArc() e switchToSepolia()
+- [x] Adicionar suporte a ethers.js e web3.js providers
