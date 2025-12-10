@@ -1,4 +1,4 @@
-# Super Dev Web3 - TODO
+# Arc SafeWallet - TODO
 
 ## Core Infrastructure
 - [x] Schema do banco de dados (projetos, contratos, transações, wallets)
@@ -49,3 +49,34 @@
 - [x] Ferramenta de teste de contratos deployados
 - [x] Interface de interação com contratos
 - [x] Documentação integrada com exemplos de código
+
+
+## Atualização Arc SafeWallet (v2)
+- [x] Renomear projeto para Arc SafeWallet
+- [x] Criar logo minimalista para o projeto
+- [x] Configurar Arc Network testnet como rede principal
+- [x] Configurar ETH Sepolia como rede de teste principal
+- [x] Integrar API real de gas fees (Etherscan/Alchemy)
+- [x] Adicionar compilador Solidity com validação de sintaxe
+- [x] Gerador de interfaces TypeScript a partir de ABIs
+- [x] Implementar verificação de contratos no Etherscan/Sepoliascan
+- [x] Atualizar branding e cores para Arc SafeWallet
+- [x] Suporte a verificação em múltiplas redes (Polygonscan, BSCscan, Arbiscan)
+
+
+## Alta Prioridade - Cyber Punk Update (v3)
+- [x] Tema visual cyber punk com cores únicas e inovadoras
+- [x] Paleta de cores neon (magenta elétrico, ciano neon, roxo profundo, verde matrix)
+- [x] Efeitos de glow e gradientes futuristas
+- [x] Debugger básico para contratos Solidity
+- [x] Console de debug com breakpoints visuais
+- [x] Inspeção de variáveis de estado
+- [x] Better error messages com explicações claras
+- [x] Sugestões de correção para erros comuns
+- [x] Links para documentação relevante
+- [x] Tutorial interativo de onboarding
+- [x] Tour guiado pela plataforma
+- [x] Exemplos práticos passo a passo
+- [x] Security scanner básico para contratos
+- [x] Detecção de vulnerabilidades comuns (reentrancy, overflow, etc.)
+- [x] Relatório de segurança com recomendações

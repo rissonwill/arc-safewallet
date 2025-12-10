@@ -25,8 +25,14 @@ import {
   Save,
   Code,
   FileJson,
-  BookOpen
+  BookOpen,
+  Bug,
+  Shield,
+  AlertTriangle
 } from "lucide-react";
+import SolidityDebugger from "@/components/SolidityDebugger";
+import SecurityScanner from "@/components/SecurityScanner";
+import EnhancedError from "@/components/EnhancedError";
 import { useLocation, useSearch } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
@@ -42,6 +48,9 @@ export default function Contracts() {
   const [selectedContract, setSelectedContract] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("source");
+  const [showDebugger, setShowDebugger] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+  const [compileError, setCompileError] = useState<string | null>(null);
   
   const [formData, setFormData] = useState({
     projectId: projectIdParam ? parseInt(projectIdParam) : 0,
@@ -551,6 +560,14 @@ export default function Contracts() {
                   <Code className="h-4 w-4 mr-1" />
                   Código
                 </TabsTrigger>
+                <TabsTrigger value="debugger">
+                  <Bug className="h-4 w-4 mr-1" />
+                  Debugger
+                </TabsTrigger>
+                <TabsTrigger value="security">
+                  <Shield className="h-4 w-4 mr-1" />
+                  Segurança
+                </TabsTrigger>
                 <TabsTrigger value="abi">
                   <FileJson className="h-4 w-4 mr-1" />
                   ABI
@@ -562,6 +579,16 @@ export default function Contracts() {
               </TabsList>
               
               <TabsContent value="source" className="flex-1 mt-4">
+                {compileError && (
+                  <div className="mb-4">
+                    <EnhancedError
+                      type="solidity"
+                      message={compileError}
+                      onDismiss={() => setCompileError(null)}
+                      onRetry={() => setCompileError(null)}
+                    />
+                  </div>
+                )}
                 <ScrollArea className="h-[50vh] rounded-lg border">
                   <Textarea
                     value={selectedContract?.sourceCode || ""}
@@ -573,6 +600,24 @@ export default function Contracts() {
                     className="min-h-[50vh] font-mono text-sm border-0 resize-none code-editor"
                   />
                 </ScrollArea>
+              </TabsContent>
+              
+              <TabsContent value="debugger" className="flex-1 mt-4">
+                <div className="h-[50vh] rounded-lg border overflow-hidden">
+                  <SolidityDebugger
+                    sourceCode={selectedContract?.sourceCode || ""}
+                    contractName={selectedContract?.name || "Contract"}
+                  />
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="security" className="flex-1 mt-4">
+                <div className="h-[50vh] rounded-lg border overflow-hidden">
+                  <SecurityScanner
+                    sourceCode={selectedContract?.sourceCode || ""}
+                    contractName={selectedContract?.name || "Contract"}
+                  />
+                </div>
               </TabsContent>
               
               <TabsContent value="abi" className="flex-1 mt-4">

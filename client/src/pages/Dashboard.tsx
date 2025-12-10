@@ -11,16 +11,19 @@ import {
   ArrowRight,
   Fuel,
   TrendingUp,
-  Activity
+  Activity,
+  HelpCircle
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
+import InteractiveTutorial, { useTutorial } from "@/components/InteractiveTutorial";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const { data: stats, isLoading: statsLoading } = trpc.stats.user.useQuery();
   const { data: recentTx, isLoading: txLoading } = trpc.transaction.list.useQuery({ limit: 5 });
   const { data: gasPrices, isLoading: gasLoading } = trpc.gasPrice.latest.useQuery();
+  const { showTutorial, setShowTutorial, resetTutorial } = useTutorial();
 
   const statCards = [
     { 
@@ -77,6 +80,14 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
+      {/* Tutorial Interativo */}
+      {showTutorial && (
+        <InteractiveTutorial
+          onComplete={() => setShowTutorial(false)}
+          onSkip={() => setShowTutorial(false)}
+        />
+      )}
+      
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -87,6 +98,9 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex gap-2">
+            <Button onClick={resetTutorial} variant="ghost" size="sm" title="Ver tutorial">
+              <HelpCircle className="h-4 w-4" />
+            </Button>
             <Button onClick={() => setLocation("/projects")} variant="outline" size="sm">
               <Plus className="h-4 w-4 mr-1" />
               Novo Projeto

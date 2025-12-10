@@ -9,12 +9,37 @@ import {
   CheckCircle,
   Globe,
   Zap,
-  Shield
+  Shield,
+  Star
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Default networks when database is empty
+// Default networks - Arc Network and Sepolia as primary
 const DEFAULT_NETWORKS = [
+  // PRIMARY NETWORKS
+  {
+    chainId: 1516,
+    name: "Arc Network Testnet",
+    symbol: "ARC",
+    rpcUrl: "https://testnet-rpc.arc.network",
+    explorerUrl: "https://testnet.arcscan.io",
+    isTestnet: true,
+    isActive: true,
+    isPrimary: true,
+    color: "#00D4FF",
+  },
+  {
+    chainId: 11155111,
+    name: "Sepolia Testnet",
+    symbol: "ETH",
+    rpcUrl: "https://sepolia.infura.io/v3/",
+    explorerUrl: "https://sepolia.etherscan.io",
+    isTestnet: true,
+    isActive: true,
+    isPrimary: true,
+    color: "#627EEA",
+  },
+  // MAINNETS
   {
     chainId: 1,
     name: "Ethereum Mainnet",
@@ -23,6 +48,7 @@ const DEFAULT_NETWORKS = [
     explorerUrl: "https://etherscan.io",
     isTestnet: false,
     isActive: true,
+    isPrimary: false,
     color: "#627EEA",
   },
   {
@@ -33,6 +59,7 @@ const DEFAULT_NETWORKS = [
     explorerUrl: "https://polygonscan.com",
     isTestnet: false,
     isActive: true,
+    isPrimary: false,
     color: "#8247E5",
   },
   {
@@ -43,6 +70,7 @@ const DEFAULT_NETWORKS = [
     explorerUrl: "https://bscscan.com",
     isTestnet: false,
     isActive: true,
+    isPrimary: false,
     color: "#F3BA2F",
   },
   {
@@ -53,6 +81,7 @@ const DEFAULT_NETWORKS = [
     explorerUrl: "https://arbiscan.io",
     isTestnet: false,
     isActive: true,
+    isPrimary: false,
     color: "#28A0F0",
   },
   {
@@ -63,48 +92,10 @@ const DEFAULT_NETWORKS = [
     explorerUrl: "https://optimistic.etherscan.io",
     isTestnet: false,
     isActive: true,
+    isPrimary: false,
     color: "#FF0420",
   },
-  {
-    chainId: 43114,
-    name: "Avalanche C-Chain",
-    symbol: "AVAX",
-    rpcUrl: "https://api.avax.network/ext/bc/C/rpc",
-    explorerUrl: "https://snowtrace.io",
-    isTestnet: false,
-    isActive: true,
-    color: "#E84142",
-  },
-  {
-    chainId: 250,
-    name: "Fantom Opera",
-    symbol: "FTM",
-    rpcUrl: "https://rpc.ftm.tools",
-    explorerUrl: "https://ftmscan.com",
-    isTestnet: false,
-    isActive: true,
-    color: "#1969FF",
-  },
-  {
-    chainId: 5,
-    name: "Goerli Testnet",
-    symbol: "ETH",
-    rpcUrl: "https://goerli.infura.io/v3/",
-    explorerUrl: "https://goerli.etherscan.io",
-    isTestnet: true,
-    isActive: true,
-    color: "#627EEA",
-  },
-  {
-    chainId: 11155111,
-    name: "Sepolia Testnet",
-    symbol: "ETH",
-    rpcUrl: "https://sepolia.infura.io/v3/",
-    explorerUrl: "https://sepolia.etherscan.io",
-    isTestnet: true,
-    isActive: true,
-    color: "#627EEA",
-  },
+  // OTHER TESTNETS
   {
     chainId: 80001,
     name: "Mumbai Testnet",
@@ -113,6 +104,7 @@ const DEFAULT_NETWORKS = [
     explorerUrl: "https://mumbai.polygonscan.com",
     isTestnet: true,
     isActive: true,
+    isPrimary: false,
     color: "#8247E5",
   },
 ];
@@ -131,12 +123,14 @@ export default function Networks() {
   const networks = dbNetworks && dbNetworks.length > 0 
     ? dbNetworks.map(n => ({
         ...n,
-        color: DEFAULT_NETWORKS.find(d => d.chainId === n.chainId)?.color || "#627EEA"
+        color: DEFAULT_NETWORKS.find(d => d.chainId === n.chainId)?.color || "#627EEA",
+        isPrimary: DEFAULT_NETWORKS.find(d => d.chainId === n.chainId)?.isPrimary || false
       }))
     : DEFAULT_NETWORKS;
 
-  const mainnets = networks.filter(n => !n.isTestnet);
-  const testnets = networks.filter(n => n.isTestnet);
+  const primaryNetworks = networks.filter(n => n.isPrimary);
+  const mainnets = networks.filter(n => !n.isTestnet && !n.isPrimary);
+  const testnets = networks.filter(n => n.isTestnet && !n.isPrimary);
 
   const openExplorer = (url: string) => {
     window.open(url, "_blank");
@@ -149,12 +143,26 @@ export default function Networks() {
         <div>
           <h1 className="headline-massive text-2xl md:text-3xl">Redes Blockchain</h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Redes EVM-compatíveis suportadas pela plataforma
+            Redes EVM-compatíveis suportadas pela Arc SafeWallet
           </p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card className="border-primary/30 bg-primary/5">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="tech-label text-xs">Redes Principais</p>
+                  <p className="headline-massive text-2xl mt-1">{primaryNetworks.length}</p>
+                </div>
+                <div className="h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                  <Star className="h-5 w-5 text-primary" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
           <Card className="border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -196,20 +204,75 @@ export default function Networks() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Primary Networks - Arc Network & Sepolia */}
+        <div>
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Star className="h-5 w-5 text-primary" />
+            Redes Principais (Arc Network & Sepolia)
+          </h2>
           
-          <Card className="border-border">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="tech-label text-xs">EVM Compatível</p>
-                  <p className="headline-massive text-2xl mt-1">100%</p>
-                </div>
-                <div className="h-10 w-10 rounded-lg bg-[var(--color-pink)]/10 flex items-center justify-center">
-                  <Shield className="h-5 w-5 text-[var(--color-pink)]" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="grid md:grid-cols-2 gap-4">
+            {primaryNetworks.map((network) => (
+              <Card key={network.chainId} className="border-primary/30 bg-primary/5 card-hover">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-4">
+                      <div 
+                        className="h-14 w-14 rounded-xl flex items-center justify-center"
+                        style={{ backgroundColor: `${network.color}30` }}
+                      >
+                        <span 
+                          className="font-bold text-xl"
+                          style={{ color: network.color }}
+                        >
+                          {network.symbol.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg">{network.name}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Chain ID: {network.chainId}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge className="bg-primary">
+                      <Star className="h-3 w-3 mr-1" />
+                      Principal
+                    </Badge>
+                  </div>
+                  
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center justify-between p-2 rounded-lg bg-background/50">
+                      <span className="text-muted-foreground">Símbolo Nativo</span>
+                      <span className="font-mono font-medium">{network.symbol}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-2 rounded-lg bg-background/50">
+                      <span className="text-muted-foreground">Tipo</span>
+                      <Badge variant="outline" className="text-[var(--color-warning)]">
+                        Testnet
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-2 rounded-lg bg-background/50">
+                      <span className="text-muted-foreground">RPC URL</span>
+                      <span className="font-mono text-xs truncate max-w-[200px]">{network.rpcUrl}</span>
+                    </div>
+                    {network.explorerUrl && (
+                      <Button 
+                        variant="outline" 
+                        className="w-full mt-2"
+                        onClick={() => openExplorer(network.explorerUrl!)}
+                      >
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Abrir Explorer
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
 
         {/* Mainnets */}
@@ -221,7 +284,7 @@ export default function Networks() {
           
           {isLoading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
+              {[1, 2, 3, 4, 5].map((i) => (
                 <Card key={i} className="border-border">
                   <CardContent className="p-4">
                     <Skeleton className="h-16 w-full" />
@@ -287,67 +350,69 @@ export default function Networks() {
           )}
         </div>
 
-        {/* Testnets */}
-        <div>
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Zap className="h-5 w-5" />
-            Redes de Teste (Testnets)
-          </h2>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {testnets.map((network) => (
-              <Card key={network.chainId} className="border-border card-hover border-dashed">
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div 
-                        className="h-10 w-10 rounded-lg flex items-center justify-center border-2 border-dashed"
-                        style={{ borderColor: network.color }}
-                      >
-                        <span 
-                          className="font-bold text-sm"
-                          style={{ color: network.color }}
+        {/* Other Testnets */}
+        {testnets.length > 0 && (
+          <div>
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Zap className="h-5 w-5" />
+              Outras Redes de Teste
+            </h2>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {testnets.map((network) => (
+                <Card key={network.chainId} className="border-border card-hover border-dashed">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className="h-10 w-10 rounded-lg flex items-center justify-center border-2 border-dashed"
+                          style={{ borderColor: network.color }}
                         >
-                          {network.symbol.charAt(0)}
-                        </span>
+                          <span 
+                            className="font-bold text-sm"
+                            style={{ color: network.color }}
+                          >
+                            {network.symbol.charAt(0)}
+                          </span>
+                        </div>
+                        <div>
+                          <h3 className="font-medium">{network.name}</h3>
+                          <p className="text-xs text-muted-foreground">
+                            Chain ID: {network.chainId}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-medium">{network.name}</h3>
-                        <p className="text-xs text-muted-foreground">
-                          Chain ID: {network.chainId}
-                        </p>
-                      </div>
+                      <Badge variant="outline" className="text-[var(--color-warning)]">
+                        Testnet
+                      </Badge>
                     </div>
-                    <Badge variant="outline" className="text-[var(--color-warning)]">
-                      Testnet
-                    </Badge>
-                  </div>
-                  
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Símbolo</span>
-                      <span className="font-mono">{network.symbol}</span>
-                    </div>
-                    {network.explorerUrl && (
+                    
+                    <div className="space-y-2 text-sm">
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Explorer</span>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="h-6 px-2"
-                          onClick={() => openExplorer(network.explorerUrl!)}
-                        >
-                          <ExternalLink className="h-3 w-3 mr-1" />
-                          Abrir
-                        </Button>
+                        <span className="text-muted-foreground">Símbolo</span>
+                        <span className="font-mono">{network.symbol}</span>
                       </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                      {network.explorerUrl && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Explorer</span>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            className="h-6 px-2"
+                            onClick={() => openExplorer(network.explorerUrl!)}
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            Abrir
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* RPC Providers */}
         <Card className="border-border">
@@ -382,21 +447,64 @@ export default function Networks() {
         </Card>
 
         {/* Arc Network Info */}
-        <Card className="border-primary/20 bg-primary/5">
+        <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-[var(--color-cyan)]/5">
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <Zap className="h-6 w-6 text-primary" />
+              <div className="h-14 w-14 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
+                <img src="/logo.png" alt="Arc SafeWallet" className="h-10 w-10" />
               </div>
               <div>
-                <h3 className="font-semibold mb-2">Arc Network</h3>
+                <h3 className="font-semibold text-lg mb-2">Arc Network Testnet</h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   A Arc Network é uma blockchain de alta performance focada em escalabilidade e baixas taxas. 
-                  Suporte completo para contratos inteligentes EVM-compatíveis com integração nativa ao Circle USDC.
+                  Use a testnet para desenvolver e testar seus contratos inteligentes antes do deploy em produção.
+                  Integração nativa com Circle USDC para taxas previsíveis.
                 </p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <Badge variant="outline">Chain ID: 1516</Badge>
+                  <Badge variant="outline">Símbolo: ARC</Badge>
+                  <Badge variant="outline">EVM Compatível</Badge>
+                </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => window.open("https://arc.network", "_blank")}>
                     Saiba Mais
+                    <ExternalLink className="h-4 w-4 ml-1" />
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => window.open("https://faucet.arc.network", "_blank")}>
+                    Faucet (Tokens de Teste)
+                    <ExternalLink className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Sepolia Info */}
+        <Card className="border-[#627EEA]/30 bg-gradient-to-br from-[#627EEA]/5 to-transparent">
+          <CardContent className="p-6">
+            <div className="flex items-start gap-4">
+              <div className="h-14 w-14 rounded-xl bg-[#627EEA]/20 flex items-center justify-center shrink-0">
+                <span className="font-bold text-2xl text-[#627EEA]">Ξ</span>
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg mb-2">Ethereum Sepolia Testnet</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Sepolia é a testnet recomendada para desenvolvimento Ethereum. Substitui Goerli como a principal 
+                  rede de teste. Use para testar contratos inteligentes com ETH de teste gratuito.
+                </p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <Badge variant="outline">Chain ID: 11155111</Badge>
+                  <Badge variant="outline">Símbolo: ETH</Badge>
+                  <Badge variant="outline">Proof of Stake</Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => window.open("https://sepolia.etherscan.io", "_blank")}>
+                    Explorer
+                    <ExternalLink className="h-4 w-4 ml-1" />
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => window.open("https://sepoliafaucet.com", "_blank")}>
+                    Faucet (ETH de Teste)
                     <ExternalLink className="h-4 w-4 ml-1" />
                   </Button>
                 </div>

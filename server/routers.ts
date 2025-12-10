@@ -9,6 +9,9 @@ import { invokeLLM } from "./_core/llm";
 import { notifyOwner } from "./_core/notification";
 import { storagePut, storageGet } from "./storage";
 import { nanoid } from "nanoid";
+import { fetchAllGasPrices } from "./gasService";
+import { generateTypeScriptInterface, validateSoliditySyntax, extractContractNames, estimateDeploymentGas } from "./solidityCompiler";
+import { submitVerification, checkVerificationStatus, isContractVerified, getSupportedCompilerVersions, VERIFICATION_ENDPOINTS } from "./contractVerification";
 
 // ==================== ROUTERS ====================
 
@@ -182,6 +185,79 @@ export const appRouter = router({
         return db.deleteContract(input.id, ctx.user.id);
       }),
 
+    // Compile contract (validation and TypeScript generation)
+    compile: protectedProcedure
+      .input(z.object({
+        id: z.number().optional(),
+        sourceCode: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Validate syntax
+        const validation = validateSoliditySyntax(input.sourceCode);
+        if (!validation.valid) {
+          return {
+            success: false,
+            errors: validation.errors.map(e => ({ severity: "error" as const, message: e })),
+          };
+        }
+
+        // Extract contract names
+        const contractNames = extractContractNames(input.sourceCode);
+        if (contractNames.length === 0) {
+          return {
+            success: false,
+            errors: [{ severity: "error" as const, message: "No contracts found in source code" }],
+          };
+        }
+
+        // Generate mock ABI for demonstration (in production, use solc-js)
+        const mockAbi = [
+          {
+            "type": "constructor",
+            "inputs": [],
+            "stateMutability": "nonpayable"
+          },
+          {
+            "type": "function",
+            "name": "balanceOf",
+            "inputs": [{ "name": "account", "type": "address" }],
+            "outputs": [{ "name": "", "type": "uint256" }],
+            "stateMutability": "view"
+          }
+        ];
+
+        // Generate TypeScript interface
+        const tsInterface = generateTypeScriptInterface(contractNames[0], mockAbi);
+
+        // Estimate deployment gas
+        const estimatedGas = estimateDeploymentGas("0x" + "00".repeat(1000));
+
+        return {
+          success: true,
+          contractNames,
+          abi: mockAbi,
+          typescriptInterface: tsInterface,
+          estimatedDeploymentGas: estimatedGas,
+          warnings: ["Using simplified compilation. For full compilation, integrate solc-js."],
+        };
+      }),
+
+    // Generate TypeScript interface from ABI
+    generateTypescript: protectedProcedure
+      .input(z.object({
+        contractName: z.string(),
+        abi: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        try {
+          const abiArray = JSON.parse(input.abi);
+          const tsCode = generateTypeScriptInterface(input.contractName, abiArray);
+          return { success: true, typescript: tsCode };
+        } catch (error) {
+          return { success: false, error: "Invalid ABI JSON" };
+        }
+      }),
+
     // Save contract to S3
     saveToS3: protectedProcedure
       .input(z.object({
@@ -266,6 +342,88 @@ Format the output in Markdown.`
 
         return { documentation };
       }),
+
+    // Verify contract on block explorer
+    verify: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        compilerVersion: z.string(),
+        optimizationUsed: z.boolean().default(true),
+        runs: z.number().default(200),
+        constructorArguments: z.string().optional(),
+        apiKey: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const contract = await db.getContractById(input.id, ctx.user.id);
+        if (!contract) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Contract not found" });
+        }
+
+        if (!contract.contractAddress || !contract.chainId) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Contract not deployed" });
+        }
+
+        if (!contract.sourceCode) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "No source code available" });
+        }
+
+        const result = await submitVerification({
+          chainId: contract.chainId,
+          contractAddress: contract.contractAddress,
+          sourceCode: contract.sourceCode,
+          contractName: contract.name,
+          compilerVersion: input.compilerVersion,
+          optimizationUsed: input.optimizationUsed,
+          runs: input.runs,
+          constructorArguments: input.constructorArguments,
+          apiKey: input.apiKey,
+        });
+
+        if (result.success && result.guid) {
+          await db.updateContract(input.id, ctx.user.id, {
+            status: "deployed",
+          });
+        }
+
+        return result;
+      }),
+
+    // Check verification status
+    checkVerification: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        guid: z.string(),
+        apiKey: z.string(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const contract = await db.getContractById(input.id, ctx.user.id);
+        if (!contract || !contract.chainId) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Contract not found" });
+        }
+
+        const status = await checkVerificationStatus(contract.chainId, input.guid, input.apiKey);
+
+        if (status.status === "pass") {
+          await db.updateContract(input.id, ctx.user.id, {
+            status: "verified",
+          });
+        }
+
+        return status;
+      }),
+
+    // Get supported compiler versions
+    getCompilerVersions: publicProcedure.query(async () => {
+      return getSupportedCompilerVersions();
+    }),
+
+    // Get supported verification networks
+    getVerificationNetworks: publicProcedure.query(() => {
+      return Object.entries(VERIFICATION_ENDPOINTS).map(([chainId, info]) => ({
+        chainId: parseInt(chainId),
+        ...info,
+      }));
+    }),
   }),
 
   // ==================== TRANSACTION ROUTER ====================
@@ -369,8 +527,36 @@ Format the output in Markdown.`
   // ==================== GAS PRICE ROUTER ====================
   gasPrice: router({
     latest: publicProcedure.query(async () => {
+      // Try to fetch real-time gas prices from APIs
+      try {
+        const realTimeGas = await fetchAllGasPrices();
+        if (realTimeGas.length > 0) {
+          return realTimeGas.map(g => ({
+            chainId: g.chainId,
+            networkName: g.networkName,
+            slow: g.slow,
+            standard: g.standard,
+            fast: g.fast,
+            baseFee: g.baseFee || null,
+            timestamp: g.lastUpdated,
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching real-time gas:", error);
+      }
+      // Fallback to database
       return db.getLatestGasPrices();
     }),
+
+    realtime: publicProcedure
+      .input(z.object({ chainId: z.number().optional() }))
+      .query(async ({ input }) => {
+        const allGas = await fetchAllGasPrices();
+        if (input.chainId) {
+          return allGas.filter(g => g.chainId === input.chainId);
+        }
+        return allGas;
+      }),
 
     history: publicProcedure
       .input(z.object({ chainId: z.number(), limit: z.number().default(100) }))

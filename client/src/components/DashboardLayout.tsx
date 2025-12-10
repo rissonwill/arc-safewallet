@@ -84,12 +84,12 @@ export default function DashboardLayout({
           <div className="flex flex-col items-center gap-4">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center wireframe-cyan">
-                <Blocks className="h-6 w-6 text-primary" />
+                <img src="/logo.png" alt="Arc SafeWallet" className="h-8 w-8" />
               </div>
-              <h1 className="headline-massive text-3xl">Super Dev Web3</h1>
+              <h1 className="headline-massive text-3xl">Arc SafeWallet</h1>
             </div>
             <p className="tech-label text-center">
-              Plataforma de Gerenciamento de Contratos Inteligentes
+              Carteira Segura para Arc Network & Ethereum
             </p>
           </div>
           <div className="w-full p-6 bg-card rounded-lg border border-border shadow-sm">
@@ -213,9 +213,9 @@ function DashboardLayoutContent({
               </button>
               {!isCollapsed ? (
                 <div className="flex items-center gap-2 min-w-0">
-                  <Blocks className="h-5 w-5 text-primary shrink-0" />
+                  <img src="/logo.png" alt="Arc SafeWallet" className="h-6 w-6 shrink-0" />
                   <span className="font-semibold tracking-tight truncate text-sm">
-                    Super Dev Web3
+                    Arc SafeWallet
                   </span>
                 </div>
               ) : null}
@@ -300,7 +300,7 @@ function DashboardLayoutContent({
             <div className="flex items-center gap-2">
               <SidebarTrigger className="h-9 w-9 rounded-lg bg-background" />
               <div className="flex items-center gap-2">
-                <Blocks className="h-4 w-4 text-primary" />
+                <img src="/logo.png" alt="Arc SafeWallet" className="h-5 w-5" />
                 <span className="font-medium text-sm">
                   {activeMenuItem?.label ?? "Menu"}
                 </span>
