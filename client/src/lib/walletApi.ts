@@ -4,6 +4,8 @@
 // Arc Testnet + Sepolia (Redes não nativas)
 // ============================================
 
+import { ethers } from 'ethers';
+
 // IMPORTANTE: Na Manus, selecione "Ethereum Mainnet" como rede base
 // Este código vai sobrescrever e adicionar Arc + Sepolia
 
@@ -297,23 +299,46 @@ async function setupCustomNetworks(): Promise<boolean> {
 // FUNÇÃO: OBTER PROVIDER DA REDE ATUAL
 // ============================================
 
-async function getCurrentProvider(): Promise<any> {
+async function getCurrentProvider(): Promise<ethers.providers.Web3Provider> {
   if (typeof window.ethereum === 'undefined') {
     throw new Error('MetaMask não detectado');
   }
 
-  // Se você usa ethers.js
-  if (typeof window.ethers !== 'undefined') {
-    return new window.ethers.providers.Web3Provider(window.ethereum);
-  }
+  // Usar ethers.js importado
+  return new ethers.providers.Web3Provider(window.ethereum as any);
+}
 
-  // Se você usa web3.js
-  if (typeof window.Web3 !== 'undefined') {
-    return new window.Web3(window.ethereum);
-  }
+/**
+ * Obter signer para assinar transações
+ */
+async function getSigner(): Promise<ethers.Signer> {
+  const provider = await getCurrentProvider();
+  return provider.getSigner();
+}
 
-  // Provider nativo
-  return window.ethereum;
+/**
+ * Criar instância de contrato
+ */
+function getContract(
+  address: string,
+  abi: ethers.ContractInterface,
+  signerOrProvider?: ethers.Signer | ethers.providers.Provider
+): ethers.Contract {
+  return new ethers.Contract(address, abi, signerOrProvider);
+}
+
+/**
+ * Formatar valor para wei/unidades
+ */
+function parseUnits(value: string, decimals: number = 18): ethers.BigNumber {
+  return ethers.utils.parseUnits(value, decimals);
+}
+
+/**
+ * Formatar wei/unidades para valor legível
+ */
+function formatUnits(value: ethers.BigNumberish, decimals: number = 18): string {
+  return ethers.utils.formatUnits(value, decimals);
 }
 
 // ============================================
@@ -566,7 +591,15 @@ export const WalletAPI = {
   addNetwork: addCustomNetwork,
   detectNetwork: detectCurrentNetwork,
   setupNetworks: setupCustomNetworks,
+  
+  // Provider e Contratos (ethers.js)
   getProvider: getCurrentProvider,
+  getSigner,
+  getContract,
+  
+  // Utilitários de formatação (ethers.js)
+  parseUnits,
+  formatUnits,
   
   // Transações
   sendTransaction,
@@ -578,7 +611,10 @@ export const WalletAPI = {
   isValidAddress,
   
   // Redes disponíveis
-  NETWORKS
+  NETWORKS,
+  
+  // Referência ao ethers.js
+  ethers
 };
 
 // ============================================

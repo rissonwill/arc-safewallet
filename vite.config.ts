@@ -1,16 +1,33 @@
 import { jsxLocPlugin } from "@builder.io/vite-plugin-jsx-loc";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import fs from "node:fs";
 import path from "path";
 import { defineConfig } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 
-
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime()];
+const plugins = [
+  react(),
+  tailwindcss(),
+  jsxLocPlugin(),
+  vitePluginManusRuntime(),
+  nodePolyfills({
+    // Polyfills necessários para ethers.js e Web3
+    include: ['buffer', 'crypto', 'stream', 'util', 'process', 'events'],
+    globals: {
+      Buffer: true,
+      global: true,
+      process: true,
+    },
+  }),
+];
 
 export default defineConfig({
   plugins,
+  define: {
+    'process.env': {},
+    global: 'globalThis',
+  },
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),

@@ -113,3 +113,26 @@
 - [x] Adicionar listener para mudanças de rede (chainChanged)
 - [x] Implementar funções switchToArc() e switchToSepolia()
 - [x] Adicionar suporte a ethers.js e web3.js providers
+
+
+## Infraestrutura Web3 Básica (v7)
+- [x] Instalar ethers@5.7.2
+- [x] Instalar vite-plugin-node-polyfills
+- [x] Configurar Vite com nodePolyfills e global/process.env
+- [x] Criar declaração de tipos para window.ethereum
+- [x] Testar integração ethers.js com WalletAPI
+
+
+### Smart Contracts Solidity (v7)
+- [x] Criar pasta contracts/ para Smart Contracts
+- [x] Criar ArcToken.sol - Token ERC20 customizado
+- [x] Criar ArcNFT.sol - NFT Collection ERC721
+- [x] Criar ArcMarketplace.sol - Marketplace simples
+- [x] Criar ArcVault.sol - Vault/Staking
+- [x] Configurar Vite com nodePolyfills
+- [x] Criar declarações de tipos para ethereum
+- [x] Atualizar WalletAPI com ethers.js
+- [x] Instalar Hardhat e dependências (@nomicfoundation/hardhat-toolbox, @openzeppelin/contracts)
+- [x] Criar hardhat.config.ts com redes Arc Testnet e Sepolia
+- [x] Criar scripts de deploy para contratos
+- [x] Criar hooks useContract, useArcToken, useArcNFT, useArcVault
