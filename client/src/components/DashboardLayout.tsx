@@ -34,7 +34,10 @@ import {
   Wallet,
   Network,
   Blocks,
-  Settings
+  Settings,
+  Rocket,
+  Vault,
+  Image
 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
@@ -42,10 +45,13 @@ import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/" },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: FolderKanban, label: "Projetos", path: "/projects" },
   { icon: FileCode2, label: "Contratos", path: "/contracts" },
   { icon: Blocks, label: "Templates", path: "/templates" },
+  { icon: Rocket, label: "Deploy", path: "/deploy" },
+  { icon: Vault, label: "Staking", path: "/staking" },
+  { icon: Image, label: "NFT Marketplace", path: "/nft-marketplace" },
   { icon: Send, label: "Transações", path: "/transactions" },
   { icon: Fuel, label: "Gas Tracker", path: "/gas" },
   { icon: Wallet, label: "Carteiras", path: "/wallets" },

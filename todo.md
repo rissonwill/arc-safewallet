@@ -136,3 +136,21 @@
 - [x] Criar hardhat.config.ts com redes Arc Testnet e Sepolia
 - [x] Criar scripts de deploy para contratos
 - [x] Criar hooks useContract, useArcToken, useArcNFT, useArcVault
+
+
+## Próximos Passos - Integração Completa (v8)
+- [x] Criar página de Deploy de Contratos com interface visual
+- [x] Implementar deploy direto pelo navegador usando ethers.js
+- [x] Adicionar seleção de rede para deploy (Arc Testnet / Sepolia)
+- [x] Salvar endereços de contratos deployados no localStorage
+- [x] Criar página de Staking/Vault para interação com ArcVault
+- [x] Implementar stake, unstake e claim de recompensas
+- [x] Mostrar APY e rewards pendentes em tempo real
+- [x] Criar página de NFT Marketplace
+- [x] Listar NFTs disponíveis para compra
+- [x] Implementar mint de NFTs
+- [x] Implementar compra/venda de NFTs
+- [x] Adicionar visualização de NFTs do usuário
+- [x] Criar scripts de deploy (install.sh, deploy-all.sh)
+- [x] Criar script de atualização de endereços (update-contracts.js)
+- [x] Criar guia completo de deploy (DEPLOY_GUIDE.md)
