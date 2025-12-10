@@ -23,6 +23,7 @@ import {
 import { useLocation } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { useI18n } from "@/i18n";
 
 const NETWORKS = [
   { chainId: 1, name: "Ethereum Mainnet", symbol: "ETH" },
@@ -44,6 +45,7 @@ const RPC_PROVIDERS = [
 
 export default function Projects() {
   const [, setLocation] = useLocation();
+  const { t } = useI18n();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
@@ -65,10 +67,10 @@ export default function Projects() {
       utils.project.list.invalidate();
       setIsCreateOpen(false);
       resetForm();
-      toast.success("Projeto criado com sucesso!");
+      toast.success(t('success.saved'));
     },
     onError: (error) => {
-      toast.error(`Erro ao criar projeto: ${error.message}`);
+      toast.error(`${t('common.error')}: ${error.message}`);
     },
   });
 
@@ -77,20 +79,20 @@ export default function Projects() {
       utils.project.list.invalidate();
       setIsEditOpen(false);
       setSelectedProject(null);
-      toast.success("Projeto atualizado!");
+      toast.success(t('success.saved'));
     },
     onError: (error) => {
-      toast.error(`Erro ao atualizar: ${error.message}`);
+      toast.error(`${t('common.error')}: ${error.message}`);
     },
   });
 
   const deleteMutation = trpc.project.delete.useMutation({
     onSuccess: () => {
       utils.project.list.invalidate();
-      toast.success("Projeto excluído!");
+      toast.success(t('common.success'));
     },
     onError: (error) => {
-      toast.error(`Erro ao excluir: ${error.message}`);
+      toast.error(`${t('common.error')}: ${error.message}`);
     },
   });
 
@@ -106,7 +108,7 @@ export default function Projects() {
 
   const handleCreate = () => {
     if (!formData.name.trim()) {
-      toast.error("Nome do projeto é obrigatório");
+      toast.error(t('error.generic'));
       return;
     }
     createMutation.mutate(formData);
@@ -163,7 +165,7 @@ export default function Projects() {
   const ProjectForm = ({ onSubmit, submitLabel }: { onSubmit: () => void; submitLabel: string }) => (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="name">Nome do Projeto</Label>
+        <Label htmlFor="name">{t('projects.name')}</Label>
         <Input
           id="name"
           placeholder="Meu Projeto Web3"
@@ -185,13 +187,13 @@ export default function Projects() {
       
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>Rede Blockchain</Label>
+          <Label>{t('networks.title')}</Label>
           <Select
             value={formData.chainId.toString()}
             onValueChange={(v) => setFormData({ ...formData, chainId: parseInt(v) })}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecione a rede" />
+              <SelectValue placeholder={t('common.select')} />
             </SelectTrigger>
             <SelectContent>
               {NETWORKS.map((network) => (
@@ -204,13 +206,13 @@ export default function Projects() {
         </div>
         
         <div className="space-y-2">
-          <Label>Provedor RPC</Label>
+          <Label>RPC Provider</Label>
           <Select
             value={formData.rpcProvider}
             onValueChange={(v) => setFormData({ ...formData, rpcProvider: v })}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Selecione o provedor" />
+              <SelectValue placeholder={t('common.select')} />
             </SelectTrigger>
             <SelectContent>
               {RPC_PROVIDERS.map((provider) => (
@@ -249,9 +251,9 @@ export default function Projects() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="headline-massive text-2xl md:text-3xl">Projetos</h1>
+            <h1 className="headline-massive text-2xl md:text-3xl">{t('projects.title')}</h1>
             <p className="text-muted-foreground text-sm mt-1">
-              Gerencie seus projetos Web3 e configurações de rede
+              {t('projects.subtitle')}
             </p>
           </div>
           
@@ -259,12 +261,12 @@ export default function Projects() {
             <DialogTrigger asChild>
               <Button onClick={() => { resetForm(); setIsCreateOpen(true); }}>
                 <Plus className="h-4 w-4 mr-1" />
-                Novo Projeto
+                {t('projects.new')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Criar Novo Projeto</DialogTitle>
+                <DialogTitle>Criar {t('projects.new')}</DialogTitle>
                 <DialogDescription>
                   Configure um novo projeto Web3 com suas preferências de rede.
                 </DialogDescription>
@@ -278,7 +280,7 @@ export default function Projects() {
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar projetos..."
+            placeholder={`${t('common.search')}...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -381,7 +383,7 @@ export default function Projects() {
               <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-4">
                 <FolderKanban className="h-8 w-8 text-muted-foreground" />
               </div>
-              <h3 className="font-semibold text-lg mb-1">Nenhum projeto encontrado</h3>
+              <h3 className="font-semibold text-lg mb-1">{t('projects.noProjects')}</h3>
               <p className="text-sm text-muted-foreground text-center max-w-sm mb-4">
                 {searchQuery 
                   ? "Tente uma busca diferente ou crie um novo projeto."

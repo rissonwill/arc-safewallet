@@ -42,48 +42,48 @@ export default function Home() {
   const features = [
     {
       icon: FileCode2,
-      title: "Editor Solidity",
-      description: "Editor avançado com syntax highlighting, autocompletion e validação em tempo real",
+      title: t('home.feature.editor'),
+      description: t('home.feature.editorDesc'),
       color: "text-[var(--color-neon-cyan)]",
       bg: "bg-[var(--color-neon-cyan)]/10",
       glow: "neon-glow-cyan",
     },
     {
       icon: Bug,
-      title: "Debugger Integrado",
-      description: "Debug de contratos com breakpoints, inspeção de variáveis e call stack",
+      title: t('home.feature.debugger'),
+      description: t('home.feature.debuggerDesc'),
       color: "text-[var(--color-neon-green)]",
       bg: "bg-[var(--color-neon-green)]/10",
       glow: "neon-glow-green",
     },
     {
       icon: Shield,
-      title: "Security Scanner",
-      description: "Análise de vulnerabilidades: reentrancy, overflow, access control e mais",
+      title: t('home.feature.security'),
+      description: t('home.feature.securityDesc'),
       color: "text-[var(--color-neon-purple)]",
       bg: "bg-[var(--color-neon-purple)]/10",
       glow: "neon-glow-purple",
     },
     {
       icon: Rocket,
-      title: "Deploy Multi-Chain",
-      description: "Deploy para Arc Network, Ethereum, Polygon, BSC e outras redes EVM",
+      title: t('home.feature.deploy'),
+      description: t('home.feature.deployDesc'),
       color: "text-[var(--color-neon-magenta)]",
       bg: "bg-[var(--color-neon-magenta)]/10",
       glow: "neon-glow-magenta",
     },
     {
       icon: Fuel,
-      title: "Gas Tracker",
-      description: "Monitoramento de gas fees em tempo real via APIs do Etherscan e Alchemy",
+      title: t('home.feature.gas'),
+      description: t('home.feature.gasDesc'),
       color: "text-[var(--color-neon-yellow)]",
       bg: "bg-[var(--color-neon-yellow)]/10",
       glow: "",
     },
     {
       icon: Sparkles,
-      title: "Documentação IA",
-      description: "Geração automática de documentação técnica com LLM para seus contratos",
+      title: t('home.feature.docs'),
+      description: t('home.feature.docsDesc'),
       color: "text-[var(--color-neon-cyan)]",
       bg: "bg-[var(--color-neon-cyan)]/10",
       glow: "neon-glow-cyan",
@@ -100,9 +100,9 @@ export default function Home() {
   ];
 
   const stats = [
-    { label: "Redes Suportadas", value: "6+" },
-    { label: "Templates", value: "10+" },
-    { label: "Vulnerabilidades Detectadas", value: "15+" },
+    { label: t('home.networksSupported'), value: "6+" },
+    { label: t('home.templates'), value: "10+" },
+    { label: t('home.vulnerabilities'), value: "15+" },
   ];
 
   // Remover redirecionamento automático para permitir voltar à Home
@@ -174,15 +174,13 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center">
             <Badge className="mb-6 bg-[var(--color-neon-cyan)]/10 text-[var(--color-neon-cyan)] border-[var(--color-neon-cyan)]/30 px-4 py-1.5">
               <Zap className="h-3 w-3 mr-1" />
-              Powered by Arc Network
+              {t('home.poweredBy')}
             </Badge>
             
             <h1 className="headline-cyber text-4xl md:text-6xl lg:text-7xl mb-6">
               <span className="gradient-neon-text">{t('home.title')}</span>
               <br />
-              <span className="text-foreground">Contratos Inteligentes</span>
-              <br />
-              <span className="neon-text-cyan animate-flicker">com Segurança</span>
+              <span className="text-foreground">{t('home.subtitle')}</span>
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
@@ -225,7 +223,7 @@ export default function Home() {
       {/* Networks Section */}
       <section className="relative z-10 py-12 border-y border-[var(--color-neon-cyan)]/10">
         <div className="container">
-          <p className="text-center text-sm text-muted-foreground mb-6">Redes Suportadas</p>
+          <p className="text-center text-sm text-muted-foreground mb-6">{t('home.networksSupported')}</p>
           <div className="flex flex-wrap items-center justify-center gap-6">
             {networks.map((network, index) => (
               <div 
@@ -245,7 +243,7 @@ export default function Home() {
                 </span>
                 {network.primary && (
                   <Badge variant="outline" className="text-[10px] ml-1 border-[var(--color-neon-green)]/50 text-[var(--color-neon-green)]">
-                    Principal
+                    {t('home.principal')}
                   </Badge>
                 )}
               </div>
@@ -259,10 +257,10 @@ export default function Home() {
         <div className="container">
           <div className="text-center mb-12">
             <h2 className="headline-cyber text-3xl md:text-4xl mb-4">
-              <span className="gradient-neon-text">Funcionalidades</span> Poderosas
+              {t('home.features')}
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Tudo que você precisa para desenvolver, testar e fazer deploy de contratos inteligentes seguros.
+              {t('home.featuresSubtitle')}
             </p>
           </div>
           
@@ -298,18 +296,17 @@ export default function Home() {
               <div className="relative z-10">
                 <Lock className="h-12 w-12 mx-auto mb-6 text-[var(--color-neon-cyan)]" />
                 <h2 className="headline-cyber text-3xl md:text-4xl mb-4">
-                  Pronto para <span className="neon-text-cyan">Construir</span>?
+                  {t('home.readyToBuild')}
                 </h2>
                 <p className="text-muted-foreground max-w-xl mx-auto mb-8">
-                  Junte-se a desenvolvedores que estão construindo o futuro da Web3 
-                  com segurança e eficiência na Arc Network.
+                  {t('home.readyToBuildDesc')}
                 </p>
                 <Button 
                   size="lg"
                   onClick={() => window.location.href = getLoginUrl()}
                   className="bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black font-bold px-8 hover:opacity-90 transition-all"
                 >
-                  Criar Conta Gratuita
+                  {t('home.createFreeAccount')}
                   <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
               </div>
@@ -330,12 +327,12 @@ export default function Home() {
             </div>
             
             <p className="text-sm text-muted-foreground">
-              © 2024 Arc SafeWallet. Desenvolvido para a Arc Network.
+              © 2024 Arc SafeWallet. Powered by Arc Network.
             </p>
             
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="sm" onClick={() => setLocation("/docs")}>
-                Documentação
+                {t('nav.docs')}
               </Button>
               <Button variant="ghost" size="sm" asChild>
                 <a href="https://arcnetwork.io" target="_blank" rel="noopener noreferrer">

@@ -17,9 +17,11 @@ import {
 import { useLocation } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
 import InteractiveTutorial, { useTutorial } from "@/components/InteractiveTutorial";
+import { useI18n } from "@/i18n";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
+  const { t } = useI18n();
   const { data: stats, isLoading: statsLoading } = trpc.stats.user.useQuery();
   const { data: recentTx, isLoading: txLoading } = trpc.transaction.list.useQuery({ limit: 5 });
   const { data: gasPrices, isLoading: gasLoading } = trpc.gasPrice.latest.useQuery();
@@ -27,7 +29,7 @@ export default function Dashboard() {
 
   const statCards = [
     { 
-      title: "Projetos", 
+      title: t('dashboard.projects'), 
       value: stats?.projects ?? 0, 
       icon: FolderKanban, 
       color: "text-[var(--color-cyan)]",
@@ -35,7 +37,7 @@ export default function Dashboard() {
       path: "/projects"
     },
     { 
-      title: "Contratos", 
+      title: t('dashboard.contracts'), 
       value: stats?.contracts ?? 0, 
       icon: FileCode2, 
       color: "text-[var(--color-pink)]",
@@ -43,7 +45,7 @@ export default function Dashboard() {
       path: "/contracts"
     },
     { 
-      title: "Transações", 
+      title: t('dashboard.transactions'), 
       value: stats?.transactions ?? 0, 
       icon: Send, 
       color: "text-[var(--color-success)]",
@@ -51,7 +53,7 @@ export default function Dashboard() {
       path: "/transactions"
     },
     { 
-      title: "Deployados", 
+      title: t('dashboard.deployed'), 
       value: stats?.deployedContracts ?? 0, 
       icon: Rocket, 
       color: "text-[var(--color-warning)]",
@@ -71,9 +73,9 @@ export default function Dashboard() {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case "confirmed": return "Confirmada";
-      case "pending": return "Pendente";
-      case "failed": return "Falhou";
+      case "confirmed": return t('transactions.confirmed');
+      case "pending": return t('transactions.pending');
+      case "failed": return t('transactions.failed');
       default: return status;
     }
   };
@@ -92,22 +94,22 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="headline-massive text-2xl md:text-3xl">Dashboard</h1>
+            <h1 className="headline-massive text-2xl md:text-3xl">{t('dashboard.title')}</h1>
             <p className="text-muted-foreground text-sm mt-1">
-              Visão geral dos seus projetos e contratos Web3
+              {t('dashboard.subtitle')}
             </p>
           </div>
           <div className="flex gap-2">
-            <Button onClick={resetTutorial} variant="ghost" size="sm" title="Ver tutorial">
+            <Button onClick={resetTutorial} variant="ghost" size="sm" title={t('tutorial.welcome')}>
               <HelpCircle className="h-4 w-4" />
             </Button>
             <Button onClick={() => setLocation("/projects")} variant="outline" size="sm">
               <Plus className="h-4 w-4 mr-1" />
-              Novo Projeto
+              {t('dashboard.newProject')}
             </Button>
             <Button onClick={() => setLocation("/contracts")} size="sm">
               <FileCode2 className="h-4 w-4 mr-1" />
-              Novo Contrato
+              {t('dashboard.newContract')}
             </Button>
           </div>
         </div>
@@ -146,11 +148,11 @@ export default function Dashboard() {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-lg font-semibold">Transações Recentes</CardTitle>
-                  <CardDescription>Últimas transações blockchain</CardDescription>
+                  <CardTitle className="text-lg font-semibold">{t('dashboard.recentTransactions')}</CardTitle>
+                  <CardDescription>{t('dashboard.recentTransactionsDesc')}</CardDescription>
                 </div>
                 <Button variant="ghost" size="sm" onClick={() => setLocation("/transactions")}>
-                  Ver todas
+                  {t('dashboard.viewAll')}
                   <ArrowRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
@@ -191,7 +193,7 @@ export default function Dashboard() {
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
                   <Send className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Nenhuma transação ainda</p>
+                  <p className="text-sm">{t('dashboard.noTransactions')}</p>
                 </div>
               )}
             </CardContent>
@@ -204,9 +206,9 @@ export default function Dashboard() {
                 <div>
                   <CardTitle className="text-lg font-semibold flex items-center gap-2">
                     <Fuel className="h-4 w-4" />
-                    Gas Tracker
+                    {t('dashboard.gasTracker')}
                   </CardTitle>
-                  <CardDescription>Preços em tempo real</CardDescription>
+                  <CardDescription>{t('dashboard.gasTrackerDesc')}</CardDescription>
                 </div>
                 <Button variant="ghost" size="sm" onClick={() => setLocation("/gas")}>
                   <TrendingUp className="h-4 w-4" />
@@ -229,16 +231,16 @@ export default function Dashboard() {
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-xs">
                         <div>
-                          <span className="text-muted-foreground">Lento</span>
-                          <p className="font-mono gas-slow">{gas.slow} Gwei</p>
+                          <span className="text-muted-foreground">{t('gas.slow')}</span>
+                          <p className="font-mono gas-slow">{gas.slow} {t('gas.gwei')}</p>
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Médio</span>
-                          <p className="font-mono gas-standard">{gas.standard} Gwei</p>
+                          <span className="text-muted-foreground">{t('gas.standard')}</span>
+                          <p className="font-mono gas-standard">{gas.standard} {t('gas.gwei')}</p>
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Rápido</span>
-                          <p className="font-mono gas-fast">{gas.fast} Gwei</p>
+                          <span className="text-muted-foreground">{t('gas.fast')}</span>
+                          <p className="font-mono gas-fast">{gas.fast} {t('gas.gwei')}</p>
                         </div>
                       </div>
                     </div>
@@ -247,8 +249,8 @@ export default function Dashboard() {
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
                   <Fuel className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Dados de gas indisponíveis</p>
-                  <p className="text-xs mt-1">Conecte a uma rede para monitorar</p>
+                  <p className="text-sm">{t('dashboard.gasUnavailable')}</p>
+                  <p className="text-xs mt-1">{t('dashboard.connectToMonitor')}</p>
                 </div>
               )}
             </CardContent>
@@ -258,8 +260,8 @@ export default function Dashboard() {
         {/* Quick Actions */}
         <Card className="border-border">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-semibold">Ações Rápidas</CardTitle>
-            <CardDescription>Comece a desenvolver seus contratos Web3</CardDescription>
+            <CardTitle className="text-lg font-semibold">{t('dashboard.quickActions')}</CardTitle>
+            <CardDescription>{t('dashboard.quickActionsDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -271,8 +273,8 @@ export default function Dashboard() {
                 <div className="h-10 w-10 rounded-lg bg-[var(--color-cyan)]/10 flex items-center justify-center">
                   <FileCode2 className="h-5 w-5 text-[var(--color-cyan)]" />
                 </div>
-                <span className="text-sm font-medium">Usar Template</span>
-                <span className="text-xs text-muted-foreground">ERC-20, ERC-721, ERC-1155</span>
+                <span className="text-sm font-medium">{t('dashboard.useTemplate')}</span>
+                <span className="text-xs text-muted-foreground">{t('dashboard.useTemplateDesc')}</span>
               </Button>
               
               <Button 
@@ -283,8 +285,8 @@ export default function Dashboard() {
                 <div className="h-10 w-10 rounded-lg bg-[var(--color-pink)]/10 flex items-center justify-center">
                   <Plus className="h-5 w-5 text-[var(--color-pink)]" />
                 </div>
-                <span className="text-sm font-medium">Novo Contrato</span>
-                <span className="text-xs text-muted-foreground">Criar do zero</span>
+                <span className="text-sm font-medium">{t('dashboard.newContract')}</span>
+                <span className="text-xs text-muted-foreground">{t('dashboard.createFromScratch')}</span>
               </Button>
               
               <Button 
@@ -295,8 +297,8 @@ export default function Dashboard() {
                 <div className="h-10 w-10 rounded-lg bg-[var(--color-success)]/10 flex items-center justify-center">
                   <Activity className="h-5 w-5 text-[var(--color-success)]" />
                 </div>
-                <span className="text-sm font-medium">Conectar Wallet</span>
-                <span className="text-xs text-muted-foreground">MetaMask, WalletConnect</span>
+                <span className="text-sm font-medium">{t('dashboard.connectWallet')}</span>
+                <span className="text-xs text-muted-foreground">{t('dashboard.connectWalletDesc')}</span>
               </Button>
               
               <Button 
@@ -305,10 +307,10 @@ export default function Dashboard() {
                 onClick={() => setLocation("/docs")}
               >
                 <div className="h-10 w-10 rounded-lg bg-[var(--color-warning)]/10 flex items-center justify-center">
-                  <Rocket className="h-5 w-5 text-[var(--color-warning)]" />
+                  <FileCode2 className="h-5 w-5 text-[var(--color-warning)]" />
                 </div>
-                <span className="text-sm font-medium">Documentação</span>
-                <span className="text-xs text-muted-foreground">Guias e exemplos</span>
+                <span className="text-sm font-medium">{t('dashboard.documentation')}</span>
+                <span className="text-xs text-muted-foreground">{t('dashboard.documentationDesc')}</span>
               </Button>
             </div>
           </CardContent>

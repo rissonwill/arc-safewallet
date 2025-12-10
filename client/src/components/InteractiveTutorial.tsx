@@ -16,15 +16,16 @@ import {
   CheckCircle,
   Play,
 } from "lucide-react";
+import { useI18n } from "@/i18n";
 
 interface TutorialStep {
   id: string;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   icon: React.ReactNode;
   targetSelector?: string;
   position?: "top" | "bottom" | "left" | "right";
-  action?: string;
+  actionKey?: string;
   code?: string;
 }
 
@@ -36,23 +37,22 @@ interface InteractiveTutorialProps {
 const TUTORIAL_STEPS: TutorialStep[] = [
   {
     id: "welcome",
-    title: "Bem-vindo ao Arc SafeWallet! 🚀",
-    description: "Esta é sua plataforma completa para desenvolvimento Web3. Vamos fazer um tour rápido pelas principais funcionalidades.",
+    titleKey: "tutorial.welcome",
+    descriptionKey: "tutorial.welcomeDesc",
     icon: <Sparkles className="h-8 w-8" />,
   },
   {
     id: "wallet",
-    title: "Conecte sua Carteira",
-    description: "Primeiro, conecte sua carteira Web3 (MetaMask, WalletConnect) para interagir com a blockchain. Isso permite assinar transações e gerenciar seus contratos.",
+    titleKey: "tutorial.step8",
+    descriptionKey: "tutorial.step8Desc",
     icon: <Wallet className="h-8 w-8" />,
     targetSelector: "[data-tutorial='connect-wallet']",
     position: "bottom",
-    action: "Clique em 'Conectar Carteira' no menu lateral",
   },
   {
     id: "project",
-    title: "Crie seu Primeiro Projeto",
-    description: "Organize seus contratos inteligentes em projetos. Cada projeto pode conter múltiplos contratos e configurações de rede.",
+    titleKey: "tutorial.step2",
+    descriptionKey: "tutorial.step2Desc",
     icon: <FileCode className="h-8 w-8" />,
     targetSelector: "[data-tutorial='new-project']",
     position: "right",
@@ -65,8 +65,8 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   },
   {
     id: "editor",
-    title: "Editor de Contratos Solidity",
-    description: "Escreva e edite seus contratos inteligentes com syntax highlighting, autocompletion e validação em tempo real.",
+    titleKey: "tutorial.step3",
+    descriptionKey: "tutorial.step3Desc",
     icon: <FileCode className="h-8 w-8" />,
     code: `// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
@@ -86,15 +86,14 @@ contract MyToken {
   },
   {
     id: "security",
-    title: "Scanner de Segurança",
-    description: "Antes de fazer deploy, analise seu contrato em busca de vulnerabilidades comuns como reentrancy, overflow e problemas de acesso.",
+    titleKey: "tutorial.step5",
+    descriptionKey: "tutorial.step5Desc",
     icon: <Shield className="h-8 w-8" />,
-    action: "Use o Security Scanner para verificar seu código",
   },
   {
     id: "deploy",
-    title: "Deploy Multi-Chain",
-    description: "Faça deploy do seu contrato em múltiplas redes: Arc Network Testnet, Ethereum Sepolia, Polygon Mumbai e mais.",
+    titleKey: "tutorial.step4",
+    descriptionKey: "tutorial.step4Desc",
     icon: <Rocket className="h-8 w-8" />,
     targetSelector: "[data-tutorial='deploy']",
     position: "bottom",
@@ -106,14 +105,14 @@ Explorer: https://testnet.arcscan.io`,
   },
   {
     id: "gas",
-    title: "Monitoramento de Gas",
-    description: "Acompanhe os preços de gas em tempo real para todas as redes suportadas. Escolha o melhor momento para suas transações.",
+    titleKey: "gas.title",
+    descriptionKey: "gas.subtitle",
     icon: <Zap className="h-8 w-8" />,
   },
   {
     id: "complete",
-    title: "Pronto para Começar! 🎉",
-    description: "Você completou o tutorial! Agora você está pronto para criar, testar e fazer deploy de contratos inteligentes na Arc Network.",
+    titleKey: "tutorial.finish",
+    descriptionKey: "tutorial.welcomeDesc",
     icon: <CheckCircle className="h-8 w-8" />,
   },
 ];
@@ -121,6 +120,7 @@ Explorer: https://testnet.arcscan.io`,
 export default function InteractiveTutorial({ onComplete, onSkip }: InteractiveTutorialProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  const { t } = useI18n();
 
   const step = TUTORIAL_STEPS[currentStep];
   const progress = ((currentStep + 1) / TUTORIAL_STEPS.length) * 100;
@@ -179,10 +179,10 @@ export default function InteractiveTutorial({ onComplete, onSkip }: InteractiveT
         <div className="px-6 pt-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-muted-foreground">
-              Passo {currentStep + 1} de {TUTORIAL_STEPS.length}
+              {t('tutorial.stepOf').replace('{current}', String(currentStep + 1)).replace('{total}', String(TUTORIAL_STEPS.length))}
             </span>
             <Badge variant="outline" className="text-xs">
-              {Math.round(progress)}% completo
+              {Math.round(progress)}% {t('tutorial.complete')}
             </Badge>
           </div>
           <Progress value={progress} className="h-1" />
@@ -216,20 +216,20 @@ export default function InteractiveTutorial({ onComplete, onSkip }: InteractiveT
           {/* Content */}
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold mb-3 headline-cyber gradient-neon-text">
-              {step.title}
+              {t(step.titleKey)}
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              {step.description}
+              {t(step.descriptionKey)}
             </p>
           </div>
 
           {/* Action hint */}
-          {step.action && (
+          {step.actionKey && (
             <div className="mb-6 p-3 rounded-lg bg-[var(--color-neon-cyan)]/10 border border-[var(--color-neon-cyan)]/30">
               <div className="flex items-center gap-2 text-sm">
                 <Play className="h-4 w-4 text-[var(--color-neon-cyan)]" />
-                <span className="text-[var(--color-neon-cyan)] font-medium">Ação:</span>
-                <span>{step.action}</span>
+                <span className="text-[var(--color-neon-cyan)] font-medium">Action:</span>
+                <span>{t(step.actionKey)}</span>
               </div>
             </div>
           )}
@@ -238,7 +238,7 @@ export default function InteractiveTutorial({ onComplete, onSkip }: InteractiveT
           {step.code && (
             <div className="mb-6 rounded-lg overflow-hidden border border-border">
               <div className="px-3 py-2 bg-muted/50 border-b border-border">
-                <span className="text-xs text-muted-foreground font-mono">Exemplo</span>
+                <span className="text-xs text-muted-foreground font-mono">Example</span>
               </div>
               <pre className="p-4 text-xs font-mono overflow-x-auto bg-[oklch(0.06_0.02_280)]">
                 <code className="text-foreground">{step.code}</code>
@@ -255,11 +255,11 @@ export default function InteractiveTutorial({ onComplete, onSkip }: InteractiveT
               className="gap-1"
             >
               <ChevronLeft className="h-4 w-4" />
-              Anterior
+              {t('tutorial.previous')}
             </Button>
 
             <Button variant="ghost" onClick={handleSkip} className="text-muted-foreground">
-              Pular Tutorial
+              {t('tutorial.skip')}
             </Button>
 
             <Button
@@ -268,12 +268,12 @@ export default function InteractiveTutorial({ onComplete, onSkip }: InteractiveT
             >
               {isLastStep ? (
                 <>
-                  Começar
+                  {t('tutorial.finish')}
                   <Sparkles className="h-4 w-4" />
                 </>
               ) : (
                 <>
-                  Próximo
+                  {t('tutorial.next')}
                   <ChevronRight className="h-4 w-4" />
                 </>
               )}

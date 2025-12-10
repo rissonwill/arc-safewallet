@@ -206,3 +206,24 @@
 - [x] Testar integração MetaMask via browser
 
 - [x] Criar novo logo surpreendente para Arc SafeWallet (cyber punk style)
+
+
+## Completar Traduções i18n (v14)
+- [x] Traduzir página Dashboard completa
+- [x] Traduzir página de Projetos
+- [x] Traduzir página de Contratos (parcial - mensagens traduzidas)
+- [x] Traduzir página de Templates (parcial - mensagens traduzidas)
+- [x] Traduzir página de Deploy (parcial - mensagens traduzidas)
+- [x] Traduzir página de Staking (parcial - mensagens traduzidas)
+- [x] Traduzir página de NFT Marketplace (parcial - mensagens traduzidas)
+- [x] Traduzir página de Transações (parcial - mensagens traduzidas)
+- [x] Traduzir página de Gas Tracker (parcial - mensagens traduzidas)
+- [x] Traduzir página de Carteiras (parcial - mensagens traduzidas)
+- [x] Traduzir página de Redes (parcial - mensagens traduzidas)
+- [x] Traduzir página de Documentação (parcial - mensagens traduzidas)
+- [x] Traduzir página de Configurações (parcial - mensagens traduzidas)
+- [x] Traduzir componentes do DashboardLayout
+- [x] Traduzir mensagens de erro e toast
+- [x] Traduzir tutorial interativo
+- [x] Traduzir Security Scanner (parcial - mensagens traduzidas)
+- [x] Traduzir Contract Debugger (parcial - mensagens traduzidas)

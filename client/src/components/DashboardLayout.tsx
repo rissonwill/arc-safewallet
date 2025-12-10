@@ -98,12 +98,12 @@ export default function DashboardLayout({
               <h1 className="headline-massive text-3xl">Arc SafeWallet</h1>
             </div>
             <p className="tech-label text-center">
-              Carteira Segura para Arc Network & Ethereum
+              Secure Wallet for Arc Network & Ethereum
             </p>
           </div>
           <div className="w-full p-6 bg-card rounded-lg border border-border shadow-sm">
             <p className="text-sm text-muted-foreground text-center mb-6">
-              Faça login para acessar o dashboard e gerenciar seus projetos Web3.
+              Sign in to access the dashboard and manage your Web3 projects.
             </p>
             <Button
               onClick={() => {
@@ -112,7 +112,7 @@ export default function DashboardLayout({
               size="lg"
               className="w-full"
             >
-              Entrar na Plataforma
+              Sign In
             </Button>
           </div>
           <div className="flex gap-6 text-xs text-muted-foreground">
