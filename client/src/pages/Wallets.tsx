@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Wallet, 
   Plus, 
@@ -17,19 +17,47 @@ import {
   ExternalLink,
   Link2,
   Unlink,
-  CheckCircle
+  CheckCircle,
+  RefreshCw,
+  Send,
+  ArrowRightLeft,
+  Fuel,
+  AlertCircle
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { 
+  WalletAPI, 
+  NETWORKS as WALLET_NETWORKS,
+  type WalletState,
+  type GasEstimate,
+  type TransactionRecord
+} from "@/lib/walletApi";
 
+// Redes suportadas com configurações corretas
 const NETWORKS = [
-  { chainId: 1, name: "Ethereum Mainnet", symbol: "ETH", explorer: "https://etherscan.io" },
-  { chainId: 137, name: "Polygon", symbol: "MATIC", explorer: "https://polygonscan.com" },
-  { chainId: 56, name: "BSC", symbol: "BNB", explorer: "https://bscscan.com" },
-  { chainId: 42161, name: "Arbitrum", symbol: "ETH", explorer: "https://arbiscan.io" },
-  { chainId: 10, name: "Optimism", symbol: "ETH", explorer: "https://optimistic.etherscan.io" },
-  { chainId: 5, name: "Goerli Testnet", symbol: "ETH", explorer: "https://goerli.etherscan.io" },
-  { chainId: 80001, name: "Mumbai Testnet", symbol: "MATIC", explorer: "https://mumbai.polygonscan.com" },
+  { 
+    chainId: 5042002, 
+    name: "Arc Network Testnet", 
+    symbol: "USDC", 
+    decimals: 6,
+    explorer: "https://testnet.arcscan.app",
+    faucet: "https://faucet.circle.com/",
+    key: "arcTestnet"
+  },
+  { 
+    chainId: 11155111, 
+    name: "Ethereum Sepolia", 
+    symbol: "ETH", 
+    decimals: 18,
+    explorer: "https://sepolia.etherscan.io",
+    faucet: "https://sepoliafaucet.com/",
+    key: "sepolia"
+  },
+  { chainId: 1, name: "Ethereum Mainnet", symbol: "ETH", decimals: 18, explorer: "https://etherscan.io" },
+  { chainId: 137, name: "Polygon", symbol: "MATIC", decimals: 18, explorer: "https://polygonscan.com" },
+  { chainId: 56, name: "BSC", symbol: "BNB", decimals: 18, explorer: "https://bscscan.com" },
+  { chainId: 42161, name: "Arbitrum", symbol: "ETH", decimals: 18, explorer: "https://arbiscan.io" },
 ];
 
 const WALLET_TYPES = [
@@ -42,12 +70,22 @@ const WALLET_TYPES = [
 
 export default function Wallets() {
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isSendOpen, setIsSendOpen] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [walletState, setWalletState] = useState<WalletState | null>(null);
+  const [gasEstimate, setGasEstimate] = useState<GasEstimate | null>(null);
+  const [txHistory, setTxHistory] = useState<TransactionRecord[]>([]);
+  
   const [formData, setFormData] = useState({
     address: "",
-    chainId: 1,
+    chainId: 5042002,
     walletType: "metamask",
     label: "",
+  });
+
+  const [sendData, setSendData] = useState({
+    recipient: "",
+    amount: "",
   });
 
   const utils = trpc.useUtils();
@@ -85,37 +123,49 @@ export default function Wallets() {
     },
   });
 
+  // Atualizar estado da carteira periodicamente
+  useEffect(() => {
+    const updateState = () => {
+      const state = WalletAPI.getWalletState();
+      setWalletState(state);
+      setTxHistory(WalletAPI.getTransactionHistory());
+    };
+
+    updateState();
+    const interval = setInterval(updateState, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const resetForm = () => {
     setFormData({
       address: "",
-      chainId: 1,
+      chainId: 5042002,
       walletType: "metamask",
       label: "",
     });
   };
 
   const handleConnectMetaMask = async () => {
-    if (typeof window.ethereum === "undefined") {
+    if (!WalletAPI.isMetaMaskInstalled()) {
       toast.error("MetaMask não detectado. Por favor, instale a extensão.");
+      window.open("https://metamask.io/download/", "_blank");
       return;
     }
 
     setIsConnecting(true);
     try {
-      const accounts = await window.ethereum.request({ 
-        method: "eth_requestAccounts" 
+      const account = await WalletAPI.connectWallet();
+      const state = WalletAPI.getWalletState();
+      setWalletState(state);
+      
+      setFormData({
+        ...formData,
+        address: account,
+        chainId: state.networkInfo?.chainIdDecimal || 5042002,
+        walletType: "metamask",
       });
       
-      if (accounts && accounts.length > 0) {
-        const chainId = await window.ethereum.request({ method: "eth_chainId" });
-        setFormData({
-          ...formData,
-          address: accounts[0],
-          chainId: parseInt(chainId, 16),
-          walletType: "metamask",
-        });
-        toast.success("MetaMask conectado!");
-      }
+      toast.success(`MetaMask conectado: ${WalletAPI.shortenAddress(account)}`);
     } catch (error: any) {
       toast.error(`Erro ao conectar: ${error.message}`);
     } finally {
@@ -123,9 +173,84 @@ export default function Wallets() {
     }
   };
 
+  const handleDisconnect = () => {
+    WalletAPI.disconnectWallet();
+    setWalletState(null);
+    toast.success("Carteira desconectada");
+  };
+
+  const handleSwitchToArc = async () => {
+    try {
+      await WalletAPI.switchNetwork("arcTestnet");
+      const state = WalletAPI.getWalletState();
+      setWalletState(state);
+      toast.success("Conectado à Arc Network Testnet!");
+    } catch (error: any) {
+      toast.error(`Erro ao trocar rede: ${error.message}`);
+    }
+  };
+
+  const handleSwitchToSepolia = async () => {
+    try {
+      await WalletAPI.switchNetwork("sepolia");
+      const state = WalletAPI.getWalletState();
+      setWalletState(state);
+      toast.success("Conectado à Ethereum Sepolia!");
+    } catch (error: any) {
+      toast.error(`Erro ao trocar rede: ${error.message}`);
+    }
+  };
+
+  const handleRefreshBalance = async () => {
+    try {
+      await WalletAPI.updateBalance();
+      const state = WalletAPI.getWalletState();
+      setWalletState(state);
+      toast.success("Saldo atualizado!");
+    } catch (error: any) {
+      toast.error(`Erro ao atualizar saldo: ${error.message}`);
+    }
+  };
+
+  const handleEstimateGas = async () => {
+    if (!sendData.recipient || !sendData.amount) {
+      toast.error("Preencha destinatário e quantidade");
+      return;
+    }
+
+    try {
+      const estimate = await WalletAPI.estimateGas(sendData.recipient, sendData.amount);
+      setGasEstimate(estimate);
+      toast.success("Gas estimado com sucesso!");
+    } catch (error: any) {
+      toast.error(`Erro ao estimar gas: ${error.message}`);
+    }
+  };
+
+  const handleSendTransaction = async () => {
+    if (!sendData.recipient || !sendData.amount) {
+      toast.error("Preencha destinatário e quantidade");
+      return;
+    }
+
+    try {
+      const tx = await WalletAPI.sendTransaction(sendData.recipient, sendData.amount);
+      setTxHistory(WalletAPI.getTransactionHistory());
+      const state = WalletAPI.getWalletState();
+      setWalletState(state);
+      
+      toast.success(`Transação enviada: ${WalletAPI.shortenAddress(tx.hash)}`);
+      setIsSendOpen(false);
+      setSendData({ recipient: "", amount: "" });
+      setGasEstimate(null);
+    } catch (error: any) {
+      toast.error(`Erro ao enviar: ${error.message}`);
+    }
+  };
+
   const handleAdd = () => {
-    if (!formData.address || formData.address.length !== 42) {
-      toast.error("Endereço inválido. Deve ter 42 caracteres.");
+    if (!formData.address || !WalletAPI.isValidAddress(formData.address)) {
+      toast.error("Endereço inválido. Deve ser um endereço Ethereum válido.");
       return;
     }
     createMutation.mutate(formData);
@@ -153,6 +278,13 @@ export default function Wallets() {
     }
   };
 
+  const openFaucet = (chainId: number) => {
+    const network = NETWORKS.find(n => n.chainId === chainId);
+    if (network && 'faucet' in network) {
+      window.open(network.faucet, "_blank");
+    }
+  };
+
   const getNetworkName = (chainId: number) => {
     return NETWORKS.find(n => n.chainId === chainId)?.name || `Chain ${chainId}`;
   };
@@ -165,321 +297,497 @@ export default function Wallets() {
     return WALLET_TYPES.find(w => w.id === type)?.name || type;
   };
 
-  const formatAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
-
   return (
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="headline-massive text-2xl md:text-3xl">Carteiras</h1>
+            <h1 className="headline-massive text-2xl md:text-3xl">Carteiras Web3</h1>
             <p className="text-muted-foreground text-sm mt-1">
-              Gerencie suas carteiras Web3 conectadas
+              Gerencie suas carteiras e transações na Arc Network e Sepolia
             </p>
           </div>
           
-          <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => { resetForm(); setIsAddOpen(true); }}>
-                <Plus className="h-4 w-4 mr-1" />
-                Adicionar Carteira
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Adicionar Carteira</DialogTitle>
-                <DialogDescription>
-                  Conecte uma carteira Web3 ou adicione manualmente.
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="space-y-4">
-                {/* Quick Connect Buttons */}
-                <div className="grid grid-cols-2 gap-3">
-                  <Button 
-                    variant="outline" 
-                    className="h-auto py-4 flex flex-col items-center gap-2"
-                    onClick={handleConnectMetaMask}
-                    disabled={isConnecting}
-                  >
-                    <span className="text-2xl">🦊</span>
-                    <span className="text-sm font-medium">
-                      {isConnecting ? "Conectando..." : "MetaMask"}
-                    </span>
-                  </Button>
+          <div className="flex gap-2">
+            <Dialog open={isSendOpen} onOpenChange={setIsSendOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" disabled={!walletState?.isConnected}>
+                  <Send className="h-4 w-4 mr-1" />
+                  Enviar
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Enviar Transação</DialogTitle>
+                  <DialogDescription>
+                    Envie {walletState?.networkInfo?.nativeCurrency.symbol || 'tokens'} para outro endereço
+                  </DialogDescription>
+                </DialogHeader>
+                
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Destinatário</Label>
+                    <Input
+                      placeholder="0x..."
+                      value={sendData.recipient}
+                      onChange={(e) => setSendData({ ...sendData, recipient: e.target.value })}
+                    />
+                  </div>
                   
-                  <Button 
-                    variant="outline" 
-                    className="h-auto py-4 flex flex-col items-center gap-2"
-                    onClick={() => toast.info("WalletConnect em breve!")}
-                  >
-                    <span className="text-2xl">🔗</span>
-                    <span className="text-sm font-medium">WalletConnect</span>
+                  <div className="space-y-2">
+                    <Label>Quantidade ({walletState?.networkInfo?.nativeCurrency.symbol || 'ETH'})</Label>
+                    <Input
+                      type="number"
+                      step="0.000001"
+                      placeholder="0.0"
+                      value={sendData.amount}
+                      onChange={(e) => setSendData({ ...sendData, amount: e.target.value })}
+                    />
+                  </div>
+
+                  {gasEstimate && (
+                    <Card className="border-primary/30 bg-primary/5">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Fuel className="h-4 w-4 text-primary" />
+                          <span className="font-medium">Estimativa de Gas</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Gas Limit:</span>
+                            <span className="ml-2 font-mono">{gasEstimate.gasEstimate}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Custo:</span>
+                            <span className="ml-2 font-mono">{gasEstimate.gasCost} {gasEstimate.symbol}</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+                
+                <DialogFooter className="flex gap-2">
+                  <Button variant="outline" onClick={handleEstimateGas}>
+                    <Fuel className="h-4 w-4 mr-1" />
+                    Estimar Gas
                   </Button>
-                </div>
+                  <Button onClick={handleSendTransaction}>
+                    <Send className="h-4 w-4 mr-1" />
+                    Enviar
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+              <DialogTrigger asChild>
+                <Button onClick={() => { resetForm(); setIsAddOpen(true); }}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  Adicionar Carteira
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Adicionar Carteira</DialogTitle>
+                  <DialogDescription>
+                    Conecte uma carteira Web3 ou adicione manualmente.
+                  </DialogDescription>
+                </DialogHeader>
                 
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
+                <div className="space-y-4">
+                  {/* Quick Connect Buttons */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={handleConnectMetaMask}
+                      disabled={isConnecting}
+                      className="h-16 flex-col gap-1"
+                    >
+                      <span className="text-2xl">🦊</span>
+                      <span className="text-xs">MetaMask</span>
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => toast.info("WalletConnect em breve!")}
+                      className="h-16 flex-col gap-1"
+                    >
+                      <span className="text-2xl">🔗</span>
+                      <span className="text-xs">WalletConnect</span>
+                    </Button>
                   </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">
-                      ou adicione manualmente
-                    </span>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">ou adicione manualmente</span>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="address">Endereço da Carteira</Label>
-                  <Input
-                    id="address"
-                    placeholder="0x..."
-                    value={formData.address}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="font-mono"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
+
+                  <div className="space-y-2">
+                    <Label>Endereço da Carteira</Label>
+                    <Input
+                      placeholder="0x..."
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    />
+                  </div>
+
                   <div className="space-y-2">
                     <Label>Rede</Label>
-                    <Select
-                      value={formData.chainId.toString()}
+                    <Select 
+                      value={formData.chainId.toString()} 
                       onValueChange={(v) => setFormData({ ...formData, chainId: parseInt(v) })}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecione a rede" />
+                        <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         {NETWORKS.map((network) => (
                           <SelectItem key={network.chainId} value={network.chainId.toString()}>
-                            {network.name}
+                            {network.name} ({network.symbol})
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <Label>Tipo de Carteira</Label>
-                    <Select
-                      value={formData.walletType}
-                      onValueChange={(v) => setFormData({ ...formData, walletType: v })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o tipo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {WALLET_TYPES.map((wallet) => (
-                          <SelectItem key={wallet.id} value={wallet.id}>
-                            <span className="flex items-center gap-2">
-                              <span>{wallet.icon}</span>
-                              {wallet.name}
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label>Label (opcional)</Label>
+                    <Input
+                      placeholder="Minha carteira principal"
+                      value={formData.label}
+                      onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                    />
                   </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="label">Rótulo (opcional)</Label>
-                  <Input
-                    id="label"
-                    placeholder="Ex: Carteira Principal"
-                    value={formData.label}
-                    onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                  />
-                </div>
-              </div>
-              
-              <DialogFooter>
-                <Button onClick={handleAdd} disabled={createMutation.isPending}>
-                  {createMutation.isPending ? "Adicionando..." : "Adicionar Carteira"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsAddOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button onClick={handleAdd} disabled={createMutation.isPending}>
+                    {createMutation.isPending ? "Adicionando..." : "Adicionar"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
-        {/* Info Card */}
-        <Card className="border-primary/20 bg-primary/5">
-          <CardContent className="flex items-center gap-4 p-4">
-            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-              <Link2 className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <p className="font-medium text-sm">Conexão Segura</p>
-              <p className="text-sm text-muted-foreground">
-                Suas chaves privadas nunca são armazenadas. Apenas o endereço público é salvo para referência.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Wallets Grid */}
-        {isLoading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="border-border">
-                <CardHeader>
-                  <Skeleton className="h-6 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                </CardHeader>
-                <CardContent>
-                  <Skeleton className="h-20 w-full" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : wallets && wallets.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {wallets.map((wallet) => (
-              <Card key={wallet.id} className={`border-border card-hover ${wallet.isDefault ? "ring-2 ring-primary" : ""}`}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-2xl">
-                        {getWalletIcon(wallet.walletType)}
-                      </div>
-                      <div>
-                        <CardTitle className="text-base flex items-center gap-2">
-                          {wallet.label || getWalletName(wallet.walletType)}
-                          {wallet.isDefault && (
-                            <Star className="h-4 w-4 text-[var(--color-warning)] fill-[var(--color-warning)]" />
-                          )}
-                        </CardTitle>
-                        <CardDescription className="text-xs">
-                          {getNetworkName(wallet.chainId)}
-                        </CardDescription>
-                      </div>
+        {/* Connected Wallet Status */}
+        {walletState?.isConnected && (
+          <Card className="border-primary/30 bg-gradient-to-r from-primary/10 to-[var(--color-magenta)]/10">
+            <CardContent className="p-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="h-14 w-14 rounded-xl bg-primary/20 flex items-center justify-center">
+                    <Wallet className="h-7 w-7 text-primary" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-lg">{WalletAPI.shortenAddress(walletState.account || '')}</span>
+                      <Button variant="ghost" size="sm" onClick={() => handleCopy(walletState.account || '')}>
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge className="bg-[var(--color-success)]">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Conectado
+                      </Badge>
+                      <Badge variant="outline">
+                        {walletState.networkInfo?.chainName || 'Rede Desconhecida'}
+                      </Badge>
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="p-3 rounded-lg bg-muted/50">
-                    <p className="text-xs text-muted-foreground mb-1">Endereço</p>
-                    <div className="flex items-center justify-between">
-                      <p className="font-mono text-sm">{formatAddress(wallet.address)}</p>
-                      <div className="flex gap-1">
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={() => handleCopy(wallet.address)}
-                        >
-                          <Copy className="h-3 w-3" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={() => openExplorer(wallet.address, wallet.chainId)}
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="text-xs">
-                      {getWalletName(wallet.walletType)}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(wallet.createdAt).toLocaleDateString("pt-BR")}
-                    </span>
+                </div>
+                
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                  <div className="text-right">
+                    <p className="text-sm text-muted-foreground">Saldo</p>
+                    <p className="text-2xl font-bold font-mono">
+                      {walletState.balance} {walletState.networkInfo?.nativeCurrency.symbol}
+                    </p>
                   </div>
                   
                   <div className="flex gap-2">
-                    {!wallet.isDefault && (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="flex-1"
-                        onClick={() => handleSetDefault(wallet.id)}
-                        disabled={setDefaultMutation.isPending}
-                      >
-                        <Star className="h-4 w-4 mr-1" />
-                        Definir Padrão
-                      </Button>
-                    )}
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      className="text-destructive hover:text-destructive"
-                      onClick={() => handleDelete(wallet.id)}
-                      disabled={deleteMutation.isPending}
-                    >
-                      <Trash2 className="h-4 w-4" />
+                    <Button variant="outline" size="sm" onClick={handleRefreshBalance}>
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleDisconnect}>
+                      <Unlink className="h-4 w-4 mr-1" />
+                      Desconectar
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <Card className="border-border">
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                <Wallet className="h-8 w-8 text-muted-foreground" />
+                </div>
               </div>
-              <h3 className="font-semibold text-lg mb-1">Nenhuma carteira conectada</h3>
-              <p className="text-sm text-muted-foreground text-center max-w-sm mb-4">
-                Conecte sua carteira Web3 para começar a interagir com contratos inteligentes.
-              </p>
-              <Button onClick={() => { resetForm(); setIsAddOpen(true); }}>
-                <Plus className="h-4 w-4 mr-1" />
-                Conectar Primeira Carteira
-              </Button>
+
+              {/* Network Switch Buttons */}
+              <div className="mt-4 pt-4 border-t border-border/50">
+                <p className="text-sm text-muted-foreground mb-2">Trocar de Rede:</p>
+                <div className="flex flex-wrap gap-2">
+                  <Button 
+                    variant={walletState.currentNetwork === 'arcTestnet' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={handleSwitchToArc}
+                  >
+                    <ArrowRightLeft className="h-4 w-4 mr-1" />
+                    Arc Testnet (USDC)
+                  </Button>
+                  <Button 
+                    variant={walletState.currentNetwork === 'sepolia' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={handleSwitchToSepolia}
+                  >
+                    <ArrowRightLeft className="h-4 w-4 mr-1" />
+                    Sepolia (ETH)
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => openFaucet(walletState.networkInfo?.chainIdDecimal || 5042002)}
+                  >
+                    <ExternalLink className="h-4 w-4 mr-1" />
+                    Obter Tokens (Faucet)
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Supported Wallets */}
-        <Card className="border-border">
-          <CardHeader>
-            <CardTitle className="text-lg">Carteiras Suportadas</CardTitle>
-            <CardDescription>
-              Conecte qualquer carteira compatível com Web3
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {WALLET_TYPES.map((wallet) => (
-                <div 
-                  key={wallet.id}
-                  className="flex flex-col items-center gap-2 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-                >
-                  <span className="text-3xl">{wallet.icon}</span>
-                  <span className="text-sm font-medium">{wallet.name}</span>
-                  {wallet.id === "metamask" && (
-                    <Badge variant="outline" className="text-xs">
-                      <CheckCircle className="h-3 w-3 mr-1" />
-                      Ativo
-                    </Badge>
-                  )}
+        {/* Not Connected Warning */}
+        {!walletState?.isConnected && (
+          <Card className="border-[var(--color-warning)]/30 bg-[var(--color-warning)]/5">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-xl bg-[var(--color-warning)]/20 flex items-center justify-center">
+                  <AlertCircle className="h-6 w-6 text-[var(--color-warning)]" />
                 </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold">Nenhuma carteira conectada</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Conecte sua carteira MetaMask para enviar transações e interagir com a blockchain.
+                  </p>
+                </div>
+                <Button onClick={handleConnectMetaMask} disabled={isConnecting}>
+                  <Link2 className="h-4 w-4 mr-1" />
+                  {isConnecting ? "Conectando..." : "Conectar MetaMask"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Transaction History */}
+        {txHistory.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Send className="h-5 w-5" />
+                Transações Recentes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {txHistory.map((tx, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                        <Send className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-mono text-sm">{WalletAPI.shortenAddress(tx.hash)}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Para: {WalletAPI.shortenAddress(tx.to)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-mono font-medium">{tx.value} {tx.symbol}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(tx.timestamp).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Saved Wallets */}
+        <div>
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Wallet className="h-5 w-5" />
+            Carteiras Salvas
+          </h2>
+
+          {isLoading ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3].map((i) => (
+                <Card key={i}>
+                  <CardContent className="p-4">
+                    <Skeleton className="h-20 w-full" />
+                  </CardContent>
+                </Card>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          ) : wallets && wallets.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {wallets.map((wallet) => (
+                <Card key={wallet.id} className={`card-hover ${wallet.isDefault ? 'border-primary/50' : ''}`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl">{getWalletIcon(wallet.walletType)}</span>
+                        <div>
+                          <p className="font-medium">{wallet.label || getWalletName(wallet.walletType)}</p>
+                          <p className="text-xs text-muted-foreground">{getNetworkName(wallet.chainId)}</p>
+                        </div>
+                      </div>
+                      {wallet.isDefault && (
+                        <Badge className="bg-primary">
+                          <Star className="h-3 w-3 mr-1" />
+                          Padrão
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 mb-3">
+                      <span className="font-mono text-sm flex-1 truncate">{wallet.address}</span>
+                      <Button variant="ghost" size="sm" onClick={() => handleCopy(wallet.address)}>
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => openExplorer(wallet.address, wallet.chainId)}
+                      >
+                        <ExternalLink className="h-4 w-4 mr-1" />
+                        Explorer
+                      </Button>
+                      {!wallet.isDefault && (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleSetDefault(wallet.id)}
+                        >
+                          <Star className="h-4 w-4" />
+                        </Button>
+                      )}
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleDelete(wallet.id)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="border-dashed">
+              <CardContent className="p-8 text-center">
+                <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="font-semibold mb-2">Nenhuma carteira salva</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Adicione suas carteiras Web3 para gerenciá-las facilmente.
+                </p>
+                <Button onClick={() => setIsAddOpen(true)}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  Adicionar Primeira Carteira
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* Network Info Cards */}
+        <div>
+          <h2 className="text-lg font-semibold mb-4">Redes Suportadas</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* Arc Network Card */}
+            <Card className="border-primary/30 bg-primary/5">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                    <span className="font-bold text-primary">A</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Arc Network Testnet</h3>
+                    <p className="text-xs text-muted-foreground">Chain ID: 5042002 (0x4CEF52)</p>
+                  </div>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Gas Token:</span>
+                    <span className="font-mono">USDC (6 decimais)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">RPC:</span>
+                    <span className="font-mono text-xs">rpc.testnet.arc.network</span>
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-3">
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => window.open('https://testnet.arcscan.app', '_blank')}>
+                    <ExternalLink className="h-4 w-4 mr-1" />
+                    Explorer
+                  </Button>
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => window.open('https://faucet.circle.com/', '_blank')}>
+                    Faucet
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Sepolia Card */}
+            <Card className="border-[var(--color-cyan)]/30 bg-[var(--color-cyan)]/5">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-lg bg-[var(--color-cyan)]/20 flex items-center justify-center">
+                    <span className="font-bold text-[var(--color-cyan)]">Ξ</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Ethereum Sepolia</h3>
+                    <p className="text-xs text-muted-foreground">Chain ID: 11155111 (0xaa36a7)</p>
+                  </div>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Gas Token:</span>
+                    <span className="font-mono">ETH (18 decimais)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">RPC:</span>
+                    <span className="font-mono text-xs">ethereum-sepolia-rpc.publicnode.com</span>
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-3">
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => window.open('https://sepolia.etherscan.io', '_blank')}>
+                    <ExternalLink className="h-4 w-4 mr-1" />
+                    Explorer
+                  </Button>
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => window.open('https://sepoliafaucet.com/', '_blank')}>
+                    Faucet
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );
-}
-
-// Extend Window interface for ethereum
-declare global {
-  interface Window {
-    ethereum?: {
-      request: (args: { method: string; params?: any[] }) => Promise<any>;
-      on: (event: string, callback: (...args: any[]) => void) => void;
-      removeListener: (event: string, callback: (...args: any[]) => void) => void;
-    };
-  }
 }

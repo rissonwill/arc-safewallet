@@ -80,3 +80,27 @@
 - [x] Security scanner básico para contratos
 - [x] Detecção de vulnerabilidades comuns (reentrancy, overflow, etc.)
 - [x] Relatório de segurança com recomendações
+
+
+## Atualização de Configurações de Rede (v4)
+- [x] Atualizar Arc Testnet: Chain ID 5042002 (0x4CEF52), RPC https://rpc.testnet.arc.network
+- [x] Atualizar Arc Testnet Explorer: https://testnet.arcscan.app
+- [x] Configurar USDC como gas token para Arc (6 decimais)
+- [x] Adicionar faucet Arc: https://faucet.circle.com/
+- [x] Atualizar Ethereum Sepolia: Chain ID 11155111 (0xaa36a7)
+- [x] Atualizar Sepolia RPC: https://ethereum-sepolia-rpc.publicnode.com
+- [x] Adicionar faucet Sepolia: https://sepoliafaucet.com/
+
+
+## WalletAPI Técnica Completa (v5)
+- [x] Criar serviço WalletAPI com configurações corretas de Arc Testnet e Sepolia
+- [x] Implementar conexão/desconexão de carteira MetaMask
+- [x] Implementar troca de rede (switchNetwork)
+- [x] Implementar adição de rede ao MetaMask (addNetwork)
+- [x] Implementar envio de transações
+- [x] Implementar estimativa de gas
+- [x] Implementar assinatura de mensagens
+- [x] Implementar verificação de assinaturas
+- [x] Criar backtests para validar todas as funções da WalletAPI
+- [x] Testar configurações de rede Arc Testnet (Chain ID 5042002)
+- [x] Testar configurações de rede Sepolia (Chain ID 11155111)

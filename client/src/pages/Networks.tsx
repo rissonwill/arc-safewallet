@@ -18,26 +18,32 @@ import { Skeleton } from "@/components/ui/skeleton";
 const DEFAULT_NETWORKS = [
   // PRIMARY NETWORKS
   {
-    chainId: 1516,
+    chainId: 5042002, // 0x4CEF52
     name: "Arc Network Testnet",
-    symbol: "ARC",
-    rpcUrl: "https://testnet-rpc.arc.network",
-    explorerUrl: "https://testnet.arcscan.io",
+    symbol: "USDC",
+    decimals: 6,
+    rpcUrl: "https://rpc.testnet.arc.network",
+    explorerUrl: "https://testnet.arcscan.app",
+    faucetUrl: "https://faucet.circle.com/",
     isTestnet: true,
     isActive: true,
     isPrimary: true,
     color: "#00D4FF",
+    gasToken: "USDC",
   },
   {
-    chainId: 11155111,
-    name: "Sepolia Testnet",
+    chainId: 11155111, // 0xaa36a7
+    name: "Ethereum Sepolia",
     symbol: "ETH",
-    rpcUrl: "https://sepolia.infura.io/v3/",
+    decimals: 18,
+    rpcUrl: "https://ethereum-sepolia-rpc.publicnode.com",
     explorerUrl: "https://sepolia.etherscan.io",
+    faucetUrl: "https://sepoliafaucet.com/",
     isTestnet: true,
     isActive: true,
     isPrimary: true,
     color: "#627EEA",
+    gasToken: "ETH",
   },
   // MAINNETS
   {
