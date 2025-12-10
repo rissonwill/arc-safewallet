@@ -4,7 +4,7 @@
 // Arc Testnet + Sepolia (Redes não nativas)
 // ============================================
 
-import { ethers } from 'ethers';
+import { ethers, formatUnits as ethersFormatUnits, parseUnits as ethersParseUnits, BigNumberish } from 'ethers';
 
 // IMPORTANTE: Na Manus, selecione "Ethereum Mainnet" como rede base
 // Este código vai sobrescrever e adicionar Arc + Sepolia
@@ -299,21 +299,21 @@ async function setupCustomNetworks(): Promise<boolean> {
 // FUNÇÃO: OBTER PROVIDER DA REDE ATUAL
 // ============================================
 
-async function getCurrentProvider(): Promise<ethers.providers.Web3Provider> {
+async function getCurrentProvider(): Promise<ethers.BrowserProvider> {
   if (typeof window.ethereum === 'undefined') {
     throw new Error('MetaMask não detectado');
   }
 
-  // Usar ethers.js importado
-  return new ethers.providers.Web3Provider(window.ethereum as any);
+  // Usar ethers.js v6
+  return new ethers.BrowserProvider(window.ethereum as any);
 }
 
 /**
  * Obter signer para assinar transações
  */
-async function getSigner(): Promise<ethers.Signer> {
+async function getSigner(): Promise<ethers.JsonRpcSigner> {
   const provider = await getCurrentProvider();
-  return provider.getSigner();
+  return await provider.getSigner();
 }
 
 /**
@@ -321,8 +321,8 @@ async function getSigner(): Promise<ethers.Signer> {
  */
 function getContract(
   address: string,
-  abi: ethers.ContractInterface,
-  signerOrProvider?: ethers.Signer | ethers.providers.Provider
+  abi: ethers.InterfaceAbi,
+  signerOrProvider?: ethers.Signer | ethers.Provider
 ): ethers.Contract {
   return new ethers.Contract(address, abi, signerOrProvider);
 }
@@ -330,15 +330,15 @@ function getContract(
 /**
  * Formatar valor para wei/unidades
  */
-function parseUnits(value: string, decimals: number = 18): ethers.BigNumber {
-  return ethers.utils.parseUnits(value, decimals);
+function parseUnitsLocal(value: string, decimals: number = 18): bigint {
+  return ethersParseUnits(value, decimals);
 }
 
 /**
  * Formatar wei/unidades para valor legível
  */
-function formatUnits(value: ethers.BigNumberish, decimals: number = 18): string {
-  return ethers.utils.formatUnits(value, decimals);
+function formatUnitsLocal(value: BigNumberish, decimals: number = 18): string {
+  return ethersFormatUnits(value, decimals);
 }
 
 // ============================================
@@ -598,8 +598,8 @@ export const WalletAPI = {
   getContract,
   
   // Utilitários de formatação (ethers.js)
-  parseUnits,
-  formatUnits,
+  parseUnits: parseUnitsLocal,
+  formatUnits: formatUnitsLocal,
   
   // Transações
   sendTransaction,

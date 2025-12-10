@@ -1,9 +1,15 @@
-// scripts/deploy.ts
-import { ethers } from "hardhat";
-import * as fs from "fs";
-import * as path from "path";
+// scripts/deploy.mjs
+import hre from "hardhat";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function main() {
+  const ethers = hre.ethers;
+  
   console.log("🚀 Iniciando deploy dos contratos...\n");
 
   // Obter o deployer

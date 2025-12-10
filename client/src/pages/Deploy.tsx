@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
+import { ethers, isAddress, parseUnits, getCreateAddress } from 'ethers';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -187,7 +187,7 @@ export default function Deploy() {
         toast.error('Preencha os endereços dos tokens para o Vault');
         return;
       }
-      if (!ethers.utils.isAddress(vaultParams.stakingToken) || !ethers.utils.isAddress(vaultParams.rewardToken)) {
+      if (!isAddress(vaultParams.stakingToken) || !isAddress(vaultParams.rewardToken)) {
         toast.error('Endereços de token inválidos');
         return;
       }
@@ -220,16 +220,16 @@ export default function Deploy() {
       
       // Verificar saldo
       const balance = await provider.getBalance(account);
-      const minBalance = ethers.utils.parseUnits('0.01', network.nativeCurrency.decimals);
+      const minBalance = parseUnits('0.01', network.nativeCurrency.decimals);
       
-      if (balance.lt(minBalance)) {
+      if (balance < minBalance) {
         throw new Error(`Saldo insuficiente. Você precisa de pelo menos 0.01 ${network.nativeCurrency.symbol} para deploy. Use o faucet: ${network.faucetUrl}`);
       }
 
       setDeployProgress(60);
 
       // Simular endereço de contrato deployado (em produção seria o endereço real)
-      const simulatedAddress = ethers.utils.getContractAddress({
+      const simulatedAddress = getCreateAddress({
         from: account,
         nonce: await provider.getTransactionCount(account),
       });

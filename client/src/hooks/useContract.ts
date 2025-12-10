@@ -1,6 +1,6 @@
 // src/hooks/useContract.ts
 import { useState, useEffect, useCallback } from 'react';
-import { ethers } from 'ethers';
+import { ethers, formatUnits, parseUnits, isAddress } from 'ethers';
 
 // ABIs dos contratos (serão gerados após o deploy)
 // Por enquanto, usando ABIs mínimas para tipagem
@@ -88,10 +88,10 @@ export const CONTRACTS = {
     ArcVault: '0x0000000000000000000000000000000000000000',
   },
   sepolia: {
-    ArcToken: '0x0000000000000000000000000000000000000000', // Atualizar após deploy
-    ArcNFT: '0x0000000000000000000000000000000000000000',
-    ArcMarketplace: '0x0000000000000000000000000000000000000000',
-    ArcVault: '0x0000000000000000000000000000000000000000',
+    ArcToken: '0x0656B33CFfB2c6c46c06664E86DCD268e2d42DcC',
+    ArcNFT: '0x5c4feae8C6CA8A31a5feB4Fc9b3e3aeD5882CaA7',
+    ArcMarketplace: '0x7b0d9163b451C4565d488Df49aaD76fa0bac50A2',
+    ArcVault: '0xBE21597B385F299CbBF71725823A5E1aD810973f',
   },
 };
 
@@ -111,7 +111,7 @@ const ABIS: Record<ContractName, string[]> = {
 export const useContract = (
   contractName: ContractName,
   network: NetworkKey,
-  provider?: ethers.providers.Web3Provider
+  provider?: ethers.BrowserProvider
 ) => {
   const [contract, setContract] = useState<ethers.Contract | null>(null);
   const [loading, setLoading] = useState(false);
@@ -120,8 +120,9 @@ export const useContract = (
   useEffect(() => {
     if (!provider) return;
 
-    try {
-      setLoading(true);
+    const loadContract = async () => {
+      try {
+        setLoading(true);
       const address = CONTRACTS[network][contractName];
       
       if (address === '0x0000000000000000000000000000000000000000') {
@@ -131,16 +132,18 @@ export const useContract = (
       }
       
       const abi = ABIS[contractName];
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const contractInstance = new ethers.Contract(address, abi, signer);
       
       setContract(contractInstance);
       setError(null);
     } catch (err: any) {
       setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadContract();
   }, [contractName, network, provider]);
 
   return { contract, loading, error };
@@ -151,7 +154,7 @@ export const useContract = (
  */
 export const useArcToken = (
   network: NetworkKey,
-  provider?: ethers.providers.Web3Provider
+  provider?: ethers.BrowserProvider
 ) => {
   const { contract, loading: contractLoading, error: contractError } = useContract('ArcToken', network, provider);
   const [balance, setBalance] = useState('0');
@@ -164,7 +167,7 @@ export const useArcToken = (
     try {
       setLoading(true);
       const bal = await contract.balanceOf(address);
-      const formatted = ethers.utils.formatEther(bal);
+      const formatted = formatUnits(bal);
       setBalance(formatted);
       return formatted;
     } catch (error) {
@@ -180,7 +183,7 @@ export const useArcToken = (
     
     try {
       const supply = await contract.totalSupply();
-      const formatted = ethers.utils.formatEther(supply);
+      const formatted = formatUnits(supply);
       setTotalSupply(formatted);
       return formatted;
     } catch (error) {
@@ -194,7 +197,7 @@ export const useArcToken = (
     
     try {
       setLoading(true);
-      const value = ethers.utils.parseEther(amount);
+      const value = parseUnits(amount);
       const tx = await contract.transfer(to, value);
       const receipt = await tx.wait();
       return receipt;
@@ -210,7 +213,7 @@ export const useArcToken = (
     
     try {
       setLoading(true);
-      const value = ethers.utils.parseEther(amount);
+      const value = parseUnits(amount);
       const tx = await contract.mint(to, value);
       const receipt = await tx.wait();
       return receipt;
@@ -226,7 +229,7 @@ export const useArcToken = (
     
     try {
       setLoading(true);
-      const value = ethers.utils.parseEther(amount);
+      const value = parseUnits(amount);
       const tx = await contract.burn(value);
       const receipt = await tx.wait();
       return receipt;
@@ -256,7 +259,7 @@ export const useArcToken = (
  */
 export const useArcNFT = (
   network: NetworkKey,
-  provider?: ethers.providers.Web3Provider
+  provider?: ethers.BrowserProvider
 ) => {
   const { contract, loading: contractLoading, error: contractError } = useContract('ArcNFT', network, provider);
   const [nfts, setNfts] = useState<any[]>([]);
@@ -282,7 +285,7 @@ export const useArcNFT = (
     
     try {
       const price = await contract.mintPrice();
-      const formatted = ethers.utils.formatEther(price);
+      const formatted = formatUnits(price);
       setMintPrice(formatted);
       return formatted;
     } catch (error) {
@@ -353,7 +356,7 @@ export const useArcNFT = (
  */
 export const useArcVault = (
   network: NetworkKey,
-  provider?: ethers.providers.Web3Provider
+  provider?: ethers.BrowserProvider
 ) => {
   const { contract, loading: contractLoading, error: contractError } = useContract('ArcVault', network, provider);
   const [stakeInfo, setStakeInfo] = useState<any>(null);
@@ -368,8 +371,8 @@ export const useArcVault = (
     try {
       const info = await contract.stakes(address);
       const stakeData = {
-        amount: ethers.utils.formatEther(info.amount),
-        rewardDebt: ethers.utils.formatEther(info.rewardDebt),
+        amount: formatUnits(info.amount),
+        rewardDebt: formatUnits(info.rewardDebt),
         stakedAt: info.stakedAt.toNumber(),
         lastClaimAt: info.lastClaimAt.toNumber(),
       };
@@ -386,7 +389,7 @@ export const useArcVault = (
     
     try {
       const rewards = await contract.pendingRewards(address);
-      const formatted = ethers.utils.formatEther(rewards);
+      const formatted = formatUnits(rewards);
       setPendingRewards(formatted);
       return formatted;
     } catch (error) {
@@ -400,7 +403,7 @@ export const useArcVault = (
     
     try {
       const total = await contract.totalStaked();
-      const formatted = ethers.utils.formatEther(total);
+      const formatted = formatUnits(total);
       setTotalStaked(formatted);
       return formatted;
     } catch (error) {
@@ -428,7 +431,7 @@ export const useArcVault = (
     
     try {
       setLoading(true);
-      const value = ethers.utils.parseEther(amount);
+      const value = parseUnits(amount);
       const tx = await contract.stake(value);
       const receipt = await tx.wait();
       return receipt;
@@ -444,7 +447,7 @@ export const useArcVault = (
     
     try {
       setLoading(true);
-      const value = ethers.utils.parseEther(amount);
+      const value = parseUnits(amount);
       const tx = await contract.unstake(value);
       const receipt = await tx.wait();
       return receipt;

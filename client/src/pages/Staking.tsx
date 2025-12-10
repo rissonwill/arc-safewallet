@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ethers } from 'ethers';
+import { ethers, formatUnits, parseUnits, isAddress, MaxUint256 } from 'ethers';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -100,7 +100,7 @@ export default function Staking() {
   };
 
   const loadVaultData = useCallback(async () => {
-    if (!vaultAddress || !account || !ethers.utils.isAddress(vaultAddress)) {
+    if (!vaultAddress || !account || !isAddress(vaultAddress)) {
       return;
     }
 
@@ -126,10 +126,10 @@ export default function Staking() {
         token.balanceOf(account),
       ]);
 
-      setTokenBalance(ethers.utils.formatUnits(balance, decimals));
+      setTokenBalance(formatUnits(balance, decimals));
       
       setVaultStats({
-        totalStaked: ethers.utils.formatUnits(totalStaked, decimals),
+        totalStaked: formatUnits(totalStaked, decimals),
         apy: (apy.toNumber() / 100).toFixed(2),
         minStakePeriod: minPeriod.toNumber(),
         earlyWithdrawFee: withdrawFee.toNumber() / 100,
@@ -146,9 +146,9 @@ export default function Staking() {
       const canWithdraw = stakedAt === 0 || (Date.now() / 1000) > (stakedAt + minPeriod.toNumber());
 
       setStakeInfo({
-        amount: ethers.utils.formatUnits(userStake.amount, decimals),
+        amount: formatUnits(userStake.amount, decimals),
         stakedAt: stakedAt,
-        pendingRewards: ethers.utils.formatUnits(pending, decimals),
+        pendingRewards: formatUnits(pending, decimals),
         canWithdrawWithoutFee: canWithdraw,
       });
 
@@ -175,7 +175,7 @@ export default function Staking() {
     setIsStaking(true);
     try {
       const provider = await WalletAPI.getProvider();
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const vault = new ethers.Contract(vaultAddress, VAULT_ABI, signer);
       
       // Obter token de staking
@@ -183,13 +183,13 @@ export default function Staking() {
       const token = new ethers.Contract(stakingTokenAddr, TOKEN_ABI, signer);
       const decimals = await token.decimals();
       
-      const amount = ethers.utils.parseUnits(stakeAmount, decimals);
+      const amount = parseUnits(stakeAmount, decimals);
 
       // Verificar allowance
       const allowance = await token.allowance(account, vaultAddress);
       if (allowance.lt(amount)) {
         toast.info('Aprovando tokens...');
-        const approveTx = await token.approve(vaultAddress, ethers.constants.MaxUint256);
+        const approveTx = await token.approve(vaultAddress, MaxUint256);
         await approveTx.wait();
         toast.success('Tokens aprovados!');
       }
@@ -219,14 +219,14 @@ export default function Staking() {
     setIsUnstaking(true);
     try {
       const provider = await WalletAPI.getProvider();
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const vault = new ethers.Contract(vaultAddress, VAULT_ABI, signer);
       
       const stakingTokenAddr = await vault.stakingToken();
       const token = new ethers.Contract(stakingTokenAddr, TOKEN_ABI, provider);
       const decimals = await token.decimals();
       
-      const amount = ethers.utils.parseUnits(unstakeAmount, decimals);
+      const amount = parseUnits(unstakeAmount, decimals);
 
       toast.info('Retirando stake...');
       const tx = await vault.unstake(amount);
@@ -247,7 +247,7 @@ export default function Staking() {
     setIsClaiming(true);
     try {
       const provider = await WalletAPI.getProvider();
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const vault = new ethers.Contract(vaultAddress, VAULT_ABI, signer);
 
       toast.info('Reivindicando recompensas...');

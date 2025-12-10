@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ethers } from 'ethers';
+import { ethers, formatEther, parseEther, isAddress } from 'ethers';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -126,7 +126,7 @@ export default function NFTMarketplace() {
   };
 
   const loadNFTData = useCallback(async () => {
-    if (!nftAddress || !account || !ethers.utils.isAddress(nftAddress)) {
+    if (!nftAddress || !account || !isAddress(nftAddress)) {
       return;
     }
 
@@ -140,7 +140,7 @@ export default function NFTMarketplace() {
         nft.name(),
         nft.symbol(),
         nft.totalSupply(),
-        nft.mintPrice().catch(() => ethers.BigNumber.from(0)),
+        nft.mintPrice().catch(() => BigInt(0)),
         nft.balanceOf(account),
       ]);
 
@@ -150,7 +150,7 @@ export default function NFTMarketplace() {
         totalSupply: totalSupply.toNumber(),
       });
 
-      setMintPrice(ethers.utils.formatEther(price));
+      setMintPrice(formatEther(price));
 
       // Carregar NFTs do usuário
       const userNFTs: NFTItem[] = [];
@@ -184,7 +184,7 @@ export default function NFTMarketplace() {
   }, [nftAddress, account]);
 
   const loadMarketplaceData = useCallback(async () => {
-    if (!marketplaceAddress || !ethers.utils.isAddress(marketplaceAddress)) {
+    if (!marketplaceAddress || !isAddress(marketplaceAddress)) {
       return;
     }
 
@@ -200,7 +200,7 @@ export default function NFTMarketplace() {
           const listing = await marketplace.listings(i);
           if (listing.isActive) {
             let metadata;
-            if (ethers.utils.isAddress(listing.nftContract)) {
+            if (isAddress(listing.nftContract)) {
               const nft = new ethers.Contract(listing.nftContract, NFT_ABI, provider);
               const uri = await nft.tokenURI(listing.tokenId);
               metadata = await fetchMetadata(uri);
@@ -211,7 +211,7 @@ export default function NFTMarketplace() {
               seller: listing.seller,
               nftContract: listing.nftContract,
               tokenId: listing.tokenId.toNumber(),
-              price: ethers.utils.formatEther(listing.price),
+              price: formatEther(listing.price),
               isActive: listing.isActive,
               createdAt: listing.createdAt.toNumber(),
               metadata,
@@ -264,7 +264,7 @@ export default function NFTMarketplace() {
     setIsMinting(true);
     try {
       const provider = await WalletAPI.getProvider();
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const nft = new ethers.Contract(nftAddress, NFT_ABI, signer);
 
       const price = await nft.mintPrice();
@@ -293,7 +293,7 @@ export default function NFTMarketplace() {
     setIsListing(true);
     try {
       const provider = await WalletAPI.getProvider();
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const nft = new ethers.Contract(nftAddress, NFT_ABI, signer);
       const marketplace = new ethers.Contract(marketplaceAddress, MARKETPLACE_ABI, signer);
 
@@ -307,7 +307,7 @@ export default function NFTMarketplace() {
 
       // Listar NFT
       toast.info('Listando NFT no marketplace...');
-      const price = ethers.utils.parseEther(listPrice);
+      const price = parseEther(listPrice);
       const tx = await marketplace.listNFT(nftAddress, selectedNFT.tokenId, price);
       await tx.wait();
 
@@ -328,12 +328,12 @@ export default function NFTMarketplace() {
     setIsBuying(true);
     try {
       const provider = await WalletAPI.getProvider();
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const marketplace = new ethers.Contract(marketplaceAddress, MARKETPLACE_ABI, signer);
 
       toast.info('Comprando NFT...');
       const tx = await marketplace.buyNFT(listing.id, {
-        value: ethers.utils.parseEther(listing.price),
+        value: parseEther(listing.price),
       });
       await tx.wait();
 

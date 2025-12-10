@@ -160,3 +160,29 @@
 - [x] Criar QUICK_START.md com comandos rápidos
 - [x] Adicionar checklist visual de deploy
 - [x] Incluir tabela de solução de problemas
+
+
+## Deploy Real dos Contratos (v10)
+- [x] Configurar .env com chave privada
+- [x] Compilar contratos com Hardhat (32 arquivos Solidity)
+- [ ] Deploy na Arc Testnet (pendente - rede lenta)
+- [x] Deploy na Sepolia
+- [x] Atualizar endereços no frontend
+
+### Contratos Deployados na Sepolia (Chain ID: 11155111)
+- ArcToken: 0x0656B33CFfB2c6c46c06664E86DCD268e2d42DcC
+- ArcNFT: 0x5c4feae8C6CA8A31a5feB4Fc9b3e3aeD5882CaA7
+- ArcMarketplace: 0x7b0d9163b451C4565d488Df49aaD76fa0bac50A2
+- ArcVault: 0xBE21597B385F299CbBF71725823A5E1aD810973f
+
+
+## Correções e Documentação (v11)
+- [x] Corrigir todos os erros de TypeScript para ethers v6
+- [x] Substituir ethers.utils por funções diretas (formatUnits, parseUnits)
+- [x] Substituir ethers.providers.Web3Provider por ethers.BrowserProvider
+- [x] Corrigir comparações de BigNumber para bigint nativo
+- [x] Adicionar await em todas as chamadas de getSigner()
+- [x] Adicionar documentação oficial da Arc Network (ARC_NETWORK_CONFIG.md)
+- [x] Documentar Gas e Fees (160 Gwei mínimo, USDC como gas token)
+- [x] Documentar Deterministic Finality (sub-second confirmation)
+- [x] Documentar endereços de contratos oficiais da Arc Network
