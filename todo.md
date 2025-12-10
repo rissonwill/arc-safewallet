@@ -186,3 +186,23 @@
 - [x] Documentar Gas e Fees (160 Gwei mínimo, USDC como gas token)
 - [x] Documentar Deterministic Finality (sub-second confirmation)
 - [x] Documentar endereços de contratos oficiais da Arc Network
+
+
+## Próximos Passos Finais (v12)
+- [ ] Tentar deploy na Arc Testnet
+- [ ] Verificar contratos no Etherscan (Sepolia)
+- [x] Testar integração MetaMask via browser
+- [ ] Validar conexão de carteira
+- [ ] Testar troca de rede
+
+
+## Sistema Bilíngue e Navegação (v13)
+- [x] Criar sistema de internacionalização (i18n) bilíngue (PT/EN)
+- [x] Criar arquivos de tradução para Português e Inglês
+- [x] Adicionar botão de troca de idioma no canto do header
+- [x] Traduzir todas as páginas principais
+- [x] Corrigir navegação para permitir voltar à página inicial após login
+- [x] Adicionar link "Home" no menu do dashboard
+- [x] Testar integração MetaMask via browser
+
+- [x] Criar novo logo surpreendente para Arc SafeWallet (cyber punk style)

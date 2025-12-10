@@ -23,10 +23,12 @@ import {
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { useEffect, useState } from "react";
+import { useI18n, LanguageSelector } from "@/i18n";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+  const { t } = useI18n();
   const [glowIndex, setGlowIndex] = useState(0);
 
   // Animated glow effect
@@ -103,10 +105,8 @@ export default function Home() {
     { label: "Vulnerabilidades Detectadas", value: "15+" },
   ];
 
-  if (isAuthenticated) {
-    setLocation("/dashboard");
-    return null;
-  }
+  // Remover redirecionamento automático para permitir voltar à Home
+  // O usuário pode clicar em "Dashboard" no menu se quiser ir para lá
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">
@@ -142,17 +142,28 @@ export default function Home() {
           </div>
           
           <div className="flex items-center gap-4">
+            <LanguageSelector />
             <Button variant="ghost" onClick={() => setLocation("/docs")} className="text-muted-foreground hover:text-[var(--color-neon-cyan)]">
               <BookOpen className="h-4 w-4 mr-2" />
-              Docs
+              {t('nav.docs')}
             </Button>
-            <Button 
-              onClick={() => window.location.href = getLoginUrl()}
-              className="bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black font-semibold hover:opacity-90 transition-opacity"
-            >
-              Entrar
-              <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
+            {isAuthenticated ? (
+              <Button 
+                onClick={() => setLocation("/dashboard")}
+                className="bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black font-semibold hover:opacity-90 transition-opacity"
+              >
+                {t('nav.dashboard')}
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => window.location.href = getLoginUrl()}
+                className="bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black font-semibold hover:opacity-90 transition-opacity"
+              >
+                {t('home.getStarted')}
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            )}
           </div>
         </div>
       </nav>
@@ -167,7 +178,7 @@ export default function Home() {
             </Badge>
             
             <h1 className="headline-cyber text-4xl md:text-6xl lg:text-7xl mb-6">
-              <span className="gradient-neon-text">Desenvolva</span>
+              <span className="gradient-neon-text">{t('home.title')}</span>
               <br />
               <span className="text-foreground">Contratos Inteligentes</span>
               <br />
@@ -175,8 +186,7 @@ export default function Home() {
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-              Plataforma completa para desenvolvimento Web3 com editor Solidity, 
-              debugger integrado, scanner de segurança e deploy multi-chain.
+              {t('home.description')}
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -185,7 +195,7 @@ export default function Home() {
                 onClick={() => window.location.href = getLoginUrl()}
                 className="bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black font-bold text-lg px-8 hover:opacity-90 transition-all neon-glow-cyan"
               >
-                Começar Agora
+                {t('home.getStarted')}
                 <Rocket className="h-5 w-5 ml-2" />
               </Button>
               <Button 
@@ -195,7 +205,7 @@ export default function Home() {
                 className="border-[var(--color-neon-cyan)]/50 text-[var(--color-neon-cyan)] hover:bg-[var(--color-neon-cyan)]/10"
               >
                 <Terminal className="h-5 w-5 mr-2" />
-                Ver Documentação
+                {t('home.learnMore')}
               </Button>
             </div>
 

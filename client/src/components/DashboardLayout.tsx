@@ -43,20 +43,23 @@ import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
+import { useI18n, LanguageSelector } from "@/i18n";
+import { Home } from "lucide-react";
 
-const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: FolderKanban, label: "Projetos", path: "/projects" },
-  { icon: FileCode2, label: "Contratos", path: "/contracts" },
-  { icon: Blocks, label: "Templates", path: "/templates" },
-  { icon: Rocket, label: "Deploy", path: "/deploy" },
-  { icon: Vault, label: "Staking", path: "/staking" },
-  { icon: Image, label: "NFT Marketplace", path: "/nft-marketplace" },
-  { icon: Send, label: "Transações", path: "/transactions" },
-  { icon: Fuel, label: "Gas Tracker", path: "/gas" },
-  { icon: Wallet, label: "Carteiras", path: "/wallets" },
-  { icon: Network, label: "Redes", path: "/networks" },
-  { icon: BookOpen, label: "Documentação", path: "/docs" },
+const getMenuItems = (t: (key: string) => string) => [
+  { icon: Home, label: t('nav.home'), path: "/" },
+  { icon: LayoutDashboard, label: t('nav.dashboard'), path: "/dashboard" },
+  { icon: FolderKanban, label: t('nav.projects'), path: "/projects" },
+  { icon: FileCode2, label: t('nav.contracts'), path: "/contracts" },
+  { icon: Blocks, label: t('nav.templates'), path: "/templates" },
+  { icon: Rocket, label: t('nav.deploy'), path: "/deploy" },
+  { icon: Vault, label: t('nav.staking'), path: "/staking" },
+  { icon: Image, label: t('nav.nftMarketplace'), path: "/nft-marketplace" },
+  { icon: Send, label: t('nav.transactions'), path: "/transactions" },
+  { icon: Fuel, label: t('nav.gasTracker'), path: "/gas" },
+  { icon: Wallet, label: t('nav.wallets'), path: "/wallets" },
+  { icon: Network, label: t('nav.networks'), path: "/networks" },
+  { icon: BookOpen, label: t('nav.docs'), path: "/docs" },
 ];
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
@@ -157,6 +160,8 @@ function DashboardLayoutContent({
 }: DashboardLayoutContentProps) {
   const { user, logout } = useAuth();
   const [location, setLocation] = useLocation();
+  const { t } = useI18n();
+  const menuItems = getMenuItems(t);
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
@@ -276,7 +281,7 @@ function DashboardLayoutContent({
                   className="cursor-pointer"
                 >
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>Configurações</span>
+                  <span>{t('nav.settings')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -284,7 +289,7 @@ function DashboardLayoutContent({
                   className="cursor-pointer text-destructive focus:text-destructive"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sair</span>
+                  <span>{t('nav.logout')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -312,6 +317,7 @@ function DashboardLayoutContent({
                 </span>
               </div>
             </div>
+            <LanguageSelector />
           </div>
         )}
         <main className="flex-1 p-4 md:p-6">{children}</main>
