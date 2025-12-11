@@ -42,6 +42,7 @@ export default function Home() {
   const features = [
     {
       icon: FileCode2,
+      iconImage: "/icons/contract-icon.png",
       title: t('home.feature.editor'),
       description: t('home.feature.editorDesc'),
       color: "text-[var(--color-neon-cyan)]",
@@ -50,6 +51,7 @@ export default function Home() {
     },
     {
       icon: Bug,
+      iconImage: null,
       title: t('home.feature.debugger'),
       description: t('home.feature.debuggerDesc'),
       color: "text-[var(--color-neon-green)]",
@@ -58,6 +60,7 @@ export default function Home() {
     },
     {
       icon: Shield,
+      iconImage: "/icons/wallet-icon.png",
       title: t('home.feature.security'),
       description: t('home.feature.securityDesc'),
       color: "text-[var(--color-neon-purple)]",
@@ -66,6 +69,7 @@ export default function Home() {
     },
     {
       icon: Rocket,
+      iconImage: "/icons/deploy-icon.png",
       title: t('home.feature.deploy'),
       description: t('home.feature.deployDesc'),
       color: "text-[var(--color-neon-magenta)]",
@@ -74,14 +78,16 @@ export default function Home() {
     },
     {
       icon: Fuel,
+      iconImage: "/icons/staking-icon.png",
       title: t('home.feature.gas'),
       description: t('home.feature.gasDesc'),
       color: "text-[var(--color-neon-yellow)]",
       bg: "bg-[var(--color-neon-yellow)]/10",
-      glow: "",
+      glow: "neon-glow-yellow",
     },
     {
       icon: Sparkles,
+      iconImage: "/icons/nft-icon.png",
       title: t('home.feature.docs'),
       description: t('home.feature.docsDesc'),
       color: "text-[var(--color-neon-cyan)]",
@@ -169,7 +175,16 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative z-10 py-20 md:py-32">
+      <section className="relative z-10 py-20 md:py-32 hero-cyber-bg">
+        {/* Hero Banner Background */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <img 
+            src="/hero-banner.png" 
+            alt="" 
+            className="w-full h-full object-cover opacity-30"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background" />
+        </div>
         <div className="container">
           <div className="max-w-4xl mx-auto text-center">
             <Badge className="mb-6 bg-[var(--color-neon-cyan)]/10 text-[var(--color-neon-cyan)] border-[var(--color-neon-cyan)]/30 px-4 py-1.5">
@@ -273,8 +288,12 @@ export default function Home() {
                 }`}
               >
                 <CardContent className="p-6">
-                  <div className={`h-12 w-12 rounded-xl ${feature.bg} flex items-center justify-center mb-4`}>
-                    <feature.icon className={`h-6 w-6 ${feature.color}`} />
+                  <div className={`h-12 w-12 rounded-xl ${feature.bg} flex items-center justify-center mb-4 transition-all duration-300 hover:scale-110 group-hover:shadow-lg`}>
+                    {feature.iconImage ? (
+                      <img src={feature.iconImage} alt={feature.title} className="h-8 w-8 object-contain" />
+                    ) : (
+                      <feature.icon className={`h-6 w-6 ${feature.color}`} />
+                    )}
                   </div>
                   <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
                   <p className="text-sm text-muted-foreground">{feature.description}</p>

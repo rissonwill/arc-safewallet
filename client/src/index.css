@@ -592,3 +592,168 @@
   border: 1px solid oklch(0.8 0.22 195 / 0.5);
   box-shadow: 0 0 30px oklch(0.8 0.22 195 / 0.3);
 }
+
+
+/* HOVER GLOW PULSANTE - v21 */
+.neon-glow-yellow {
+  box-shadow: 
+    0 0 5px oklch(0.9 0.2 95 / 0.5),
+    0 0 10px oklch(0.9 0.2 95 / 0.3),
+    0 0 20px oklch(0.9 0.2 95 / 0.2),
+    inset 0 0 5px oklch(0.9 0.2 95 / 0.1);
+}
+
+/* Icon hover animations */
+.icon-hover-glow {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.icon-hover-glow:hover {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 15px oklch(0.8 0.22 195 / 0.8));
+}
+
+/* Card icon pulse on hover */
+.card-hover:hover .icon-hover-glow {
+  animation: icon-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes icon-pulse {
+  0%, 100% { 
+    transform: scale(1);
+    filter: drop-shadow(0 0 5px oklch(0.8 0.22 195 / 0.5));
+  }
+  50% { 
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 20px oklch(0.8 0.22 195 / 0.8));
+  }
+}
+
+/* Glow pulse variants for different colors */
+@keyframes glow-pulse-cyan {
+  0%, 100% { 
+    box-shadow: 0 0 5px oklch(0.8 0.22 195 / 0.5), 0 0 10px oklch(0.8 0.22 195 / 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 20px oklch(0.8 0.22 195 / 0.8), 0 0 40px oklch(0.8 0.22 195 / 0.5);
+  }
+}
+
+@keyframes glow-pulse-magenta {
+  0%, 100% { 
+    box-shadow: 0 0 5px oklch(0.7 0.28 330 / 0.5), 0 0 10px oklch(0.7 0.28 330 / 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 20px oklch(0.7 0.28 330 / 0.8), 0 0 40px oklch(0.7 0.28 330 / 0.5);
+  }
+}
+
+@keyframes glow-pulse-purple {
+  0%, 100% { 
+    box-shadow: 0 0 5px oklch(0.55 0.25 290 / 0.5), 0 0 10px oklch(0.55 0.25 290 / 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 20px oklch(0.55 0.25 290 / 0.8), 0 0 40px oklch(0.55 0.25 290 / 0.5);
+  }
+}
+
+.animate-glow-pulse-cyan:hover {
+  animation: glow-pulse-cyan 2s ease-in-out infinite;
+}
+
+.animate-glow-pulse-magenta:hover {
+  animation: glow-pulse-magenta 2s ease-in-out infinite;
+}
+
+.animate-glow-pulse-purple:hover {
+  animation: glow-pulse-purple 2s ease-in-out infinite;
+}
+
+/* Button neon hover effect */
+.btn-neon-hover {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-neon-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-neon-hover:hover::before {
+  left: 100%;
+}
+
+.btn-neon-hover:hover {
+  box-shadow: 
+    0 0 20px oklch(0.8 0.22 195 / 0.5),
+    0 0 40px oklch(0.7 0.28 330 / 0.3);
+}
+
+/* Hero banner cyber animation */
+.hero-cyber-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-cyber-bg::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(ellipse at 30% 20%, oklch(0.8 0.22 195 / 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, oklch(0.7 0.28 330 / 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, oklch(0.55 0.25 290 / 0.08) 0%, transparent 60%);
+  animation: hero-glow-rotate 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes hero-glow-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Floating particles effect */
+.particles-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: oklch(0.8 0.22 195);
+  border-radius: 50%;
+  animation: float-particle 15s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes float-particle {
+  0% {
+    transform: translateY(100vh) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(100px);
+    opacity: 0;
+  }
+}

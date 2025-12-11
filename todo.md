@@ -279,3 +279,8 @@
 - [x] Gerar ícones para botões do site
 - [x] Aplicar logo e ícones no frontend
 - [x] Atualizar favicon
+
+## Melhorias Visuais v21
+- [x] Aplicar ícones neon nos cards da Home
+- [x] Adicionar animações hover com glow pulsante
+- [x] Criar banner hero animado cyber punk
