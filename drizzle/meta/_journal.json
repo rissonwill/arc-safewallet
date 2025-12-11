@@ -29,6 +29,13 @@
       "when": 1765442574073,
       "tag": "0003_flaky_pixie",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1765487166080,
+      "tag": "0004_blue_joystick",
+      "breakpoints": true
     }
   ]
 }

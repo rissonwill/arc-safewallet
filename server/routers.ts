@@ -16,6 +16,10 @@ import { fetchAllGasPrices } from "./gasService";
 import { generateTypeScriptInterface, validateSoliditySyntax, extractContractNames, estimateDeploymentGas } from "./solidityCompiler";
 import { compileSimpleContract, extractContractNamesFromSource, generateTypesFromABI } from "./solcCompiler";
 import { submitVerification, checkVerificationStatus, isContractVerified, getSupportedCompilerVersions, VERIFICATION_ENDPOINTS } from "./contractVerification";
+import Stripe from "stripe";
+import { STRIPE_PRODUCTS, getProductByPlan } from "./stripe/products";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
 // ==================== ROUTERS ====================
 
@@ -867,6 +871,128 @@ Format the output in Markdown.`
         }
         return { canRequest: true, waitTime: 0 };
       }),
+  }),
+
+  // ==================== STRIPE PAYMENTS ====================
+  stripe: router({
+    createCheckoutSession: protectedProcedure
+      .input(z.object({
+        plan: z.enum(["pro", "enterprise"]),
+        interval: z.enum(["month", "year"]),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const product = getProductByPlan(input.plan, input.interval);
+        const origin = ctx.req.headers.origin || "https://smartvault.manus.space";
+        
+        const session = await stripe.checkout.sessions.create({
+          payment_method_types: ["card"],
+          mode: "subscription",
+          line_items: [
+            {
+              price_data: {
+                currency: "usd",
+                product_data: {
+                  name: product.name,
+                  description: `SmartVault ${input.plan.charAt(0).toUpperCase() + input.plan.slice(1)} Plan`,
+                },
+                unit_amount: product.amount,
+                recurring: {
+                  interval: product.interval,
+                },
+              },
+              quantity: 1,
+            },
+          ],
+          customer_email: ctx.user.email || undefined,
+          client_reference_id: ctx.user.id.toString(),
+          metadata: {
+            user_id: ctx.user.id.toString(),
+            customer_email: ctx.user.email || "",
+            customer_name: ctx.user.name || "",
+            plan: input.plan,
+            interval: input.interval,
+          },
+          success_url: `${origin}/dashboard?payment=success`,
+          cancel_url: `${origin}/pricing?payment=cancelled`,
+          allow_promotion_codes: true,
+        });
+        
+        return { checkoutUrl: session.url };
+      }),
+
+    getSubscription: protectedProcedure.query(async ({ ctx }) => {
+      // Get user's subscription from database
+      const user = await db.getUserById(ctx.user.id);
+      if (!user?.stripeCustomerId) {
+        return { subscription: null, plan: "free" };
+      }
+
+      try {
+        const subscriptions = await stripe.subscriptions.list({
+          customer: user.stripeCustomerId,
+          status: "active",
+          limit: 1,
+        });
+
+        if (subscriptions.data.length === 0) {
+          return { subscription: null, plan: "free" };
+        }
+
+        const subscription = subscriptions.data[0];
+        const plan = subscription.metadata?.plan || "pro";
+        
+        return {
+          subscription: {
+            id: subscription.id,
+            status: subscription.status,
+            currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
+            cancelAtPeriodEnd: (subscription as any).cancel_at_period_end,
+          },
+          plan,
+        };
+      } catch {
+        return { subscription: null, plan: "free" };
+      }
+    }),
+
+    cancelSubscription: protectedProcedure.mutation(async ({ ctx }) => {
+      const user = await db.getUserById(ctx.user.id);
+      if (!user?.stripeCustomerId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "No subscription found" });
+      }
+
+      const subscriptions = await stripe.subscriptions.list({
+        customer: user.stripeCustomerId,
+        status: "active",
+        limit: 1,
+      });
+
+      if (subscriptions.data.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "No active subscription" });
+      }
+
+      await stripe.subscriptions.update(subscriptions.data[0].id, {
+        cancel_at_period_end: true,
+      });
+
+      return { success: true };
+    }),
+
+    createPortalSession: protectedProcedure.mutation(async ({ ctx }) => {
+      const user = await db.getUserById(ctx.user.id);
+      if (!user?.stripeCustomerId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "No customer found" });
+      }
+
+      const origin = ctx.req.headers.origin || "https://smartvault.manus.space";
+      
+      const session = await stripe.billingPortal.sessions.create({
+        customer: user.stripeCustomerId,
+        return_url: `${origin}/settings`,
+      });
+
+      return { portalUrl: session.url };
+    }),
   }),
 });
 

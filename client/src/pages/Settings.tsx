@@ -28,6 +28,12 @@ export default function Settings() {
     emailNotifications: true,
     deployNotifications: true,
     transactionNotifications: true,
+    gasAlerts: true,
+    securityAlerts: true,
+    governanceAlerts: true,
+    stakingAlerts: false,
+    priceAlerts: false,
+    gasThreshold: "50",
     
     // Preferences
     defaultNetwork: "1",
@@ -141,6 +147,78 @@ export default function Settings() {
               <Switch
                 checked={settings.transactionNotifications}
                 onCheckedChange={() => handleToggle("transactionNotifications")}
+              />
+            </div>
+            
+            <Separator />
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-sm">Alertas de Gas</p>
+                <p className="text-xs text-muted-foreground">
+                  Notificar quando o preço do gas estiver abaixo do limite definido
+                </p>
+              </div>
+              <Switch
+                checked={settings.gasAlerts}
+                onCheckedChange={() => handleToggle("gasAlerts")}
+              />
+            </div>
+            
+            {settings.gasAlerts && (
+              <div className="ml-6 space-y-2">
+                <Label>Limite de Gas (Gwei)</Label>
+                <Input
+                  type="number"
+                  value={settings.gasThreshold}
+                  onChange={(e) => setSettings({ ...settings, gasThreshold: e.target.value })}
+                  placeholder="50"
+                  className="max-w-[150px]"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Você será notificado quando o gas cair abaixo de {settings.gasThreshold} Gwei
+                </p>
+              </div>
+            )}
+            
+            <Separator />
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-sm">Alertas de Segurança</p>
+                <p className="text-xs text-muted-foreground">
+                  Notificar sobre vulnerabilidades detectadas nos seus contratos
+                </p>
+              </div>
+              <Switch
+                checked={settings.securityAlerts}
+                onCheckedChange={() => handleToggle("securityAlerts")}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-sm">Alertas de Governança</p>
+                <p className="text-xs text-muted-foreground">
+                  Notificar sobre novas propostas e votações na DAO
+                </p>
+              </div>
+              <Switch
+                checked={settings.governanceAlerts}
+                onCheckedChange={() => handleToggle("governanceAlerts")}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-sm">Alertas de Staking</p>
+                <p className="text-xs text-muted-foreground">
+                  Notificar sobre recompensas de staking e mudanças de APY
+                </p>
+              </div>
+              <Switch
+                checked={settings.stakingAlerts}
+                onCheckedChange={() => handleToggle("stakingAlerts")}
               />
             </div>
           </CardContent>

@@ -548,10 +548,10 @@
 
 ## Bug Login v43 (11/12/2025)
 
-- [ ] Remover sistema OAuth do Manus
-- [ ] Implementar autenticação apenas por carteira (MetaMask)
-- [ ] Atualizar UI para mostrar apenas "Conectar Carteira"
-- [ ] Testar login no navegador do MetaMask
+- [x] Remover sistema OAuth do Manus
+- [x] Implementar autenticação apenas por carteira (MetaMask)
+- [x] Atualizar UI para mostrar apenas "Conectar Carteira"
+- [x] Testar login no navegador do MetaMask
 
 
 ## Autenticação por Carteira v44 (11/12/2025)
@@ -569,3 +569,23 @@
 - [x] Adicionar suporte a WalletConnect na tela de login
 - [x] Implementar reconeção automática de carteiras
 - [x] Criar página de perfil do usuáriofil do usuário com histórico de atividades
+
+
+## Melhorias v46 (11/12/2025)
+
+### Limpeza de Código
+- [x] Remover console.logs de produção
+- [x] Limpar código não utilizado
+
+### Novas Funcionalidades
+- [x] Implementar modal de vídeo demo (já existia)
+- [x] Criar página de status das redes em tempo real (já existia)
+- [x] Implementar preferências de notificação do usuário (alertas de gas, segurança, governança, staking)
+- [x] Configurar Stripe para pagamentos (checkout, subscription, portal)
+
+### Backtests
+- [ ] Backtest: criar projeto
+- [ ] Backtest: criar contrato
+- [ ] Backtest: compilar contrato
+- [ ] Backtest: fazer deploy
+- [ ] Backtest: interagir com contrato deployado

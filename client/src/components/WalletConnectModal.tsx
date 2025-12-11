@@ -107,7 +107,7 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
       return true;
     } catch (err: any) {
       if (err.code !== 4001) {
-        console.log('Rede Arc pode estar adicionada');
+        // Arc network may already be added
       }
       return false;
     }
@@ -174,7 +174,7 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
         try {
           await addArcNetwork(provider);
         } catch (e) {
-          console.log('Não foi possível adicionar rede Arc via WalletConnect');
+          // Could not add Arc network via WalletConnect
         }
         
         onConnect(accounts[0], "walletconnect");

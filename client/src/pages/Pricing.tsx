@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, Zap, Shield, Rocket, Crown, ArrowLeft, Sparkles } from "lucide-react";
@@ -9,6 +11,7 @@ import { Check, X, Zap, Shield, Rocket, Crown, ArrowLeft, Sparkles } from "lucid
 export default function Pricing() {
   const [, setLocation] = useLocation();
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
+  const createCheckout = trpc.stripe.createCheckoutSession.useMutation();
 
   const plans = [
     {
@@ -205,14 +208,24 @@ export default function Pricing() {
                       : ""
                   }`}
                   variant={plan.popular ? "default" : "outline"}
-                  onClick={() => {
+                  onClick={async () => {
                     if (plan.name === "Free") {
                       setLocation("/dashboard");
                     } else if (plan.name === "Enterprise") {
                       window.open("mailto:sales@smartvault.io?subject=Enterprise Plan Inquiry", "_blank");
                     } else {
-                      // TODO: Implement Stripe checkout
-                      alert("Integração de pagamento em breve!");
+                      try {
+                        toast.info("Redirecionando para o checkout...");
+                        const result = await createCheckout.mutateAsync({
+                          plan: "pro",
+                          interval: billingCycle === "monthly" ? "month" : "year",
+                        });
+                        if (result.checkoutUrl) {
+                          window.open(result.checkoutUrl, "_blank");
+                        }
+                      } catch (error) {
+                        toast.error("Erro ao iniciar checkout. Tente novamente.");
+                      }
                     }
                   }}
                 >

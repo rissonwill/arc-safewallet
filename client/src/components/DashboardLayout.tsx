@@ -116,7 +116,7 @@ function WalletLoginScreen() {
           }
         }
       } catch (err) {
-        console.log('Auto-connect failed:', err);
+        // Auto-connect silently failed
       }
       setIsAutoConnecting(false);
     };

@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE users ADD COLUMN stripeCustomerId VARCHAR(64) DEFAULT NULL, ADD COLUMN subscriptionPlan ENUM('free', 'pro', 'enterprise') NOT NULL DEFAULT 'free';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3y26Mj8Erk6uTAj.77c4e6e1f670 --database CUHF4Y8fMjSbtetRcg3EQn --execute ALTER TABLE users ADD COLUMN stripeCustomerId VARCHAR(64) DEFAULT NULL, ADD COLUMN subscriptionPlan ENUM('free', 'pro', 'enterprise') NOT NULL DEFAULT 'free';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 818
+}

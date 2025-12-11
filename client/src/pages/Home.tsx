@@ -62,7 +62,6 @@ export default function Home() {
 
   const handleWalletConnect = (address: string, walletType: string) => {
     setConnectedWallet(address);
-    console.log(`Connected ${walletType}: ${address}`);
   };
 
   // Animated glow effect
