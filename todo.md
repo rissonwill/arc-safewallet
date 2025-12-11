@@ -537,3 +537,10 @@
 - [x] Criar ícone SVG para ArcVault (cofre dourado com dial de combinação)
 - [x] Atualizar página de Deploy para usar os novos ícones
 - [x] Adicionar efeito glow nos ícones quando selecionados
+
+
+## Bugs Reportados (11/12/2025 - v35)
+
+- [x] Bug: Botão Deploy no card de contrato não funciona (página Contratos)
+- [x] Bug: Página de Templates com problemas (botão Usar Template)
+- [x] Melhoria: Implementar modo claro/escuro (toggle no menu do usuário)

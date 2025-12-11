@@ -41,7 +41,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 export default function Contracts() {
   const [, setLocation] = useLocation();
   const search = useSearch();
-  const projectIdParam = new URLSearchParams(search).get("projectId");
+  const searchParams = new URLSearchParams(search);
+  const projectIdParam = searchParams.get("projectId");
+  const templateParam = searchParams.get("template");
   
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -130,6 +132,24 @@ export default function Contracts() {
       templateType: "",
     });
   };
+
+  // Auto-open create modal when template param is present
+  useEffect(() => {
+    if (templateParam && templates) {
+      const template = templates.find(t => t.templateType === templateParam);
+      if (template) {
+        setFormData({
+          projectId: projectIdParam ? parseInt(projectIdParam) : 0,
+          name: `${template.name} Contract`,
+          description: template.description || "",
+          sourceCode: template.sourceCode,
+          templateType: template.templateType,
+        });
+        setIsCreateOpen(true);
+        toast.info(`Template ${template.name} carregado! Selecione um projeto e crie o contrato.`);
+      }
+    }
+  }, [templateParam, templates, projectIdParam]);
 
   const handleCreate = () => {
     if (!formData.name.trim()) {
@@ -480,6 +500,7 @@ export default function Contracts() {
                       variant="default" 
                       size="sm"
                       disabled={contract.status === "deployed"}
+                      onClick={() => setLocation(`/deploy?contractId=${contract.id}`)}
                     >
                       <Rocket className="h-4 w-4 mr-1" />
                       Deploy

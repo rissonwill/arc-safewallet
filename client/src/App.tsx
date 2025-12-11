@@ -74,7 +74,7 @@ function App() {
   return (
     <ErrorBoundary>
       <I18nProvider>
-        <ThemeProvider defaultTheme="dark">
+        <ThemeProvider defaultTheme="dark" switchable={true}>
           <TooltipProvider>
             <Toaster />
             <Router />

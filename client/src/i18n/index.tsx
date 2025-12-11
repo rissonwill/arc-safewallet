@@ -31,6 +31,10 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.settings': 'Configurações',
     'nav.logout': 'Sair',
     
+    // Tema
+    'theme.light': 'Modo Claro',
+    'theme.dark': 'Modo Escuro',
+    
     // Página Inicial
     'home.title': 'SmartVault',
     'home.subtitle': 'Contratos Inteligentes com Segurança',
@@ -417,6 +421,10 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.docs': 'Documentation',
     'nav.settings': 'Settings',
     'nav.logout': 'Logout',
+    
+    // Theme
+    'theme.light': 'Light Mode',
+    'theme.dark': 'Dark Mode',
     
     // Home Page
     'home.title': 'SmartVault',

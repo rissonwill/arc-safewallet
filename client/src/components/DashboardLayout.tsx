@@ -38,13 +38,16 @@ import {
   Rocket,
   Vault,
   Image,
-  Vote
+  Vote,
+  Sun,
+  Moon
 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 import { useI18n, LanguageSelector } from "@/i18n";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Home } from "lucide-react";
 
 const getMenuItems = (t: (key: string) => string) => [
@@ -163,6 +166,7 @@ function DashboardLayoutContent({
   const { user, logout } = useAuth();
   const [location, setLocation] = useLocation();
   const { t } = useI18n();
+  const { theme, toggleTheme, switchable } = useTheme();
   const menuItems = getMenuItems(t);
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
@@ -278,6 +282,22 @@ function DashboardLayoutContent({
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
+                {switchable && (
+                  <>
+                    <DropdownMenuItem
+                      onClick={toggleTheme}
+                      className="cursor-pointer"
+                    >
+                      {theme === 'dark' ? (
+                        <Sun className="mr-2 h-4 w-4" />
+                      ) : (
+                        <Moon className="mr-2 h-4 w-4" />
+                      )}
+                      <span>{theme === 'dark' ? t('theme.light') : t('theme.dark')}</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem
                   onClick={() => setLocation("/settings")}
                   className="cursor-pointer"
