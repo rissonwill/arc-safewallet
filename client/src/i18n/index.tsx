@@ -406,6 +406,63 @@ const translations: Record<Language, Record<string, string>> = {
     'common.no': 'Não',
     'common.or': 'ou',
     'common.and': 'e',
+    
+    // Roadmap
+    'roadmap.badge': 'Roadmap Público',
+    'roadmap.title': 'Nossa Jornada',
+    'roadmap.subtitle': 'Acompanhe o desenvolvimento do SmartVault e veja o que está por vir.',
+    'roadmap.progress': 'Progresso Geral',
+    'roadmap.status.completed': 'Concluído',
+    'roadmap.status.inProgress': 'Em Progresso',
+    'roadmap.status.planned': 'Planejado',
+    'roadmap.stats.progress': 'Progresso Total',
+    'roadmap.stats.delivered': 'Features Entregues',
+    'roadmap.stats.planned': 'Features Planejadas',
+    'roadmap.stats.quarters': 'Trimestres',
+    'roadmap.cta.title': 'Quer fazer parte dessa jornada?',
+    'roadmap.cta.description': 'Junte-se a desenvolvedores que estão construindo o futuro da Web3 com o SmartVault.',
+    'roadmap.cta.getStarted': 'Começar Agora',
+    'roadmap.cta.viewGithub': 'Ver no GitHub',
+    
+    // Q4 2024
+    'roadmap.q4_2024.title': 'Lançamento Beta',
+    'roadmap.q4_2024.item1': 'Editor Solidity com syntax highlighting',
+    'roadmap.q4_2024.item2': 'Deploy para múltiplas redes testnet',
+    'roadmap.q4_2024.item3': 'Security Scanner básico',
+    'roadmap.q4_2024.item4': 'Integração MetaMask',
+    'roadmap.q4_2024.item5': 'Dashboard de projetos',
+    
+    // Q1 2025
+    'roadmap.q1_2025.title': 'Expansão de Funcionalidades',
+    'roadmap.q1_2025.item1': 'Debugger integrado com breakpoints',
+    'roadmap.q1_2025.item2': 'Deploy multi-chain (Ethereum, Polygon, BSC, Arc)',
+    'roadmap.q1_2025.item3': 'Gas Tracker em tempo real',
+    'roadmap.q1_2025.item4': 'WalletConnect v2 integration',
+    'roadmap.q1_2025.item5': 'Sistema de governança DAO',
+    
+    // Q2 2025
+    'roadmap.q2_2025.title': 'Ecossistema DeFi',
+    'roadmap.q2_2025.item1': 'NFT Marketplace integrado',
+    'roadmap.q2_2025.item2': 'Staking Vault com recompensas',
+    'roadmap.q2_2025.item3': 'SDK para desenvolvedores',
+    'roadmap.q2_2025.item4': 'Marketplace de templates',
+    'roadmap.q2_2025.item5': 'Auditoria colaborativa',
+    
+    // Q3 2025
+    'roadmap.q3_2025.title': 'Ferramentas Avançadas',
+    'roadmap.q3_2025.item1': 'Aplicativo mobile (iOS/Android)',
+    'roadmap.q3_2025.item2': 'Suporte a mais 10 redes EVM',
+    'roadmap.q3_2025.item3': 'Verificação automática de contratos',
+    'roadmap.q3_2025.item4': 'Multi-sig wallet integrada',
+    'roadmap.q3_2025.item5': 'Sistema de notificações avançado',
+    
+    // Q4 2025
+    'roadmap.q4_2025.title': 'Enterprise & Mainnet',
+    'roadmap.q4_2025.item1': 'Deploy para mainnets',
+    'roadmap.q4_2025.item2': 'Integração com exchanges',
+    'roadmap.q4_2025.item3': 'Analytics avançado',
+    'roadmap.q4_2025.item4': 'Features enterprise',
+    'roadmap.q4_2025.item5': 'API pública v1.0',
   },
   
   en: {
@@ -802,6 +859,63 @@ const translations: Record<Language, Record<string, string>> = {
     'common.no': 'No',
     'common.or': 'or',
     'common.and': 'and',
+    
+    // Roadmap
+    'roadmap.badge': 'Public Roadmap',
+    'roadmap.title': 'Our Journey',
+    'roadmap.subtitle': 'Follow SmartVault development and see what\'s coming next.',
+    'roadmap.progress': 'Overall Progress',
+    'roadmap.status.completed': 'Completed',
+    'roadmap.status.inProgress': 'In Progress',
+    'roadmap.status.planned': 'Planned',
+    'roadmap.stats.progress': 'Total Progress',
+    'roadmap.stats.delivered': 'Features Delivered',
+    'roadmap.stats.planned': 'Features Planned',
+    'roadmap.stats.quarters': 'Quarters',
+    'roadmap.cta.title': 'Want to be part of this journey?',
+    'roadmap.cta.description': 'Join developers who are building the future of Web3 with SmartVault.',
+    'roadmap.cta.getStarted': 'Get Started',
+    'roadmap.cta.viewGithub': 'View on GitHub',
+    
+    // Q4 2024
+    'roadmap.q4_2024.title': 'Beta Launch',
+    'roadmap.q4_2024.item1': 'Solidity Editor with syntax highlighting',
+    'roadmap.q4_2024.item2': 'Deploy to multiple testnet networks',
+    'roadmap.q4_2024.item3': 'Basic Security Scanner',
+    'roadmap.q4_2024.item4': 'MetaMask Integration',
+    'roadmap.q4_2024.item5': 'Project Dashboard',
+    
+    // Q1 2025
+    'roadmap.q1_2025.title': 'Feature Expansion',
+    'roadmap.q1_2025.item1': 'Integrated debugger with breakpoints',
+    'roadmap.q1_2025.item2': 'Multi-chain deploy (Ethereum, Polygon, BSC, Arc)',
+    'roadmap.q1_2025.item3': 'Real-time Gas Tracker',
+    'roadmap.q1_2025.item4': 'WalletConnect v2 integration',
+    'roadmap.q1_2025.item5': 'DAO Governance System',
+    
+    // Q2 2025
+    'roadmap.q2_2025.title': 'DeFi Ecosystem',
+    'roadmap.q2_2025.item1': 'Integrated NFT Marketplace',
+    'roadmap.q2_2025.item2': 'Staking Vault with rewards',
+    'roadmap.q2_2025.item3': 'Developer SDK',
+    'roadmap.q2_2025.item4': 'Template Marketplace',
+    'roadmap.q2_2025.item5': 'Collaborative Auditing',
+    
+    // Q3 2025
+    'roadmap.q3_2025.title': 'Advanced Tools',
+    'roadmap.q3_2025.item1': 'Mobile app (iOS/Android)',
+    'roadmap.q3_2025.item2': 'Support for 10+ EVM networks',
+    'roadmap.q3_2025.item3': 'Automatic contract verification',
+    'roadmap.q3_2025.item4': 'Integrated multi-sig wallet',
+    'roadmap.q3_2025.item5': 'Advanced notification system',
+    
+    // Q4 2025
+    'roadmap.q4_2025.title': 'Enterprise & Mainnet',
+    'roadmap.q4_2025.item1': 'Mainnet deployments',
+    'roadmap.q4_2025.item2': 'Exchange integrations',
+    'roadmap.q4_2025.item3': 'Advanced Analytics',
+    'roadmap.q4_2025.item4': 'Enterprise features',
+    'roadmap.q4_2025.item5': 'Public API v1.0',
   },
 };
 

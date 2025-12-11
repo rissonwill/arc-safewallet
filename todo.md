@@ -596,3 +596,8 @@
 - [x] Remover email do footer (emails fictícios removidos da Pricing)
 - [x] Confirmar remoção completa do OAuth (useAuth atualizado)
 - [x] Criar vídeo demo para o site (VideoModal já existe e está integrado)
+
+## Página de Roadmap (v28)
+- [x] Atualizar página de Roadmap com timeline visual profissional
+- [x] Adicionar traduções PT/EN para o Roadmap
+- [x] Atualizar itens do roadmap com funcionalidades reais implementadas
