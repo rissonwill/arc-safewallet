@@ -1,5 +1,8 @@
-import { COOKIE_NAME } from "@shared/const";
+import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
+import { ethers } from "ethers";
+import { sdk } from "./_core/sdk";
+import { setNonce, getNonce, deleteNonce, isNonceValid } from "./walletNonces";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
@@ -26,6 +29,68 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
+
+    // Gerar nonce para login com carteira
+    getWalletNonce: publicProcedure
+      .input(z.object({ address: z.string().length(42) }))
+      .mutation(async ({ input }) => {
+        const nonce = `SmartVault Login\n\nNonce: ${nanoid(32)}\nTimestamp: ${Date.now()}`;
+        setNonce(input.address, nonce);
+        return { nonce };
+      }),
+
+    // Verificar assinatura e fazer login com carteira
+    walletLogin: publicProcedure
+      .input(z.object({
+        address: z.string().length(42),
+        signature: z.string(),
+        nonce: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { address, signature, nonce } = input;
+        const normalizedAddress = address.toLowerCase();
+
+        // Verificar se o nonce é válido
+        if (!isNonceValid(address, nonce)) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "Nonce inválido ou expirado" });
+        }
+
+        // Verificar a assinatura
+        try {
+          const recoveredAddress = ethers.verifyMessage(nonce, signature);
+          if (recoveredAddress.toLowerCase() !== normalizedAddress) {
+            throw new TRPCError({ code: "UNAUTHORIZED", message: "Assinatura inválida" });
+          }
+        } catch (error) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "Erro ao verificar assinatura" });
+        }
+
+        // Limpar nonce usado
+        deleteNonce(address);
+
+        // Criar ou atualizar usuário
+        const openId = `wallet:${normalizedAddress}`;
+        await db.upsertUser({
+          openId,
+          name: `${address.substring(0, 6)}...${address.substring(38)}`,
+          email: null,
+          loginMethod: "metamask",
+          lastSignedIn: new Date(),
+        });
+
+        // Criar token de sessão
+        const sessionToken = await sdk.createSessionToken(openId, {
+          name: address,
+          expiresInMs: ONE_YEAR_MS,
+        });
+
+        // Definir cookie
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+
+        const user = await db.getUserByOpenId(openId);
+        return { success: true, user };
+      }),
   }),
 
   // ==================== WALLET ROUTER ====================

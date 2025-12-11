@@ -27,7 +27,7 @@ import {
   X
 } from "lucide-react";
 import { useLocation } from "wouter";
-import { getLoginUrl } from "@/const";
+// Login agora é feito via MetaMask no dashboard
 import { useEffect, useState, useRef } from "react";
 import { useI18n, LanguageSelector } from "@/i18n";
 import { WalletConnectModal } from "@/components/WalletConnectModal";
@@ -246,7 +246,7 @@ export default function Home() {
                 </Button>
               ) : (
                 <Button 
-                  onClick={() => window.location.href = getLoginUrl()}
+                  onClick={() => setLocation("/dashboard")}
                   className="bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black font-semibold hover:opacity-90 transition-opacity"
                 >
                   {t('home.getStarted')}
@@ -296,7 +296,7 @@ export default function Home() {
                 </Button>
               ) : (
                 <Button 
-                  onClick={() => window.location.href = getLoginUrl()}
+                  onClick={() => setLocation("/dashboard")}
                   className="w-full bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black font-semibold"
                 >
                   {t('home.getStarted')}
@@ -338,7 +338,7 @@ export default function Home() {
             <div className={`flex flex-col sm:flex-row items-center justify-center gap-4 transition-all duration-1000 delay-500 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               <Button 
                 size="lg"
-                onClick={() => window.location.href = getLoginUrl()}
+                onClick={() => setLocation("/dashboard")}
                 className="bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black font-bold text-lg px-8 hover:opacity-90 transition-all neon-glow-cyan"
               >
                 {t('home.getStarted')}
@@ -480,7 +480,7 @@ export default function Home() {
                 </p>
                 <Button 
                   size="lg"
-                  onClick={() => window.location.href = getLoginUrl()}
+                  onClick={() => setLocation("/dashboard")}
                   className="bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black font-bold px-8 hover:opacity-90 transition-all"
                 >
                   {t('home.createFreeAccount')}

@@ -544,3 +544,21 @@
 - [x] Bug: Botão Deploy no card de contrato não funciona (página Contratos)
 - [x] Bug: Página de Templates com problemas (botão Usar Template)
 - [x] Melhoria: Implementar modo claro/escuro (toggle no menu do usuário)
+
+
+## Bug Login v43 (11/12/2025)
+
+- [ ] Remover sistema OAuth do Manus
+- [ ] Implementar autenticação apenas por carteira (MetaMask)
+- [ ] Atualizar UI para mostrar apenas "Conectar Carteira"
+- [ ] Testar login no navegador do MetaMask
+
+
+## Autenticação por Carteira v44 (11/12/2025)
+
+- [x] Remover sistema OAuth do Manus
+- [x] Implementar autenticação apenas por carteira (MetaMask)
+- [x] Criar endpoints de getNonce e walletLogin no backend
+- [x] Atualizar UI para mostrar tela "Conectar MetaMask"
+- [x] Testar login no navegador do MetaMask
+- [x] Resolver problema de cookies bloqueados no navegador do MetaMask

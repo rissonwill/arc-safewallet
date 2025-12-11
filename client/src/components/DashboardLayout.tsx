@@ -20,7 +20,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { getLoginUrl } from "@/const";
+// Login agora é feito via MetaMask
 import { useIsMobile } from "@/hooks/useMobile";
 import { 
   LayoutDashboard, 
@@ -49,7 +49,10 @@ import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 import { useI18n, LanguageSelector } from "@/i18n";
 import { useTheme } from "@/contexts/ThemeContext";
-import { Home } from "lucide-react";
+import { Home, Loader2 } from "lucide-react";
+import { WalletAPI } from "@/lib/walletApi";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
 const getMenuItems = (t: (key: string) => string) => [
   { icon: Home, label: t('nav.home'), path: "/" },
@@ -74,6 +77,138 @@ const DEFAULT_WIDTH = 260;
 const MIN_WIDTH = 200;
 const MAX_WIDTH = 400;
 
+// Componente de login com carteira
+function WalletLoginScreen() {
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const utils = trpc.useUtils();
+  
+  const getNonceMutation = trpc.auth.getWalletNonce.useMutation();
+  const walletLoginMutation = trpc.auth.walletLogin.useMutation({
+    onSuccess: () => {
+      utils.auth.me.invalidate();
+      toast.success("Login realizado com sucesso!");
+    },
+    onError: (err) => {
+      setError(err.message);
+      toast.error("Erro ao fazer login: " + err.message);
+    },
+  });
+
+  const handleConnectWallet = async () => {
+    setIsConnecting(true);
+    setError(null);
+
+    try {
+      // Verificar se MetaMask está instalado
+      if (!WalletAPI.isMetaMaskInstalled()) {
+        setError("MetaMask não encontrado. Por favor, instale a extensão MetaMask.");
+        setIsConnecting(false);
+        return;
+      }
+
+      // Conectar carteira (retorna o endereço)
+      const account = await WalletAPI.connectWallet();
+      if (!account) {
+        setError("Não foi possível conectar a carteira.");
+        setIsConnecting(false);
+        return;
+      }
+
+      // Obter nonce do servidor
+      const { nonce } = await getNonceMutation.mutateAsync({ address: account });
+
+      // Assinar mensagem
+      const signature = await WalletAPI.signMessage(nonce);
+
+      // Fazer login
+      await walletLoginMutation.mutateAsync({
+        address: account,
+        signature,
+        nonce,
+      });
+
+    } catch (err: any) {
+      console.error("Erro ao conectar carteira:", err);
+      if (err.code === 4001) {
+        setError("Conexão cancelada pelo usuário.");
+      } else {
+        setError(err.message || "Erro ao conectar carteira.");
+      }
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen blueprint-grid">
+      <div className="flex flex-col items-center gap-8 p-8 max-w-md w-full">
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center wireframe-cyan">
+              <img src="/smartvault-logo.png" alt="SmartVault" className="h-8 w-8" />
+            </div>
+            <h1 className="headline-massive text-3xl">SmartVault</h1>
+          </div>
+          <p className="tech-label text-center">
+            Secure Wallet for SmartVault Network & Ethereum
+          </p>
+        </div>
+        
+        <div className="w-full p-6 bg-card rounded-lg border border-border shadow-sm space-y-4">
+          <p className="text-sm text-muted-foreground text-center">
+            Conecte sua carteira para acessar o dashboard e gerenciar seus projetos Web3.
+          </p>
+          
+          {error && (
+            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive text-center">
+              {error}
+            </div>
+          )}
+          
+          <Button
+            onClick={handleConnectWallet}
+            disabled={isConnecting}
+            size="lg"
+            className="w-full bg-gradient-to-r from-[var(--color-cyan)] to-[var(--color-pink)] hover:opacity-90"
+          >
+            {isConnecting ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Conectando...
+              </>
+            ) : (
+              <>
+                <Wallet className="h-4 w-4 mr-2" />
+                Conectar MetaMask
+              </>
+            )}
+          </Button>
+          
+          <p className="text-xs text-muted-foreground text-center">
+            Ao conectar, você concorda com nossos termos de uso.
+          </p>
+        </div>
+        
+        <div className="flex gap-6 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <div className="h-2 w-2 rounded-full bg-[var(--color-cyan)]" />
+            Ethereum
+          </span>
+          <span className="flex items-center gap-1">
+            <div className="h-2 w-2 rounded-full bg-[var(--color-pink)]" />
+            Polygon
+          </span>
+          <span className="flex items-center gap-1">
+            <div className="h-2 w-2 rounded-full bg-[var(--color-warning)]" />
+            Arc Network
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardLayout({
   children,
 }: {
@@ -94,51 +229,7 @@ export default function DashboardLayout({
   }
 
   if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen blueprint-grid">
-        <div className="flex flex-col items-center gap-8 p-8 max-w-md w-full">
-          <div className="flex flex-col items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center wireframe-cyan">
-                <img src="/smartvault-logo.png" alt="SmartVault" className="h-8 w-8" />
-              </div>
-              <h1 className="headline-massive text-3xl">SmartVault</h1>
-            </div>
-            <p className="tech-label text-center">
-              Secure Wallet for SmartVault Network & Ethereum
-            </p>
-          </div>
-          <div className="w-full p-6 bg-card rounded-lg border border-border shadow-sm">
-            <p className="text-sm text-muted-foreground text-center mb-6">
-              Sign in to access the dashboard and manage your Web3 projects.
-            </p>
-            <Button
-              onClick={() => {
-                window.location.href = getLoginUrl();
-              }}
-              size="lg"
-              className="w-full"
-            >
-              Sign In
-            </Button>
-          </div>
-          <div className="flex gap-6 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <div className="h-2 w-2 rounded-full bg-[var(--color-cyan)]" />
-              Ethereum
-            </span>
-            <span className="flex items-center gap-1">
-              <div className="h-2 w-2 rounded-full bg-[var(--color-pink)]" />
-              Polygon
-            </span>
-            <span className="flex items-center gap-1">
-              <div className="h-2 w-2 rounded-full bg-[var(--color-warning)]" />
-              BSC
-            </span>
-          </div>
-        </div>
-      </div>
-    );
+    return <WalletLoginScreen />;
   }
 
   return (
