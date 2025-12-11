@@ -240,3 +240,9 @@
 - [x] Ativar deploy funcional via interface
 - [x] Executar seeds no banco de dados
 - [x] Testar compilação e deploy
+
+## GitHub e Backup (v15)
+- [ ] Preparar .gitignore e README para GitHub
+- [ ] Criar repositório no GitHub
+- [ ] Push do código para o repositório
+- [ ] Gerar backup ZIP completo
