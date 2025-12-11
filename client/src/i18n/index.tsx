@@ -30,6 +30,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.docs': 'Documentação',
     'nav.analytics': 'Analytics',
     'nav.settings': 'Configurações',
+    'nav.profile': 'Meu Perfil',
     'nav.logout': 'Sair',
     
     // Analytics
@@ -425,6 +426,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.docs': 'Documentation',
     'nav.analytics': 'Analytics',
     'nav.settings': 'Settings',
+    'nav.profile': 'My Profile',
     'nav.logout': 'Logout',
     
     // Analytics

@@ -562,3 +562,10 @@
 - [x] Atualizar UI para mostrar tela "Conectar MetaMask"
 - [x] Testar login no navegador do MetaMask
 - [x] Resolver problema de cookies bloqueados no navegador do MetaMask
+
+
+### Melhorias de Carteira v45 (11/12/2025)
+
+- [x] Adicionar suporte a WalletConnect na tela de login
+- [x] Implementar reconeção automática de carteiras
+- [x] Criar página de perfil do usuáriofil do usuário com histórico de atividades
