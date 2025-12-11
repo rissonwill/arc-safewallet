@@ -252,6 +252,6 @@
 - [x] Atualizar README com créditos do criador @smartcript
 - [x] Criar documentação completa (DOCS.md)
 - [x] Adicionar página de Governança no frontend
-- [ ] Compilar e fazer deploy do contrato de governança
-- [ ] Atualizar GitHub com todas as mudanças
-- [ ] Gerar novo backup ZIP final
+- [x] Compilar e fazer deploy do contrato de governança (compilado com Solidity 0.8.26)
+- [x] Atualizar GitHub com todas as mudanças
+- [x] Gerar novo backup ZIP final
