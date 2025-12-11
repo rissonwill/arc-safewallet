@@ -159,7 +159,7 @@ export default function Home() {
             <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] flex items-center justify-center neon-glow-cyan">
               <img src="/logo.png" alt="Arc SafeWallet" className="h-6 w-6" />
             </div>
-            <span className="headline-cyber text-xl gradient-neon-text">Arc SafeWallet</span>
+            <span className="font-bold text-xl uppercase tracking-wider gradient-neon-text hidden sm:inline" style={{ fontFamily: 'var(--font-cyber)' }}>Arc SafeWallet</span>
           </div>
           
           <div className="flex items-center gap-4">
@@ -205,9 +205,8 @@ export default function Home() {
         </div>
         
         {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-[var(--color-neon-cyan)]/20 bg-background/95 backdrop-blur-xl">
-            <div className="container py-4 space-y-3">
+        <div className={`md:hidden border-t border-[var(--color-neon-cyan)]/20 bg-background/95 backdrop-blur-xl overflow-hidden transition-all duration-300 ease-in-out ${mobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+          <div className="container py-4 space-y-3">
               <LanguageSelector />
               <Button 
                 variant="ghost" 
@@ -241,9 +240,8 @@ export default function Home() {
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               )}
-            </div>
           </div>
-        )}
+        </div>
       </nav>
 
       {/* Hero Section */}
@@ -425,7 +423,7 @@ export default function Home() {
                 <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] flex items-center justify-center neon-glow-cyan">
                   <img src="/logo.png" alt="Arc SafeWallet" className="h-6 w-6" />
                 </div>
-                <span className="headline-cyber text-xl gradient-neon-text">Arc SafeWallet</span>
+                <span className="font-bold text-xl uppercase tracking-wider gradient-neon-text hidden sm:inline" style={{ fontFamily: 'var(--font-cyber)' }}>Arc SafeWallet</span>
               </div>
               <p className="text-sm text-muted-foreground mb-4 max-w-md">
                 {t('home.subtitle')}

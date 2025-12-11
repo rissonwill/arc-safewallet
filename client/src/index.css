@@ -85,6 +85,7 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --font-cyber: "Orbitron", "Inter", sans-serif;
+  --font-family-cyber: "Orbitron", "Inter", sans-serif;
 }
 
 /* CYBER PUNK DARK THEME - Default */

@@ -340,3 +340,9 @@
 ## Bug Fix v29
 - [x] Corrigir header duplicado/sobreposto no mobile
 - [x] Ajustar layout responsivo do header para telas pequenas
+
+## Melhorias Mobile v30
+- [x] Ajustar logo/texto grande no mobile (ocultar ou redimensionar)
+- [x] Adicionar animação de transição ao menu hamburger
+- [x] Otimizar layout responsivo geral
+- [x] Corrigir conflito CSS headline-cyber no logo do header (72px -> 20px)
