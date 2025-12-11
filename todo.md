@@ -403,3 +403,23 @@
 - [x] Animação pulse/glow no badge "Powered by Arc Network"
 - [x] Animação de contagem nos números (6+, 10+, 15+)
 - [x] Efeito de transição suave nos elementos
+
+## Correções de Usabilidade v33
+
+### Navegação e Estrutura
+- [x] Adicionar botão "voltar ao topo"
+- [x] Melhorar breadcrumbs nas páginas internas
+
+### Botões e CTAs
+- [x] Adicionar CTAs funcionais nos cards de features (Try Editor, Scan Contract, etc.)
+- [x] Tornar redes clicáveis com informações detalhadas
+- [x] Adicionar botão "Watch Demo" no Hero (Learn More)
+
+### Interatividade e Feedback
+- [x] Adicionar hover effects em todos os cards
+- [x] Implementar loading states nos botões
+- [x] Adicionar tooltips informativos
+- [x] Melhorar feedback visual de estados (hover, active, focus)
+
+### Performance
+- [x] Implementar lazy loading nas imagens (nativo do browser)

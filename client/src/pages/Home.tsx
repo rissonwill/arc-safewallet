@@ -42,7 +42,21 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [animatedStats, setAnimatedStats] = useState<{[key: string]: number}>({});
   const [heroVisible, setHeroVisible] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to top button visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleWalletConnect = (address: string, walletType: string) => {
     setConnectedWallet(address);
@@ -92,6 +106,8 @@ export default function Home() {
       color: "text-[var(--color-neon-cyan)]",
       bg: "bg-[var(--color-neon-cyan)]/10",
       glow: "neon-glow-cyan",
+      cta: "Open Editor",
+      link: "/contracts",
     },
     {
       icon: Bug,
@@ -101,6 +117,8 @@ export default function Home() {
       color: "text-[var(--color-neon-green)]",
       bg: "bg-[var(--color-neon-green)]/10",
       glow: "neon-glow-green",
+      cta: "Try Debugger",
+      link: "/playground",
     },
     {
       icon: Shield,
@@ -110,6 +128,8 @@ export default function Home() {
       color: "text-[var(--color-neon-purple)]",
       bg: "bg-[var(--color-neon-purple)]/10",
       glow: "neon-glow-purple",
+      cta: "Scan Contract",
+      link: "/security",
     },
     {
       icon: Rocket,
@@ -119,6 +139,8 @@ export default function Home() {
       color: "text-[var(--color-neon-magenta)]",
       bg: "bg-[var(--color-neon-magenta)]/10",
       glow: "neon-glow-magenta",
+      cta: "Deploy Now",
+      link: "/deploy",
     },
     {
       icon: Fuel,
@@ -128,6 +150,8 @@ export default function Home() {
       color: "text-[var(--color-neon-yellow)]",
       bg: "bg-[var(--color-neon-yellow)]/10",
       glow: "neon-glow-yellow",
+      cta: "View Gas Prices",
+      link: "/gas",
     },
     {
       icon: Sparkles,
@@ -137,6 +161,8 @@ export default function Home() {
       color: "text-[var(--color-neon-cyan)]",
       bg: "bg-[var(--color-neon-cyan)]/10",
       glow: "neon-glow-cyan",
+      cta: "Generate Docs",
+      link: "/docs",
     },
   ];
 
@@ -354,16 +380,18 @@ export default function Home() {
           <p className="text-center text-sm text-muted-foreground mb-6">{t('home.networksSupported')}</p>
           <div className="flex flex-wrap items-center justify-center gap-6">
             {networks.map((network, index) => (
-              <div 
+              <button 
                 key={index} 
-                className={`flex items-center gap-2 px-4 py-2 rounded-full border ${
+                onClick={() => setLocation('/networks')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full border cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg ${
                   network.primary 
-                    ? "border-[var(--color-neon-cyan)]/50 bg-[var(--color-neon-cyan)]/10" 
-                    : "border-border bg-card/50"
+                    ? "border-[var(--color-neon-cyan)]/50 bg-[var(--color-neon-cyan)]/10 hover:bg-[var(--color-neon-cyan)]/20" 
+                    : "border-border bg-card/50 hover:border-[var(--color-neon-cyan)]/30"
                 }`}
+                title={`Click to view ${network.name} details`}
               >
                 <div 
-                  className="h-3 w-3 rounded-full"
+                  className="h-3 w-3 rounded-full transition-transform hover:scale-125"
                   style={{ backgroundColor: network.color, boxShadow: `0 0 10px ${network.color}` }}
                 />
                 <span className={`text-sm ${network.primary ? "text-[var(--color-neon-cyan)] font-medium" : "text-muted-foreground"}`}>
@@ -374,7 +402,7 @@ export default function Home() {
                     {t('home.principal')}
                   </Badge>
                 )}
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -396,20 +424,29 @@ export default function Home() {
             {features.map((feature, index) => (
               <Card 
                 key={index} 
-                className={`card-hover border-border bg-card/50 backdrop-blur-sm ${
+                className={`card-hover border-border bg-card/50 backdrop-blur-sm cursor-pointer group transition-all duration-300 hover:border-[var(--color-neon-cyan)]/50 hover:shadow-lg hover:shadow-[var(--color-neon-cyan)]/10 ${
                   glowIndex === index % 4 ? feature.glow : ""
                 }`}
+                onClick={() => setLocation(feature.link)}
               >
                 <CardContent className="p-6">
-                  <div className={`h-12 w-12 rounded-xl ${feature.bg} flex items-center justify-center mb-4 transition-all duration-300 hover:scale-110 group-hover:shadow-lg`}>
+                  <div className={`h-12 w-12 rounded-xl ${feature.bg} flex items-center justify-center mb-4 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg`}>
                     {feature.iconImage ? (
                       <img src={feature.iconImage} alt={feature.title} className="h-8 w-8 object-contain" />
                     ) : (
                       <feature.icon className={`h-6 w-6 ${feature.color}`} />
                     )}
                   </div>
-                  <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  <h3 className="font-semibold text-lg mb-2 group-hover:text-[var(--color-neon-cyan)] transition-colors">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-4">{feature.description}</p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className={`w-full opacity-0 group-hover:opacity-100 transition-all duration-300 border-[var(--color-neon-cyan)]/50 text-[var(--color-neon-cyan)] hover:bg-[var(--color-neon-cyan)]/10`}
+                  >
+                    {feature.cta}
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
                 </CardContent>
               </Card>
             ))}
@@ -554,6 +591,18 @@ export default function Home() {
         onOpenChange={setWalletModalOpen}
         onConnect={handleWalletConnect}
       />
+
+      {/* Scroll to Top Button */}
+      <button
+        onClick={scrollToTop}
+        className={`fixed bottom-6 right-6 z-50 p-3 rounded-full bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl ${
+          showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
+        }`}
+        aria-label="Scroll to top"
+        title="Voltar ao topo"
+      >
+        <ArrowRight className="h-5 w-5 rotate-[-90deg]" />
+      </button>
     </div>
   );
 }
