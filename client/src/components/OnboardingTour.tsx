@@ -19,7 +19,7 @@ interface OnboardingTourProps {
 
 const tourSteps = [
   {
-    title: "Bem-vindo ao Arc SafeWallet!",
+    title: "Bem-vindo ao Axiom Labs!",
     description: "Sua plataforma completa para desenvolvimento e gerenciamento de smart contracts. Vamos fazer um tour rápido pelas principais funcionalidades.",
     icon: Wallet,
     color: "var(--color-neon-cyan)",
@@ -38,7 +38,7 @@ const tourSteps = [
   },
   {
     title: "Deploy Multi-Chain",
-    description: "Faça deploy em múltiplas redes simultaneamente: Arc Network, Ethereum, Polygon, BSC e outras redes EVM compatíveis.",
+    description: "Faça deploy em múltiplas redes simultaneamente: Axiom Network, Ethereum, Polygon, BSC e outras redes EVM compatíveis.",
     icon: Rocket,
     color: "var(--color-neon-magenta)",
   },

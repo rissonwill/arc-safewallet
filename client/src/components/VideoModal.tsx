@@ -14,7 +14,7 @@ export function VideoModal({ open, onOpenChange }: VideoModalProps) {
         <DialogHeader>
           <DialogTitle className="text-xl font-bold gradient-neon-text flex items-center gap-2">
             <Play className="h-5 w-5" />
-            Arc SafeWallet Demo
+            Axiom Labs Demo
           </DialogTitle>
         </DialogHeader>
         
@@ -26,7 +26,7 @@ export function VideoModal({ open, onOpenChange }: VideoModalProps) {
               </div>
               <h3 className="text-xl font-semibold mb-2">Demo em Breve</h3>
               <p className="text-muted-foreground text-sm max-w-md">
-                Estamos preparando um vídeo demonstrativo completo das funcionalidades do Arc SafeWallet. 
+                Estamos preparando um vídeo demonstrativo completo das funcionalidades do Axiom Labs. 
                 Enquanto isso, explore o dashboard para conhecer todas as ferramentas disponíveis.
               </p>
               <Button 

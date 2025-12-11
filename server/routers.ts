@@ -705,6 +705,94 @@ Format the output in Markdown.`
         }
       }),
   }),
+
+  // ==================== NOTIFICATION PREFERENCES ROUTER ====================
+  notificationPrefs: router({
+    get: protectedProcedure.query(async ({ ctx }) => {
+      const prefs = await db.getNotificationPreferences(ctx.user.id);
+      return prefs || {
+        enableTransactionAlerts: true,
+        enableGasAlerts: true,
+        enableSecurityAlerts: true,
+        gasAlertThreshold: 20,
+        preferredChains: [1, 5042002, 137],
+        emailNotifications: false,
+      };
+    }),
+
+    update: protectedProcedure
+      .input(z.object({
+        enableTransactionAlerts: z.boolean().optional(),
+        enableGasAlerts: z.boolean().optional(),
+        enableSecurityAlerts: z.boolean().optional(),
+        gasAlertThreshold: z.number().min(1).max(500).optional(),
+        preferredChains: z.array(z.number()).optional(),
+        emailNotifications: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        return db.upsertNotificationPreferences(ctx.user.id, input);
+      }),
+  }),
+
+  // ==================== FAUCET ROUTER ====================
+  faucet: router({
+    request: protectedProcedure
+      .input(z.object({
+        walletAddress: z.string().length(42),
+        chainId: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Check rate limit (1 request per hour)
+        const lastRequest = await db.getLastFaucetRequest(ctx.user.id, input.chainId);
+        if (lastRequest) {
+          const hourAgo = new Date(Date.now() - 60 * 60 * 1000);
+          if (new Date(lastRequest.createdAt) > hourAgo) {
+            const waitTime = Math.ceil((new Date(lastRequest.createdAt).getTime() + 60 * 60 * 1000 - Date.now()) / 60000);
+            throw new TRPCError({
+              code: "TOO_MANY_REQUESTS",
+              message: `Please wait ${waitTime} minutes before requesting again.`,
+            });
+          }
+        }
+
+        // Create faucet request
+        const request = await db.createFaucetRequest({
+          userId: ctx.user.id,
+          walletAddress: input.walletAddress,
+          chainId: input.chainId,
+          amount: "0.1", // 0.1 ETH/tokens
+        });
+
+        // In production, this would call the actual faucet API
+        // For now, we simulate success
+        await db.updateFaucetRequestStatus(request.id, "completed", "0x" + "0".repeat(64));
+
+        return {
+          success: true,
+          message: "Tokens sent successfully! Check your wallet.",
+          amount: "0.1",
+          txHash: "0x" + "0".repeat(64),
+        };
+      }),
+
+    history: protectedProcedure.query(async ({ ctx }) => {
+      return db.getFaucetRequestsByUser(ctx.user.id);
+    }),
+
+    canRequest: protectedProcedure
+      .input(z.object({ chainId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const lastRequest = await db.getLastFaucetRequest(ctx.user.id, input.chainId);
+        if (!lastRequest) return { canRequest: true, waitTime: 0 };
+        
+        const hourAgo = new Date(Date.now() - 60 * 60 * 1000);
+        if (new Date(lastRequest.createdAt) > hourAgo) {
+          const waitTime = Math.ceil((new Date(lastRequest.createdAt).getTime() + 60 * 60 * 1000 - Date.now()) / 60000);
+          return { canRequest: false, waitTime };
+        }
+        return { canRequest: true, waitTime: 0 };
+      }),
+  }),
 });
 
 // Helper function to convert Solidity types to TypeScript

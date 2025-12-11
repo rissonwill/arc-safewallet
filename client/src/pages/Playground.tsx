@@ -95,7 +95,7 @@ Contract: SimpleStorage
   - Estimated gas: 125,432
 
 ABI gerado com sucesso.
-Pronto para deploy na Arc Network Testnet.
+Pronto para deploy na Axiom Network Testnet.
 `);
     setIsCompiling(false);
     toast.success("Contrato compilado com sucesso!");
@@ -121,9 +121,9 @@ Pronto para deploy na Arc Network Testnet.
         <div className="container flex items-center justify-between h-16">
           <Link href="/">
             <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-              <img src="/logo.png" alt="Arc SafeWallet" className="w-10 h-10" />
+              <img src="/logo.png" alt="Axiom Labs" className="w-10 h-10" />
               <span className="text-xl font-bold gradient-neon-text" style={{ fontFamily: 'var(--font-cyber)' }}>
-                ARC SAFEWALLET
+                AXIOM LABS
               </span>
             </div>
           </Link>
@@ -145,7 +145,7 @@ Pronto para deploy na Arc Network Testnet.
               Testnet Playground
             </Badge>
             <Badge className="bg-[var(--color-neon-green)]/20 text-[var(--color-neon-green)]">
-              Arc Network Testnet
+              Axiom Network Testnet
             </Badge>
           </div>
           <h1 className="text-3xl font-bold mb-2">Playground Interativo</h1>
@@ -237,7 +237,7 @@ Pronto para deploy na Arc Network Testnet.
               <CardContent className="p-4">
                 <h3 className="font-semibold mb-2">Faucet Integrado</h3>
                 <p className="text-sm text-muted-foreground">
-                  Obtenha tokens de teste gratuitos para a Arc Network Testnet.
+                  Obtenha tokens de teste gratuitos para a Axiom Network Testnet.
                 </p>
               </CardContent>
             </Card>

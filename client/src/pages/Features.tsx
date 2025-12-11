@@ -44,7 +44,7 @@ const features = [
   {
     icon: Globe,
     title: "Deploy Multi-Chain",
-    description: "Deploy para Arc Network, Ethereum, Polygon, BSC, Arbitrum e outras redes EVM com um clique.",
+    description: "Deploy para Axiom Network, Ethereum, Polygon, BSC, Arbitrum e outras redes EVM com um clique.",
     benefits: ["6+ redes suportadas", "Deploy com 1 clique", "Verificação automática", "Gas estimation"],
     color: "purple"
   },
@@ -97,9 +97,9 @@ export default function Features() {
         <div className="container flex items-center justify-between h-16">
           <Link href="/">
             <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-              <img src="/logo.png" alt="Arc SafeWallet" className="w-10 h-10" />
+              <img src="/logo.png" alt="Axiom Labs" className="w-10 h-10" />
               <span className="text-xl font-bold gradient-neon-text" style={{ fontFamily: 'var(--font-cyber)' }}>
-                ARC SAFEWALLET
+                AXIOM LABS
               </span>
             </div>
           </Link>

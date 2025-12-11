@@ -95,12 +95,12 @@ export default function DashboardLayout({
           <div className="flex flex-col items-center gap-4">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center wireframe-cyan">
-                <img src="/logo.png" alt="Arc SafeWallet" className="h-8 w-8" />
+                <img src="/axiom-labs-logo.png" alt="Axiom Labs" className="h-8 w-8" />
               </div>
-              <h1 className="headline-massive text-3xl">Arc SafeWallet</h1>
+              <h1 className="headline-massive text-3xl">Axiom Labs</h1>
             </div>
             <p className="tech-label text-center">
-              Secure Wallet for Arc Network & Ethereum
+              Secure Wallet for Axiom Network & Ethereum
             </p>
           </div>
           <div className="w-full p-6 bg-card rounded-lg border border-border shadow-sm">
@@ -226,9 +226,9 @@ function DashboardLayoutContent({
               </button>
               {!isCollapsed ? (
                 <div className="flex items-center gap-2 min-w-0">
-                  <img src="/logo.png" alt="Arc SafeWallet" className="h-6 w-6 shrink-0" />
+                  <img src="/axiom-labs-logo.png" alt="Axiom Labs" className="h-6 w-6 shrink-0" />
                   <span className="font-semibold tracking-tight truncate text-sm">
-                    Arc SafeWallet
+                    Axiom Labs
                   </span>
                 </div>
               ) : null}
@@ -313,7 +313,7 @@ function DashboardLayoutContent({
             <div className="flex items-center gap-2">
               <SidebarTrigger className="h-9 w-9 rounded-lg bg-background" />
               <div className="flex items-center gap-2">
-                <img src="/logo.png" alt="Arc SafeWallet" className="h-5 w-5" />
+                <img src="/axiom-labs-logo.png" alt="Axiom Labs" className="h-5 w-5" />
                 <span className="font-medium text-sm">
                   {activeMenuItem?.label ?? "Menu"}
                 </span>

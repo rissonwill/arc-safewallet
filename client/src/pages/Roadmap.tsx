@@ -18,7 +18,7 @@ const roadmapItems = [
     title: "Lançamento Beta",
     items: [
       { text: "Editor Solidity com syntax highlighting", done: true },
-      { text: "Deploy para Arc Network Testnet", done: true },
+      { text: "Deploy para Axiom Network Testnet", done: true },
       { text: "Security Scanner básico", done: true },
       { text: "Integração MetaMask", done: true },
       { text: "Dashboard de projetos", done: true }
@@ -82,9 +82,9 @@ export default function Roadmap() {
         <div className="container flex items-center justify-between h-16">
           <Link href="/">
             <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-              <img src="/logo.png" alt="Arc SafeWallet" className="w-10 h-10" />
+              <img src="/logo.png" alt="Axiom Labs" className="w-10 h-10" />
               <span className="text-xl font-bold gradient-neon-text" style={{ fontFamily: 'var(--font-cyber)' }}>
-                ARC SAFEWALLET
+                AXIOM LABS
               </span>
             </div>
           </Link>
@@ -108,7 +108,7 @@ export default function Roadmap() {
             <span className="text-[var(--color-neon-purple)]">Nossa Jornada</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Acompanhe o desenvolvimento do Arc SafeWallet e veja o que está por vir.
+            Acompanhe o desenvolvimento do Axiom Labs e veja o que está por vir.
           </p>
         </div>
       </section>

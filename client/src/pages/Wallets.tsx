@@ -38,7 +38,7 @@ import {
 const NETWORKS = [
   { 
     chainId: 5042002, 
-    name: "Arc Network Testnet", 
+    name: "Axiom Network Testnet", 
     symbol: "USDC", 
     decimals: 6,
     explorer: "https://testnet.arcscan.app",
@@ -63,7 +63,7 @@ const NETWORKS = [
 const WALLET_TYPES = [
   { id: "metamask", name: "MetaMask", icon: "🦊" },
   { id: "walletconnect", name: "WalletConnect", icon: "🔗" },
-  { id: "arc", name: "Arc Network", icon: "⚡" },
+  { id: "arc", name: "Axiom Network", icon: "⚡" },
   { id: "coinbase", name: "Coinbase Wallet", icon: "🔵" },
   { id: "trust", name: "Trust Wallet", icon: "🛡️" },
 ];
@@ -184,7 +184,7 @@ export default function Wallets() {
       await WalletAPI.switchNetwork("arcTestnet");
       const state = WalletAPI.getWalletState();
       setWalletState(state);
-      toast.success("Conectado à Arc Network Testnet!");
+      toast.success("Conectado à Axiom Network Testnet!");
     } catch (error: any) {
       toast.error(`Erro ao trocar rede: ${error.message}`);
     }
@@ -305,7 +305,7 @@ export default function Wallets() {
           <div>
             <h1 className="headline-massive text-2xl md:text-3xl">Carteiras Web3</h1>
             <p className="text-muted-foreground text-sm mt-1">
-              Gerencie suas carteiras e transações na Arc Network e Sepolia
+              Gerencie suas carteiras e transações na Axiom Network e Sepolia
             </p>
           </div>
           
@@ -718,7 +718,7 @@ export default function Wallets() {
         <div>
           <h2 className="text-lg font-semibold mb-4">Redes Suportadas</h2>
           <div className="grid md:grid-cols-2 gap-4">
-            {/* Arc Network Card */}
+            {/* Axiom Network Card */}
             <Card className="border-primary/30 bg-primary/5">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3 mb-3">
@@ -726,7 +726,7 @@ export default function Wallets() {
                     <span className="font-bold text-primary">A</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold">Arc Network Testnet</h3>
+                    <h3 className="font-semibold">Axiom Network Testnet</h3>
                     <p className="text-xs text-muted-foreground">Chain ID: 5042002 (0x4CEF52)</p>
                   </div>
                 </div>

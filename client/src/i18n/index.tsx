@@ -32,7 +32,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.logout': 'Sair',
     
     // Página Inicial
-    'home.title': 'Arc SafeWallet',
+    'home.title': 'Axiom Labs',
     'home.subtitle': 'Contratos Inteligentes com Segurança',
     'home.description': 'Gerencie seus ativos digitais, contratos inteligentes e NFTs em múltiplas blockchains com segurança e facilidade.',
     'home.getStarted': 'Começar Agora',
@@ -40,12 +40,12 @@ const translations: Record<Language, Record<string, string>> = {
     'home.connectWallet': 'Conectar Carteira',
     'home.features': 'Funcionalidades Poderosas',
     'home.featuresSubtitle': 'Tudo que você precisa para desenvolver, testar e fazer deploy de contratos inteligentes seguros.',
-    'home.poweredBy': 'Powered by Arc Network',
+    'home.poweredBy': 'Powered by Axiom Network',
     'home.networksSupported': 'Redes Suportadas',
     'home.templates': 'Templates',
     'home.vulnerabilities': 'Vulnerabilidades Detectadas',
     'home.readyToBuild': 'Pronto para Construir?',
-    'home.readyToBuildDesc': 'Junte-se a desenvolvedores que estão construindo o futuro da Web3 com segurança e eficiência na Arc Network.',
+    'home.readyToBuildDesc': 'Junte-se a desenvolvedores que estão construindo o futuro da Web3 com segurança e eficiência na Axiom Network.',
     'home.createFreeAccount': 'Criar Conta Gratuita',
     'home.principal': 'Principal',
     
@@ -62,7 +62,7 @@ const translations: Record<Language, Record<string, string>> = {
     'home.feature.security': 'Security Scanner',
     'home.feature.securityDesc': 'Análise de vulnerabilidades: reentrancy, overflow, access control e mais',
     'home.feature.deploy': 'Deploy Multi-Chain',
-    'home.feature.deployDesc': 'Deploy para Arc Network, Ethereum, Polygon, BSC e outras redes EVM',
+    'home.feature.deployDesc': 'Deploy para Axiom Network, Ethereum, Polygon, BSC e outras redes EVM',
     'home.feature.gas': 'Gas Tracker',
     'home.feature.gasDesc': 'Monitoramento de gas fees em tempo real via APIs do Etherscan e Alchemy',
     'home.feature.docs': 'Documentação IA',
@@ -71,7 +71,7 @@ const translations: Record<Language, Record<string, string>> = {
     // Dashboard
     'dashboard.title': 'Dashboard',
     'dashboard.subtitle': 'Visão geral dos seus projetos e contratos Web3',
-    'dashboard.welcome': 'Bem-vindo ao Arc SafeWallet',
+    'dashboard.welcome': 'Bem-vindo ao Axiom Labs',
     'dashboard.totalBalance': 'Saldo Total',
     'dashboard.projects': 'Projetos',
     'dashboard.contracts': 'Contratos',
@@ -310,7 +310,7 @@ const translations: Record<Language, Record<string, string>> = {
     'debugger.console': 'Console',
     
     // Tutorial
-    'tutorial.welcome': 'Bem-vindo ao Arc SafeWallet!',
+    'tutorial.welcome': 'Bem-vindo ao Axiom Labs!',
     'tutorial.welcomeDesc': 'Esta é sua plataforma completa para desenvolvimento Web3. Vamos fazer um tour rápido pelas principais funcionalidades.',
     'tutorial.step1': 'Dashboard',
     'tutorial.step1Desc': 'Aqui você tem uma visão geral de todos os seus projetos, contratos e transações.',
@@ -419,7 +419,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.logout': 'Logout',
     
     // Home Page
-    'home.title': 'Arc SafeWallet',
+    'home.title': 'Axiom Labs',
     'home.subtitle': 'Smart Contracts with Security',
     'home.description': 'Manage your digital assets, smart contracts and NFTs across multiple blockchains with security and ease.',
     'home.getStarted': 'Get Started',
@@ -427,12 +427,12 @@ const translations: Record<Language, Record<string, string>> = {
     'home.connectWallet': 'Connect Wallet',
     'home.features': 'Powerful Features',
     'home.featuresSubtitle': 'Everything you need to develop, test and deploy secure smart contracts.',
-    'home.poweredBy': 'Powered by Arc Network',
+    'home.poweredBy': 'Powered by Axiom Network',
     'home.networksSupported': 'Networks Supported',
     'home.templates': 'Templates',
     'home.vulnerabilities': 'Vulnerabilities Detected',
     'home.readyToBuild': 'Ready to Build?',
-    'home.readyToBuildDesc': 'Join developers who are building the future of Web3 with security and efficiency on Arc Network.',
+    'home.readyToBuildDesc': 'Join developers who are building the future of Web3 with security and efficiency on Axiom Network.',
     'home.createFreeAccount': 'Create Free Account',
     'home.principal': 'Primary',
     
@@ -449,7 +449,7 @@ const translations: Record<Language, Record<string, string>> = {
     'home.feature.security': 'Security Scanner',
     'home.feature.securityDesc': 'Vulnerability analysis: reentrancy, overflow, access control and more',
     'home.feature.deploy': 'Multi-Chain Deploy',
-    'home.feature.deployDesc': 'Deploy to Arc Network, Ethereum, Polygon, BSC and other EVM networks',
+    'home.feature.deployDesc': 'Deploy to Axiom Network, Ethereum, Polygon, BSC and other EVM networks',
     'home.feature.gas': 'Gas Tracker',
     'home.feature.gasDesc': 'Real-time gas fee monitoring via Etherscan and Alchemy APIs',
     'home.feature.docs': 'AI Documentation',
@@ -458,7 +458,7 @@ const translations: Record<Language, Record<string, string>> = {
     // Dashboard
     'dashboard.title': 'Dashboard',
     'dashboard.subtitle': 'Overview of your Web3 projects and contracts',
-    'dashboard.welcome': 'Welcome to Arc SafeWallet',
+    'dashboard.welcome': 'Welcome to Axiom Labs',
     'dashboard.totalBalance': 'Total Balance',
     'dashboard.projects': 'Projects',
     'dashboard.contracts': 'Contracts',
@@ -697,7 +697,7 @@ const translations: Record<Language, Record<string, string>> = {
     'debugger.console': 'Console',
     
     // Tutorial
-    'tutorial.welcome': 'Welcome to Arc SafeWallet!',
+    'tutorial.welcome': 'Welcome to Axiom Labs!',
     'tutorial.welcomeDesc': 'This is your complete Web3 development platform. Let\'s take a quick tour of the main features.',
     'tutorial.step1': 'Dashboard',
     'tutorial.step1Desc': 'Here you have an overview of all your projects, contracts and transactions.',

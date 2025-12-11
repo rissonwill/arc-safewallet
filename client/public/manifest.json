@@ -1,7 +1,7 @@
 {
-  "name": "Arc SafeWallet - Plataforma Web3",
-  "short_name": "Arc SafeWallet",
-  "description": "Desenvolva, teste e faça deploy de smart contracts com segurança na Arc Network",
+  "name": "Axiom Labs - Plataforma Web3",
+  "short_name": "Axiom Labs",
+  "description": "Desenvolva, teste e faça deploy de smart contracts com segurança em múltiplas blockchains",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0f",

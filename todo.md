@@ -460,3 +460,34 @@
 - [x] Criar notificações para transações confirmadas
 - [x] Criar alertas de gas baixo na Arc Network
 - [ ] Implementar preferências de notificação do usuário
+
+## Próximos Passos v37
+
+### Preferências de Notificação
+- [ ] Criar tabela de preferências no banco de dados
+- [ ] Criar página de configurações de notificação
+- [ ] Permitir ativar/desativar alertas de transação
+- [ ] Permitir configurar threshold de gas baixo
+
+### Faucet Integrado
+- [ ] Criar endpoint para solicitar tokens da Arc Testnet
+- [ ] Criar componente de faucet na UI
+- [ ] Implementar rate limiting (1 solicitação por hora)
+- [ ] Mostrar saldo atual do usuário
+
+### Dashboard de Analytics
+- [ ] Criar gráfico de volume de transações por período
+- [ ] Criar gráfico de gas gasto por rede
+- [ ] Criar gráfico de distribuição por tipo de transação
+- [ ] Implementar filtros de data
+
+## Rebranding v38 - Axiom Labs
+
+- [x] Atualizar nome em index.html e meta tags
+- [x] Atualizar logo e branding no header
+- [x] Atualizar Home.tsx com novo nome
+- [x] Atualizar todas as páginas com referências ao nome
+- [x] Atualizar documentação (README, DOCS, etc.)
+- [x] Atualizar manifest.json e PWA
+- [x] Atualizar sitemap.xml
+- [x] Gerar novo logo profissional

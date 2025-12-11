@@ -147,3 +147,35 @@ export const networks = mysqlTable("networks", {
 
 export type Network = typeof networks.$inferSelect;
 export type InsertNetwork = typeof networks.$inferInsert;
+
+// User Notification Preferences
+export const notificationPreferences = mysqlTable("notification_preferences", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  enableTransactionAlerts: boolean("enableTransactionAlerts").default(true).notNull(),
+  enableGasAlerts: boolean("enableGasAlerts").default(true).notNull(),
+  enableSecurityAlerts: boolean("enableSecurityAlerts").default(true).notNull(),
+  gasAlertThreshold: int("gasAlertThreshold").default(20).notNull(), // Gwei
+  preferredChains: json("preferredChains").$type<number[]>(),
+  emailNotifications: boolean("emailNotifications").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type NotificationPreference = typeof notificationPreferences.$inferSelect;
+export type InsertNotificationPreference = typeof notificationPreferences.$inferInsert;
+
+// Faucet Requests (rate limiting)
+export const faucetRequests = mysqlTable("faucet_requests", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  walletAddress: varchar("walletAddress", { length: 42 }).notNull(),
+  chainId: int("chainId").notNull(),
+  amount: varchar("amount", { length: 78 }).notNull(),
+  txHash: varchar("txHash", { length: 66 }),
+  status: mysqlEnum("status", ["pending", "completed", "failed"]).default("pending").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type FaucetRequest = typeof faucetRequests.$inferSelect;
+export type InsertFaucetRequest = typeof faucetRequests.$inferInsert;

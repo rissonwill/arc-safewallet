@@ -1,5 +1,5 @@
 // ============================================
-// ARC SAFEWALLET - WALLET API SERVICE
+// AXIOM LABS - WALLET API SERVICE
 // Arc Testnet + Sepolia Networks
 // ============================================
 

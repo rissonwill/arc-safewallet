@@ -141,7 +141,7 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
         optionalChains: [5042002, 11155111, 137, 56, 42161], // Arc Testnet, Sepolia, Polygon, BSC, Arbitrum
         showQrModal: true,
         metadata: {
-          name: 'Arc SafeWallet',
+          name: 'Axiom Labs',
           description: 'Smart Contracts with Security',
           url: window.location.origin,
           icons: [`${window.location.origin}/logo.png`]
@@ -359,7 +359,7 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
         <DialogHeader>
           <DialogTitle className="text-xl gradient-neon-text">Connect Wallet</DialogTitle>
           <DialogDescription>
-            Choose your preferred wallet to connect to Arc SafeWallet
+            Choose your preferred wallet to connect to Axiom Labs
           </DialogDescription>
         </DialogHeader>
 

@@ -8,7 +8,9 @@ import {
   InsertTransaction, transactions, Transaction,
   InsertContractTemplate, contractTemplates, ContractTemplate,
   InsertGasPrice, gasPrices, GasPrice,
-  InsertNetwork, networks, Network
+  InsertNetwork, networks, Network,
+  InsertNotificationPreference, notificationPreferences, NotificationPreference,
+  InsertFaucetRequest, faucetRequests, FaucetRequest
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -540,4 +542,81 @@ export async function getUserStats(userId: number) {
     transactions: Number(txCount?.count) || 0,
     deployedContracts: Number(deployedCount?.count) || 0,
   };
+}
+
+// ==================== NOTIFICATION PREFERENCES QUERIES ====================
+
+export async function getNotificationPreferences(userId: number): Promise<NotificationPreference | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const [result] = await db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, userId));
+  return result;
+}
+
+export async function upsertNotificationPreferences(
+  userId: number,
+  prefs: Partial<InsertNotificationPreference>
+): Promise<NotificationPreference> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const existing = await getNotificationPreferences(userId);
+  
+  if (existing) {
+    await db.update(notificationPreferences)
+      .set(prefs)
+      .where(eq(notificationPreferences.userId, userId));
+    const [updated] = await db.select().from(notificationPreferences).where(eq(notificationPreferences.userId, userId));
+    return updated;
+  } else {
+    const [result] = await db.insert(notificationPreferences).values({ userId, ...prefs }).$returningId();
+    const [created] = await db.select().from(notificationPreferences).where(eq(notificationPreferences.id, result.id));
+    return created;
+  }
+}
+
+// ==================== FAUCET QUERIES ====================
+
+export async function getLastFaucetRequest(userId: number, chainId: number): Promise<FaucetRequest | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const [result] = await db.select().from(faucetRequests)
+    .where(and(eq(faucetRequests.userId, userId), eq(faucetRequests.chainId, chainId)))
+    .orderBy(desc(faucetRequests.createdAt))
+    .limit(1);
+  return result;
+}
+
+export async function createFaucetRequest(request: InsertFaucetRequest): Promise<FaucetRequest> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const [result] = await db.insert(faucetRequests).values(request).$returningId();
+  const [created] = await db.select().from(faucetRequests).where(eq(faucetRequests.id, result.id));
+  return created;
+}
+
+export async function updateFaucetRequestStatus(
+  id: number,
+  status: "pending" | "completed" | "failed",
+  txHash?: string
+): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  await db.update(faucetRequests)
+    .set({ status, txHash })
+    .where(eq(faucetRequests.id, id));
+}
+
+export async function getFaucetRequestsByUser(userId: number, limit = 10): Promise<FaucetRequest[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(faucetRequests)
+    .where(eq(faucetRequests.userId, userId))
+    .orderBy(desc(faucetRequests.createdAt))
+    .limit(limit);
 }

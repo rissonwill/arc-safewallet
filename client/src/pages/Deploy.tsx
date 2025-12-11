@@ -293,7 +293,7 @@ export default function Deploy() {
               Deploy de Contratos
             </h1>
             <p className="text-muted-foreground mt-1">
-              Faça deploy dos seus Smart Contracts na Arc Network ou Sepolia
+              Faça deploy dos seus Smart Contracts na Axiom Network ou Sepolia
             </p>
           </div>
           
