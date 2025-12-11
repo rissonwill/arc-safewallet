@@ -385,6 +385,11 @@ export default function Home() {
                   </Button>
                 </li>
                 <li>
+                  <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-[var(--color-neon-cyan)]" onClick={() => setLocation("/faq")}>
+                    FAQ
+                  </Button>
+                </li>
+                <li>
                   <a href="https://arcnetwork.io" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
                     Arc Network
                   </a>

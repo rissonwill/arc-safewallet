@@ -22,12 +22,14 @@ import Deploy from "./pages/Deploy";
 import Staking from "./pages/Staking";
 import NFTMarketplace from "./pages/NFTMarketplace";
 import Governance from "./pages/Governance";
+import FAQ from "./pages/FAQ";
 
 function Router() {
   return (
     <Switch>
       {/* Public */}
       <Route path="/" component={Home} />
+      <Route path="/faq" component={FAQ} />
       <Route path="/docs" component={Docs} />
       
       {/* Protected - Dashboard */}

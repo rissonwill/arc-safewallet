@@ -315,3 +315,9 @@
 - [x] Adicionar CHANGELOG.md
 - [x] Adicionar badges no README
 - [x] Remover email do footer
+
+## Release e FAQ v26
+- [x] Criar release v1.0.0 no GitHub
+- [x] Criar página de FAQ
+- [x] Adicionar rota de FAQ no App.tsx
+- [x] Traduzir FAQ para PT/EN
