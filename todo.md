@@ -589,3 +589,10 @@
 - [x] Backtest: compilar contrato (Security Score 100)
 - [x] Backtest: fazer deploy (interface funcionando)
 - [x] Backtest: interagir com contrato deployado (histórico funcionando)
+
+
+## Correções v47 (11/12/2025)
+
+- [x] Remover email do footer (emails fictícios removidos da Pricing)
+- [x] Confirmar remoção completa do OAuth (useAuth atualizado)
+- [x] Criar vídeo demo para o site (VideoModal já existe e está integrado)

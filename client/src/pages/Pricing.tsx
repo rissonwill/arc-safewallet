@@ -212,7 +212,8 @@ export default function Pricing() {
                     if (plan.name === "Free") {
                       setLocation("/dashboard");
                     } else if (plan.name === "Enterprise") {
-                      window.open("mailto:sales@smartvault.io?subject=Enterprise Plan Inquiry", "_blank");
+                      toast.info("Entre em contato pelo Discord para planos Enterprise");
+                      window.open("https://discord.gg/buildonarc", "_blank");
                     } else {
                       try {
                         toast.info("Redirecionando para o checkout...");
@@ -294,7 +295,7 @@ export default function Pricing() {
                 Ver FAQ Completo
               </Button>
               <Button 
-                onClick={() => window.open("mailto:support@smartvault.io", "_blank")}
+                onClick={() => window.open("https://discord.gg/buildonarc", "_blank")}
                 className="bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)]"
               >
                 Falar com Suporte

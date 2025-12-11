@@ -6,6 +6,18 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  # Mock environment variables for CI build
+  VITE_APP_ID: "ci-placeholder"
+  VITE_OAUTH_PORTAL_URL: "https://example.com"
+  VITE_ANALYTICS_ENDPOINT: "https://example.com"
+  VITE_ANALYTICS_WEBSITE_ID: "ci-placeholder"
+  VITE_FRONTEND_FORGE_API_KEY: "ci-placeholder"
+  VITE_FRONTEND_FORGE_API_URL: "https://example.com"
+  VITE_STRIPE_PUBLISHABLE_KEY: "pk_test_placeholder"
+  VITE_APP_TITLE: "SmartVault"
+  VITE_APP_LOGO: ""
+
 jobs:
   lint-and-typecheck:
     runs-on: ubuntu-latest
