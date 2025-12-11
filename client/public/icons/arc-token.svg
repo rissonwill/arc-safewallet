@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="tokenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff00ff;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="tokenInner" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.3" />
+    </linearGradient>
+  </defs>
+  <!-- Outer ring -->
+  <circle cx="32" cy="32" r="28" stroke="url(#tokenGrad)" stroke-width="3" fill="none"/>
+  <!-- Inner circle -->
+  <circle cx="32" cy="32" r="22" fill="url(#tokenInner)"/>
+  <!-- Token symbol - stylized "A" -->
+  <path d="M32 16 L44 48 L40 48 L37 40 L27 40 L24 48 L20 48 L32 16Z" fill="url(#tokenGrad)"/>
+  <path d="M29 36 L35 36 L32 26 L29 36Z" fill="#0a0a0f"/>
+  <!-- Decorative dots -->
+  <circle cx="32" cy="52" r="2" fill="url(#tokenGrad)"/>
+  <circle cx="32" cy="12" r="2" fill="url(#tokenGrad)"/>
+  <circle cx="12" cy="32" r="2" fill="url(#tokenGrad)"/>
+  <circle cx="52" cy="32" r="2" fill="url(#tokenGrad)"/>
+</svg>

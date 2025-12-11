@@ -16,13 +16,23 @@ import {
   Loader2, 
   Copy, 
   ExternalLink,
-  Coins,
-  Image,
-  Store,
-  Vault,
   AlertTriangle,
   Wallet
 } from 'lucide-react';
+
+// Componentes de ícone personalizados para cada contrato
+const ArcTokenIcon = ({ className }: { className?: string }) => (
+  <img src="/icons/arc-token.svg" alt="ArcToken" className={className} />
+);
+const ArcNFTIcon = ({ className }: { className?: string }) => (
+  <img src="/icons/arc-nft.svg" alt="ArcNFT" className={className} />
+);
+const ArcMarketplaceIcon = ({ className }: { className?: string }) => (
+  <img src="/icons/arc-marketplace.svg" alt="ArcMarketplace" className={className} />
+);
+const ArcVaultIcon = ({ className }: { className?: string }) => (
+  <img src="/icons/arc-vault.svg" alt="ArcVault" className={className} />
+);
 import { WalletAPI, NETWORKS } from '@/lib/walletApi';
 import DashboardLayout from '@/components/DashboardLayout';
 import { CONTRACT_ARTIFACTS, getContractArtifact } from '@/lib/contractBytecodes';
@@ -32,7 +42,8 @@ const CONTRACT_BYTECODES = {
   ArcToken: {
     name: 'ArcToken',
     description: 'Token ERC20 customizado com mint/burn e sistema de minters',
-    icon: Coins,
+    icon: ArcTokenIcon,
+    iconSrc: '/icons/arc-token.svg',
     features: ['ERC20 Standard', 'Mintable', 'Burnable', 'Minter Roles'],
     // Bytecode será carregado do servidor ou compilado
     abi: [
@@ -54,7 +65,8 @@ const CONTRACT_BYTECODES = {
   ArcNFT: {
     name: 'ArcNFT',
     description: 'Coleção NFT ERC721 com mint público e royalties',
-    icon: Image,
+    icon: ArcNFTIcon,
+    iconSrc: '/icons/arc-nft.svg',
     features: ['ERC721 Standard', 'Public Mint', 'Royalties', 'Metadata URI'],
     abi: [
       "constructor()",
@@ -73,7 +85,8 @@ const CONTRACT_BYTECODES = {
   ArcMarketplace: {
     name: 'ArcMarketplace',
     description: 'Marketplace para compra e venda de NFTs',
-    icon: Store,
+    icon: ArcMarketplaceIcon,
+    iconSrc: '/icons/arc-marketplace.svg',
     features: ['List NFTs', 'Buy/Sell', 'Marketplace Fee', 'Multi-Collection'],
     abi: [
       "constructor()",
@@ -89,7 +102,8 @@ const CONTRACT_BYTECODES = {
   ArcVault: {
     name: 'ArcVault',
     description: 'Vault de Staking com recompensas automáticas',
-    icon: Vault,
+    icon: ArcVaultIcon,
+    iconSrc: '/icons/arc-vault.svg',
     features: ['Staking', 'Auto-Rewards', 'APY Display', 'Early Withdraw Fee'],
     requiresParams: true,
     params: [
@@ -354,7 +368,11 @@ export default function Deploy() {
                                 p-2 rounded-lg
                                 ${isSelected ? 'bg-cyan-500/20' : 'bg-muted'}
                               `}>
-                                <Icon className={`w-6 h-6 ${isSelected ? 'text-cyan-400' : 'text-muted-foreground'}`} />
+                                <img 
+                                  src={contract.iconSrc} 
+                                  alt={contract.name} 
+                                  className={`w-8 h-8 ${isSelected ? 'drop-shadow-[0_0_8px_rgba(0,212,255,0.5)]' : 'opacity-70'}`} 
+                                />
                               </div>
                               <div className="flex-1">
                                 <h3 className="font-semibold">{contract.name}</h3>

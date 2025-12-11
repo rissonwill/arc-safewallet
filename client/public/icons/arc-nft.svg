@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="nftGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff00ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="nftBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff00ff;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0.2" />
+    </linearGradient>
+  </defs>
+  <!-- Frame -->
+  <rect x="8" y="8" width="48" height="48" rx="6" stroke="url(#nftGrad)" stroke-width="2.5" fill="url(#nftBg)"/>
+  <!-- Inner frame -->
+  <rect x="14" y="14" width="36" height="36" rx="4" stroke="url(#nftGrad)" stroke-width="1" fill="none" opacity="0.5"/>
+  <!-- Diamond/gem shape representing NFT art -->
+  <path d="M32 20 L42 30 L32 44 L22 30 Z" fill="url(#nftGrad)"/>
+  <!-- Sparkle effects -->
+  <circle cx="18" cy="18" r="2" fill="#00d4ff"/>
+  <circle cx="46" cy="18" r="2" fill="#ff00ff"/>
+  <circle cx="18" cy="46" r="2" fill="#7c3aed"/>
+  <circle cx="46" cy="46" r="2" fill="#00d4ff"/>
+  <!-- NFT badge -->
+  <rect x="24" y="48" width="16" height="8" rx="2" fill="url(#nftGrad)"/>
+  <text x="32" y="54" font-family="Arial" font-size="6" fill="#0a0a0f" text-anchor="middle" font-weight="bold">NFT</text>
+</svg>

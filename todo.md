@@ -523,3 +523,17 @@
 - [x] Melhorar visibilidade do logo SmartVault no header
 - [x] Adicionar efeito de destaque/glow no logo
 - [x] Aumentar tamanho do logo no canto
+
+## Bug Fix v42
+
+- [ ] Corrigir página de login que carrega mas não entra
+- [ ] Restaurar tutorial interativo que não está disponível
+
+
+## Ícones Personalizados para Contratos (v27)
+- [x] Criar ícone SVG para ArcToken (moeda/token com gradiente ciano/roxo/magenta)
+- [x] Criar ícone SVG para ArcNFT (moldura de arte digital com diamante)
+- [x] Criar ícone SVG para ArcMarketplace (loja/marketplace com gradiente verde/ciano)
+- [x] Criar ícone SVG para ArcVault (cofre dourado com dial de combinação)
+- [x] Atualizar página de Deploy para usar os novos ícones
+- [x] Adicionar efeito glow nos ícones quando selecionados
