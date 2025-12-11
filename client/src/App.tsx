@@ -32,6 +32,7 @@ import Blog from "./pages/Blog";
 import Playground from "./pages/Playground";
 import TransactionHistory from "./pages/TransactionHistory";
 import Pricing from "./pages/Pricing";
+import Analytics from "./pages/Analytics";
 
 function Router() {
   return (
@@ -54,6 +55,7 @@ function Router() {
       <Route path="/templates" component={Templates} />
       <Route path="/transactions" component={Transactions} />
       <Route path="/transaction-history" component={TransactionHistory} />
+      <Route path="/analytics" component={Analytics} />
       <Route path="/gas" component={GasTracker} />
       <Route path="/wallets" component={Wallets} />
       <Route path="/networks" component={Networks} />

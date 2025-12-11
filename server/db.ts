@@ -620,3 +620,85 @@ export async function getFaucetRequestsByUser(userId: number, limit = 10): Promi
     .orderBy(desc(faucetRequests.createdAt))
     .limit(limit);
 }
+
+
+// ==================== ANALYTICS QUERIES ====================
+
+export async function getTransactionAnalytics(
+  userId: number,
+  days: number = 30
+): Promise<{
+  dailyVolume: { date: string; count: number; gasUsed: number }[];
+  byChain: { chainId: number; count: number; gasUsed: number }[];
+  byType: { txType: string; count: number }[];
+  totalGasUsed: number;
+}> {
+  const db = await getDb();
+  if (!db) return { dailyVolume: [], byChain: [], byType: [], totalGasUsed: 0 };
+
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+
+  // Daily volume
+  const dailyResults = await db.execute(sql`
+    SELECT 
+      DATE(createdAt) as date,
+      COUNT(*) as count,
+      COALESCE(SUM(CAST(gasUsed AS UNSIGNED)), 0) as gasUsed
+    FROM transactions
+    WHERE userId = ${userId} AND createdAt >= ${startDate}
+    GROUP BY DATE(createdAt)
+    ORDER BY date ASC
+  `);
+
+  // By chain with gas
+  const byChainResults = await db.execute(sql`
+    SELECT 
+      chainId,
+      COUNT(*) as count,
+      COALESCE(SUM(CAST(gasUsed AS UNSIGNED)), 0) as gasUsed
+    FROM transactions
+    WHERE userId = ${userId} AND createdAt >= ${startDate}
+    GROUP BY chainId
+  `);
+
+  // By type
+  const byTypeResults = await db.execute(sql`
+    SELECT 
+      txType,
+      COUNT(*) as count
+    FROM transactions
+    WHERE userId = ${userId} AND createdAt >= ${startDate}
+    GROUP BY txType
+  `);
+
+  // Total gas
+  const [totalGasResult] = await db.execute(sql`
+    SELECT COALESCE(SUM(CAST(gasUsed AS UNSIGNED)), 0) as totalGas
+    FROM transactions
+    WHERE userId = ${userId} AND createdAt >= ${startDate}
+  `);
+
+  const dailyRows = Array.isArray(dailyResults) && dailyResults.length > 0 ? dailyResults[0] : [];
+  const chainRows = Array.isArray(byChainResults) && byChainResults.length > 0 ? byChainResults[0] : [];
+  const typeRows = Array.isArray(byTypeResults) && byTypeResults.length > 0 ? byTypeResults[0] : [];
+  const gasRow = Array.isArray(totalGasResult) ? totalGasResult : [totalGasResult];
+
+  return {
+    dailyVolume: (Array.isArray(dailyRows) ? dailyRows : []).map((r: any) => ({
+      date: r.date instanceof Date ? r.date.toISOString().split('T')[0] : String(r.date),
+      count: Number(r.count) || 0,
+      gasUsed: Number(r.gasUsed) || 0,
+    })),
+    byChain: (Array.isArray(chainRows) ? chainRows : []).map((r: any) => ({
+      chainId: Number(r.chainId) || 0,
+      count: Number(r.count) || 0,
+      gasUsed: Number(r.gasUsed) || 0,
+    })),
+    byType: (Array.isArray(typeRows) ? typeRows : []).map((r: any) => ({
+      txType: String(r.txType) || 'unknown',
+      count: Number(r.count) || 0,
+    })),
+    totalGasUsed: Number((gasRow[0] as any)?.totalGas) || 0,
+  };
+}

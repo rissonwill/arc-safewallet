@@ -506,9 +506,9 @@
 - [x] Configurar funil de conversão
 
 ### Dashboard Analytics
-- [ ] Criar gráficos de volume de transações
-- [ ] Criar gráfico de gas gasto por período
-- [ ] Implementar filtros de data
+- [x] Criar gráficos de volume de transações
+- [x] Criar gráfico de gas gasto por período
+- [x] Implementar filtros de data
 
 ## Rebranding v40 - SmartVault
 
@@ -526,8 +526,8 @@
 
 ## Bug Fix v42
 
-- [ ] Corrigir página de login que carrega mas não entra
-- [ ] Restaurar tutorial interativo que não está disponível
+- [x] Corrigir página de login que carrega mas não entra (verificado: funcionando)
+- [x] Restaurar tutorial interativo que não está disponível (verificado: funcionando)
 
 
 ## Ícones Personalizados para Contratos (v27)

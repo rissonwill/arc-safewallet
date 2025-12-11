@@ -40,7 +40,8 @@ import {
   Image,
   Vote,
   Sun,
-  Moon
+  Moon,
+  BarChart3
 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
@@ -61,6 +62,7 @@ const getMenuItems = (t: (key: string) => string) => [
   { icon: Image, label: t('nav.nftMarketplace'), path: "/nft-marketplace" },
   { icon: Vote, label: t('nav.governance'), path: "/governance" },
   { icon: Send, label: t('nav.transactions'), path: "/transactions" },
+  { icon: BarChart3, label: t('nav.analytics') || 'Analytics', path: "/analytics" },
   { icon: Fuel, label: t('nav.gasTracker'), path: "/gas" },
   { icon: Wallet, label: t('nav.wallets'), path: "/wallets" },
   { icon: Network, label: t('nav.networks'), path: "/networks" },

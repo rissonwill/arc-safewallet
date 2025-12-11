@@ -28,8 +28,12 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.nftMarketplace': 'NFT Marketplace',
     'nav.governance': 'Governança',
     'nav.docs': 'Documentação',
+    'nav.analytics': 'Analytics',
     'nav.settings': 'Configurações',
     'nav.logout': 'Sair',
+    
+    // Analytics
+    'analytics.subtitle': 'Métricas e insights das suas transações',
     
     // Tema
     'theme.light': 'Modo Claro',
@@ -419,8 +423,12 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.nftMarketplace': 'NFT Marketplace',
     'nav.governance': 'Governance',
     'nav.docs': 'Documentation',
+    'nav.analytics': 'Analytics',
     'nav.settings': 'Settings',
     'nav.logout': 'Logout',
+    
+    // Analytics
+    'analytics.subtitle': 'Metrics and insights from your transactions',
     
     // Theme
     'theme.light': 'Light Mode',

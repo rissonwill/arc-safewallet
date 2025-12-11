@@ -679,6 +679,16 @@ Format the output in Markdown.`
     user: protectedProcedure.query(async ({ ctx }) => {
       return db.getUserStats(ctx.user.id);
     }),
+
+    analytics: protectedProcedure
+      .input(z.object({ days: z.number().min(1).max(365).default(30) }).optional())
+      .query(async ({ ctx, input }) => {
+        return db.getTransactionAnalytics(ctx.user.id, input?.days ?? 30);
+      }),
+
+    transactionStats: protectedProcedure.query(async ({ ctx }) => {
+      return db.getTransactionStats(ctx.user.id);
+    }),
   }),
 
   // ==================== ABI GENERATOR ROUTER ====================
