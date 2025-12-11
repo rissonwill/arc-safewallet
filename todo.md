@@ -273,3 +273,9 @@
 - [x] Conectar página de Governança aos contratos on-chain
 - [x] Verificar contratos no Etherscan (ArcGovernance e ArcTimelock verificados)
 - [x] Testar integração completa
+
+## Atualização Visual v20
+- [x] Gerar novo logo profissional com cores cyber punk
+- [x] Gerar ícones para botões do site
+- [x] Aplicar logo e ícones no frontend
+- [x] Atualizar favicon
