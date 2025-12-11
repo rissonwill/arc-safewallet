@@ -517,3 +517,9 @@
 - [x] Atualizar manifest.json e PWA
 - [x] Atualizar todas as páginas e componentes
 - [x] Atualizar sitemap.xml e robots.txt
+
+## Destaque Logo v41
+
+- [x] Melhorar visibilidade do logo SmartVault no header
+- [x] Adicionar efeito de destaque/glow no logo
+- [x] Aumentar tamanho do logo no canto
