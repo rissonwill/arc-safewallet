@@ -165,7 +165,7 @@
 ## Deploy Real dos Contratos (v10)
 - [x] Configurar .env com chave privada
 - [x] Compilar contratos com Hardhat (32 arquivos Solidity)
-- [ ] Deploy na Arc Testnet (pendente - rede lenta)
+- [x] Deploy na Arc Testnet
 - [x] Deploy na Sepolia
 - [x] Atualizar endereços no frontend
 
@@ -189,11 +189,11 @@
 
 
 ## Próximos Passos Finais (v12)
-- [ ] Tentar deploy na Arc Testnet
+- [x] Tentar deploy na Arc Testnet
 - [x] Verificar contratos no Etherscan (ArcGovernance e ArcTimelock verificados) (Sepolia)
 - [x] Testar integração MetaMask via browser
-- [ ] Validar conexão de carteira
-- [ ] Testar troca de rede
+- [x] Validar conexão de carteira
+- [x] Testar troca de rede
 
 
 ## Sistema Bilíngue e Navegação (v13)
@@ -229,9 +229,15 @@
 - [x] Traduzir Contract Debugger (parcial - mensagens traduzidas)
 
 ## Deploy Arc Network (v15)
-- [ ] Verificar status da Arc Network Testnet
-- [ ] Tentar deploy dos contratos na Arc Network
+- [x] Verificar status da Arc Network Testnet
+- [x] Tentar deploy dos contratos na Arc Network
 - [x] Registrar endereços dos contratos deployados
+
+### Contratos Deployados na Arc Testnet (Chain ID: 5042002)
+- ArcToken: 0x7D54337E4AA62fbccf6061315F68e4Bc29EBea5D
+- ArcNFT: 0x0656B33CFfB2c6c46c06664E86DCD268e2d42DcC
+- ArcMarketplace: 0x5c4feae8C6CA8A31a5feB4Fc9b3e3aeD5882CaA7
+- ArcVault: 0x7b0d9163b451C4565d488Df49aaD76fa0bac50A2
 
 ## Prioridade Extrema P0 (v14)
 - [x] Criar seed de templates de contratos (ERC-20, ERC-721, ERC-1155)

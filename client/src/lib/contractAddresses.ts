@@ -3,6 +3,17 @@
  * Atualizado automaticamente pelo script de deploy
  */
 
+export const ARC_TESTNET_CONTRACTS = {
+  chainId: 5042002,
+  network: "arc-testnet",
+  
+  // Contratos principais
+  ArcToken: "0x7D54337E4AA62fbccf6061315F68e4Bc29EBea5D",
+  ArcNFT: "0x0656B33CFfB2c6c46c06664E86DCD268e2d42DcC",
+  ArcMarketplace: "0x5c4feae8C6CA8A31a5feB4Fc9b3e3aeD5882CaA7",
+  ArcVault: "0x7b0d9163b451C4565d488Df49aaD76fa0bac50A2",
+} as const;
+
 export const SEPOLIA_CONTRACTS = {
   chainId: 11155111,
   network: "sepolia",
