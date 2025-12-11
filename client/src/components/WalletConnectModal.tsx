@@ -65,6 +65,54 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
     return typeof window !== "undefined" && typeof (window as any).ethereum !== "undefined";
   };
 
+  // Configuração da rede Arc Testnet
+  const ARC_TESTNET = {
+    chainId: '0x4CEF52', // 5042002
+    chainName: 'Arc Testnet',
+    nativeCurrency: {
+      name: 'USDC',
+      symbol: 'USDC',
+      decimals: 6
+    },
+    rpcUrls: ['https://rpc.testnet.arc.network'],
+    blockExplorerUrls: ['https://testnet.arcscan.app']
+  };
+
+  // Função para adicionar rede Arc automaticamente
+  const addArcNetwork = async () => {
+    try {
+      await (window as any).ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [ARC_TESTNET]
+      });
+      console.log('✅ Rede Arc Testnet adicionada!');
+      return true;
+    } catch (err: any) {
+      if (err.code !== 4001) { // 4001 = user rejected
+        console.log('ℹ️ Rede Arc já pode estar adicionada');
+      }
+      return false;
+    }
+  };
+
+  // Função para trocar para rede Arc
+  const switchToArc = async () => {
+    try {
+      await (window as any).ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: ARC_TESTNET.chainId }]
+      });
+      return true;
+    } catch (err: any) {
+      if (err.code === 4902) {
+        // Rede não existe, adicionar primeiro
+        await addArcNetwork();
+        return switchToArc();
+      }
+      return false;
+    }
+  };
+
   const connectMetaMask = async () => {
     if (!checkMetaMask()) {
       window.open("https://metamask.io/download/", "_blank");
@@ -77,8 +125,23 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
       });
       
       if (accounts && accounts.length > 0) {
+        // AUTO-ADICIONAR REDE ARC
+        console.log('🔄 Verificando rede Arc Testnet...');
+        const currentChainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
+        
+        // Se não estiver na Arc, adicionar e perguntar se quer trocar
+        if (currentChainId.toLowerCase() !== ARC_TESTNET.chainId.toLowerCase()) {
+          await addArcNetwork();
+          const shouldSwitch = window.confirm(
+            'Rede Arc Testnet foi adicionada à sua carteira!\n\nDeseja trocar para a rede Arc Testnet agora?'
+          );
+          if (shouldSwitch) {
+            await switchToArc();
+          }
+        }
+        
         onConnect(accounts[0], "metamask");
-        alert(`Connected to ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`);
+        alert(`Conectado: ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`);
         onOpenChange(false);
       }
     } catch (err: any) {

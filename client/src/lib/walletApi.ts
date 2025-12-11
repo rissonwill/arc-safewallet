@@ -359,8 +359,31 @@ async function connectWallet(): Promise<string> {
       walletState.account = accounts[0];
       walletState.isConnected = true;
       
-      // Detectar rede e atualizar saldo
-      await detectCurrentNetwork();
+      // Detectar rede atual
+      const currentNetwork = await detectCurrentNetwork();
+      
+      // AUTO-ADICIONAR REDE ARC: Se não estiver em uma rede customizada, adicionar Arc Testnet automaticamente
+      if (!currentNetwork || !currentNetwork.isCustom) {
+        console.log('🔄 Auto-adicionando rede Arc Testnet...');
+        try {
+          await addCustomNetwork('arcTestnet');
+          console.log('✅ Rede Arc Testnet adicionada automaticamente!');
+          // Perguntar se quer trocar para Arc
+          const shouldSwitch = window.confirm(
+            'Rede Arc Testnet foi adicionada à sua carteira!\n\nDeseja trocar para a rede Arc Testnet agora?'
+          );
+          if (shouldSwitch) {
+            await switchToCustomNetwork('arcTestnet');
+          }
+        } catch (addError: any) {
+          // Se já existe, apenas log
+          if (addError.code !== 4001) { // 4001 = user rejected
+            console.log('ℹ️ Rede Arc já pode estar adicionada:', addError.message);
+          }
+        }
+      }
+      
+      // Atualizar saldo
       await updateBalance();
       
       console.log(`✅ Carteira conectada: ${shortenAddress(accounts[0])}`);
@@ -447,6 +470,32 @@ async function sendTransaction(to: string, amount: string): Promise<TransactionR
 
     transactionHistory.unshift(txRecord);
     console.log(`✅ Transação enviada: ${txHash}`);
+    
+    // CONTABILIDADE: Registrar transferência na rede via API
+    try {
+      console.log(`[📊 Contabilidade] Registrando transferência...`);
+      console.log(`  - Rede: ${walletState.networkInfo.chainName}`);
+      console.log(`  - De: ${walletState.account}`);
+      console.log(`  - Para: ${to}`);
+      console.log(`  - Valor: ${amount} ${walletState.networkInfo.nativeCurrency.symbol}`);
+      console.log(`  - Hash: ${txHash}`);
+      
+      // Disparar evento customizado para que o frontend possa registrar via tRPC
+      const transferEvent = new CustomEvent('arcTransferComplete', {
+        detail: {
+          txHash,
+          chainId: walletState.networkInfo.chainIdDecimal,
+          fromAddress: walletState.account,
+          toAddress: to,
+          value: amount,
+          symbol: walletState.networkInfo.nativeCurrency.symbol,
+          networkName: walletState.networkInfo.chainName,
+        }
+      });
+      window.dispatchEvent(transferEvent);
+    } catch (accountingError) {
+      console.warn('⚠️ Erro ao registrar contabilidade:', accountingError);
+    }
     
     // Atualizar saldo após transação
     setTimeout(() => updateBalance(), 3000);

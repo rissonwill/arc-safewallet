@@ -498,6 +498,45 @@ Format the output in Markdown.`
         });
       }),
 
+    // Registrar transferência com contabilidade de rede
+    recordTransfer: protectedProcedure
+      .input(z.object({
+        txHash: z.string().length(66),
+        chainId: z.number(),
+        fromAddress: z.string().length(42),
+        toAddress: z.string().length(42),
+        value: z.string(),
+        symbol: z.string().default("ETH"),
+        networkName: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Registrar a transferência no banco de dados
+        const tx = await db.createTransaction({
+          userId: ctx.user.id,
+          txHash: input.txHash,
+          chainId: input.chainId,
+          fromAddress: input.fromAddress,
+          toAddress: input.toAddress,
+          value: input.value,
+          txType: "transfer",
+        });
+
+        // Log para contabilidade da rede
+        console.log(`[📊 Contabilidade] Transferência registrada:`);
+        console.log(`  - Rede: ${input.networkName || `Chain ${input.chainId}`}`);
+        console.log(`  - De: ${input.fromAddress}`);
+        console.log(`  - Para: ${input.toAddress}`);
+        console.log(`  - Valor: ${input.value} ${input.symbol}`);
+        console.log(`  - Hash: ${input.txHash}`);
+        console.log(`  - User ID: ${ctx.user.id}`);
+
+        return {
+          success: true,
+          transaction: tx,
+          message: `Transferência de ${input.value} ${input.symbol} registrada com sucesso`,
+        };
+      }),
+
     updateStatus: protectedProcedure
       .input(z.object({
         txHash: z.string(),

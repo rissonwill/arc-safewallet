@@ -321,3 +321,18 @@
 - [x] Criar página de FAQ
 - [x] Adicionar rota de FAQ no App.tsx
 - [x] Traduzir FAQ para PT/EN
+
+## Menu Mobile e Backtest v27
+- [x] Implementar menu hambúrguer mobile
+- [ ] Backtest: criar projeto
+- [ ] Backtest: criar contrato
+- [ ] Backtest: compilar contrato
+- [ ] Backtest: fazer deploy
+- [ ] Backtest: interagir com contrato deployado
+- [ ] Backtest: página de governança
+- [ ] Corrigir problemas encontrados
+
+## Wallet e Contabilidade v28
+- [x] Auto-adicionar rede Arc ao conectar wallet
+- [x] Chamada de contrato para contabilidade de transferências
+- [x] Registrar cada transferência na rede

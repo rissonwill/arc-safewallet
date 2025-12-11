@@ -22,7 +22,9 @@ import {
   Github,
   Twitter,
   Mail,
-  MessageCircle
+  MessageCircle,
+  Menu,
+  X
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
@@ -37,6 +39,7 @@ export default function Home() {
   const [glowIndex, setGlowIndex] = useState(0);
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleWalletConnect = (address: string, walletType: string) => {
     setConnectedWallet(address);
@@ -160,30 +163,87 @@ export default function Home() {
           </div>
           
           <div className="flex items-center gap-4">
-            <LanguageSelector />
-            <Button variant="ghost" onClick={() => setLocation("/docs")} className="text-muted-foreground hover:text-[var(--color-neon-cyan)]">
-              <BookOpen className="h-4 w-4 mr-2" />
-              {t('nav.docs')}
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-4">
+              <LanguageSelector />
+              <Button variant="ghost" onClick={() => setLocation("/docs")} className="text-muted-foreground hover:text-[var(--color-neon-cyan)]">
+                <BookOpen className="h-4 w-4 mr-2" />
+                {t('nav.docs')}
+              </Button>
+              <Button variant="ghost" onClick={() => setLocation("/faq")} className="text-muted-foreground hover:text-[var(--color-neon-cyan)]">
+                FAQ
+              </Button>
+              {isAuthenticated ? (
+                <Button 
+                  onClick={() => setLocation("/dashboard")}
+                  className="bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black font-semibold hover:opacity-90 transition-opacity"
+                >
+                  {t('nav.dashboard')}
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              ) : (
+                <Button 
+                  onClick={() => window.location.href = getLoginUrl()}
+                  className="bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black font-semibold hover:opacity-90 transition-opacity"
+                >
+                  {t('home.getStarted')}
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              )}
+            </div>
+            
+            {/* Mobile Menu Button */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="md:hidden text-[var(--color-neon-cyan)]"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
-            {isAuthenticated ? (
-              <Button 
-                onClick={() => setLocation("/dashboard")}
-                className="bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black font-semibold hover:opacity-90 transition-opacity"
-              >
-                {t('nav.dashboard')}
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            ) : (
-              <Button 
-                onClick={() => window.location.href = getLoginUrl()}
-                className="bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black font-semibold hover:opacity-90 transition-opacity"
-              >
-                {t('home.getStarted')}
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            )}
           </div>
         </div>
+        
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-[var(--color-neon-cyan)]/20 bg-background/95 backdrop-blur-xl">
+            <div className="container py-4 space-y-3">
+              <LanguageSelector />
+              <Button 
+                variant="ghost" 
+                onClick={() => { setLocation("/docs"); setMobileMenuOpen(false); }} 
+                className="w-full justify-start text-muted-foreground hover:text-[var(--color-neon-cyan)]"
+              >
+                <BookOpen className="h-4 w-4 mr-2" />
+                {t('nav.docs')}
+              </Button>
+              <Button 
+                variant="ghost" 
+                onClick={() => { setLocation("/faq"); setMobileMenuOpen(false); }} 
+                className="w-full justify-start text-muted-foreground hover:text-[var(--color-neon-cyan)]"
+              >
+                FAQ
+              </Button>
+              {isAuthenticated ? (
+                <Button 
+                  onClick={() => { setLocation("/dashboard"); setMobileMenuOpen(false); }}
+                  className="w-full bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black font-semibold"
+                >
+                  {t('nav.dashboard')}
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              ) : (
+                <Button 
+                  onClick={() => window.location.href = getLoginUrl()}
+                  className="w-full bg-gradient-to-r from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] text-black font-semibold"
+                >
+                  {t('home.getStarted')}
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
