@@ -757,3 +757,173 @@
     opacity: 0;
   }
 }
+
+/* ==================== RESPONSIVE STYLES ==================== */
+
+/* Mobile First - Base styles for small screens */
+@media (max-width: 640px) {
+  /* Navigation */
+  .nav-mobile-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  /* Hero Section */
+  .hero-cyber-bg {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+  
+  .headline-cyber {
+    font-size: 2rem !important;
+    line-height: 1.2;
+  }
+  
+  /* Cards Grid */
+  .feature-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  /* Footer */
+  .footer-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  
+  .footer-social {
+    justify-content: center;
+  }
+  
+  /* Buttons */
+  .btn-mobile-full {
+    width: 100%;
+  }
+  
+  /* Stats */
+  .stats-container {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  /* Modal */
+  .wallet-modal {
+    width: 95%;
+    max-width: 100%;
+    margin: 1rem;
+  }
+  
+  /* Hide on mobile */
+  .hide-mobile {
+    display: none !important;
+  }
+  
+  /* Container padding */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Tablet styles */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .headline-cyber {
+    font-size: 3rem !important;
+  }
+  
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 1025px) {
+  .headline-cyber {
+    font-size: 4.5rem !important;
+  }
+  
+  .feature-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  /* Show on desktop */
+  .show-desktop {
+    display: flex !important;
+  }
+  
+  /* Hide on desktop */
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
+/* Touch-friendly tap targets for mobile */
+@media (hover: none) and (pointer: coarse) {
+  button, a, .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Larger touch targets for icons */
+  .icon-btn {
+    padding: 0.75rem;
+  }
+}
+
+/* Smooth scrolling */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Safe area for notched devices */
+@supports (padding: max(0px)) {
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+}
+
+/* Landscape mobile optimization */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero-cyber-bg {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  
+  .headline-cyber {
+    font-size: 1.75rem !important;
+  }
+}
+
+/* High DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .neon-glow-cyan,
+  .neon-glow-magenta,
+  .neon-glow-purple {
+    filter: blur(0.5px);
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .neon-glow-cyan,
+  .neon-glow-magenta,
+  .neon-glow-purple {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+}

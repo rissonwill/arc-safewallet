@@ -21,18 +21,27 @@ import {
   Terminal,
   Github,
   Twitter,
-  Mail
+  Mail,
+  MessageCircle
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { useEffect, useState } from "react";
 import { useI18n, LanguageSelector } from "@/i18n";
+import { WalletConnectModal } from "@/components/WalletConnectModal";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
   const { t } = useI18n();
   const [glowIndex, setGlowIndex] = useState(0);
+  const [walletModalOpen, setWalletModalOpen] = useState(false);
+  const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
+
+  const handleWalletConnect = (address: string, walletType: string) => {
+    setConnectedWallet(address);
+    console.log(`Connected ${walletType}: ${address}`);
+  };
 
   // Animated glow effect
   useEffect(() => {
@@ -213,6 +222,15 @@ export default function Home() {
               >
                 {t('home.getStarted')}
                 <Rocket className="h-5 w-5 ml-2" />
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                onClick={() => setWalletModalOpen(true)}
+                className="border-[var(--color-neon-magenta)]/50 text-[var(--color-neon-magenta)] hover:bg-[var(--color-neon-magenta)]/10"
+              >
+                <Wallet className="h-5 w-5 mr-2" />
+                {connectedWallet ? `${connectedWallet.slice(0, 6)}...${connectedWallet.slice(-4)}` : t('home.connectWallet')}
               </Button>
               <Button 
                 size="lg" 
@@ -401,6 +419,18 @@ export default function Home() {
                     @smartcript
                   </a>
                 </li>
+                <li>
+                  <a href="https://discord.gg/buildonarc" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
+                    <MessageCircle className="h-4 w-4" />
+                    Discord Arc
+                  </a>
+                </li>
+                <li>
+                  <a href="https://discord.gg/buildoncircle" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-[var(--color-neon-magenta)] transition-colors">
+                    <MessageCircle className="h-4 w-4" />
+                    Discord Circle
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
@@ -420,10 +450,20 @@ export default function Home() {
               <a href="https://twitter.com/smartcript" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
                 <Twitter className="h-5 w-5" />
               </a>
+              <a href="https://discord.gg/buildonarc" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors" title="Discord Arc">
+                <MessageCircle className="h-5 w-5" />
+              </a>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* Wallet Connect Modal */}
+      <WalletConnectModal
+        open={walletModalOpen}
+        onOpenChange={setWalletModalOpen}
+        onConnect={handleWalletConnect}
+      />
     </div>
   );
 }

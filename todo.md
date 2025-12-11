@@ -290,3 +290,11 @@
 - [x] Atualizar email de contato
 - [x] Atualizar link do GitHub
 - [x] Adicionar links sociais no footer
+
+## Discord e Multi-Wallet v23
+- [x] Adicionar Discord Arc no footer
+- [x] Adicionar Discord Circle no footer
+- [x] Criar modal de conexão multi-wallet
+- [x] Suporte MetaMask, WalletConnect, Coinbase, Trust Wallet
+- [x] Otimizar responsividade mobile
+- [x] Otimizar responsividade desktop
