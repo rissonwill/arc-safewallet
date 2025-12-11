@@ -231,7 +231,7 @@
 ## Deploy Arc Network (v15)
 - [ ] Verificar status da Arc Network Testnet
 - [ ] Tentar deploy dos contratos na Arc Network
-- [ ] Registrar endereços dos contratos deployados
+- [x] Registrar endereços dos contratos deployados
 
 ## Prioridade Extrema P0 (v14)
 - [x] Criar seed de templates de contratos (ERC-20, ERC-721, ERC-1155)
@@ -255,3 +255,9 @@
 - [x] Compilar e fazer deploy do contrato de governança (compilado com Solidity 0.8.26)
 - [x] Atualizar GitHub com todas as mudanças
 - [x] Gerar novo backup ZIP final
+
+## Deploy Governança Sepolia (v17)
+- [x] Criar script de deploy para ArcGovernance e ArcTimelock
+- [x] Executar deploy na Sepolia
+- [x] Registrar endereços dos contratos deployados
+- [x] Atualizar frontend com endereços dos contratos

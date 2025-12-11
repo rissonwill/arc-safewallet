@@ -24,5 +24,20 @@
       "stakingToken": "0x0656B33CFfB2c6c46c06664E86DCD268e2d42DcC",
       "rewardToken": "0x0656B33CFfB2c6c46c06664E86DCD268e2d42DcC"
     }
+  },
+  "ArcTimelock": {
+    "address": "0x3A0671E9E966213D3d73ed1841E33879B37146fe",
+    "minDelay": 86400,
+    "deployedAt": "2025-12-11T04:31:00.481Z"
+  },
+  "ArcGovernance": {
+    "address": "0x693405999755d7Fea40D635ddE861AAc462EC1f8",
+    "tokenAddress": "0x0656B33CFfB2c6c46c06664E86DCD268e2d42DcC",
+    "timelockAddress": "0x3A0671E9E966213D3d73ed1841E33879B37146fe",
+    "votingDelay": "1 day (7200 blocks)",
+    "votingPeriod": "1 week (50400 blocks)",
+    "proposalThreshold": "1000 ARC",
+    "quorum": "4%",
+    "deployedAt": "2025-12-11T04:31:00.481Z"
   }
 }
