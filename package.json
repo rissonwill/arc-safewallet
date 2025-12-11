@@ -47,6 +47,7 @@
     "@trpc/react-query": "^11.6.0",
     "@trpc/server": "^11.6.0",
     "@walletconnect/ethereum-provider": "^2.23.0",
+    "@walletconnect/modal": "^2.7.0",
     "@web3modal/ethers": "^5.1.11",
     "axios": "^1.12.0",
     "class-variance-authority": "^0.7.1",

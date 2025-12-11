@@ -30,6 +30,7 @@ import Security from "./pages/Security";
 import Roadmap from "./pages/Roadmap";
 import Blog from "./pages/Blog";
 import Playground from "./pages/Playground";
+import TransactionHistory from "./pages/TransactionHistory";
 
 function Router() {
   return (
@@ -50,6 +51,7 @@ function Router() {
       <Route path="/contracts" component={Contracts} />
       <Route path="/templates" component={Templates} />
       <Route path="/transactions" component={Transactions} />
+      <Route path="/transaction-history" component={TransactionHistory} />
       <Route path="/gas" component={GasTracker} />
       <Route path="/wallets" component={Wallets} />
       <Route path="/networks" component={Networks} />

@@ -434,9 +434,29 @@
 ### Preparação para GitHub
 - [x] Remover indícios de IA do código
 - [x] Limpar comentários e metadados
-- [ ] Preparar backup completo para download
+- [x] Preparar backup completo para download (32MB ZIP)
 
 ## Correção Wallet Modal v35
 - [x] Atualizar logos das wallets para padrão oficial
 - [x] Implementar conexão real com MetaMask (abrir chamado na wallet)
 - [x] Funcionar tanto no celular quanto no PC (deep links)
+
+## Próximos Passos v36
+
+### WalletConnect v2
+- [x] Instalar dependências @walletconnect/modal e @walletconnect/ethereum-provider
+- [x] Configurar WalletConnect com Project ID
+- [x] Implementar conexão via QR Code para wallets mobile
+- [x] Testar conexão com Trust Wallet e Rainbow
+
+### Histórico de Transações
+- [x] Criar tabela de transações no banco de dados (já existia)
+- [x] Criar endpoint tRPC para listar transações do usuário (history, stats)
+- [x] Criar página TransactionHistory com filtros
+- [x] Implementar paginação e busca
+
+### Notificações Push
+- [x] Configurar sistema de notificações do template
+- [x] Criar notificações para transações confirmadas
+- [x] Criar alertas de gas baixo na Arc Network
+- [ ] Implementar preferências de notificação do usuário

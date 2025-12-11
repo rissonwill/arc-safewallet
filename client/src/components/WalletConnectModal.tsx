@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, QrCode } from "lucide-react";
 
 interface WalletOption {
   id: string;
@@ -11,7 +11,6 @@ interface WalletOption {
   deepLink?: string;
 }
 
-// Logos oficiais das wallets em SVG/base64
 const WALLET_LOGOS = {
   metamask: "https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg",
   walletconnect: "https://avatars.githubusercontent.com/u/37784886?s=200&v=4",
@@ -33,7 +32,7 @@ const walletOptions: WalletOption[] = [
     id: "walletconnect",
     name: "WalletConnect",
     logo: WALLET_LOGOS.walletconnect,
-    description: "Connect with mobile wallets",
+    description: "Scan QR code with mobile wallet",
   },
   {
     id: "coinbase",
@@ -69,9 +68,14 @@ interface WalletConnectModalProps {
   onConnect: (address: string, walletType: string) => void;
 }
 
+// WalletConnect Project ID - pode ser obtido em https://cloud.walletconnect.com
+const WALLETCONNECT_PROJECT_ID = "3a8170812b534d0ff9d794f19a901d64";
+
 export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConnectModalProps) {
   const [connecting, setConnecting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [wcProvider, setWcProvider] = useState<any>(null);
+  const [showQRCode, setShowQRCode] = useState(false);
 
   const isMobile = () => {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -93,9 +97,10 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
     blockExplorerUrls: ['https://testnet.arcscan.app']
   };
 
-  const addArcNetwork = async () => {
+  const addArcNetwork = async (provider?: any) => {
+    const eth = provider || (window as any).ethereum;
     try {
-      await (window as any).ethereum.request({
+      await eth.request({
         method: 'wallet_addEthereumChain',
         params: [ARC_TESTNET]
       });
@@ -108,44 +113,100 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
     }
   };
 
-  const switchToArc = async () => {
+  const switchToArc = async (provider?: any) => {
+    const eth = provider || (window as any).ethereum;
     try {
-      await (window as any).ethereum.request({
+      await eth.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: ARC_TESTNET.chainId }]
       });
       return true;
     } catch (err: any) {
       if (err.code === 4902) {
-        await addArcNetwork();
-        return switchToArc();
+        await addArcNetwork(provider);
+        return switchToArc(provider);
       }
       return false;
     }
   };
 
+  // Inicializar WalletConnect
+  const initWalletConnect = async () => {
+    try {
+      const { EthereumProvider } = await import('@walletconnect/ethereum-provider');
+      
+      const provider = await EthereumProvider.init({
+        projectId: WALLETCONNECT_PROJECT_ID,
+        chains: [1], // Ethereum Mainnet
+        optionalChains: [5042002, 11155111, 137, 56, 42161], // Arc Testnet, Sepolia, Polygon, BSC, Arbitrum
+        showQrModal: true,
+        metadata: {
+          name: 'Arc SafeWallet',
+          description: 'Smart Contracts with Security',
+          url: window.location.origin,
+          icons: [`${window.location.origin}/logo.png`]
+        }
+      });
+
+      setWcProvider(provider);
+      return provider;
+    } catch (err) {
+      console.error('Erro ao inicializar WalletConnect:', err);
+      throw new Error('Falha ao inicializar WalletConnect');
+    }
+  };
+
+  const connectWalletConnect = async () => {
+    try {
+      setShowQRCode(true);
+      
+      let provider = wcProvider;
+      if (!provider) {
+        provider = await initWalletConnect();
+      }
+
+      // Conectar - isso abre o modal QR Code
+      await provider.connect();
+      
+      const accounts = provider.accounts;
+      if (accounts && accounts.length > 0) {
+        // Tentar adicionar rede Arc
+        try {
+          await addArcNetwork(provider);
+        } catch (e) {
+          console.log('Não foi possível adicionar rede Arc via WalletConnect');
+        }
+        
+        onConnect(accounts[0], "walletconnect");
+        onOpenChange(false);
+      }
+    } catch (err: any) {
+      if (err.message?.includes('User rejected')) {
+        throw new Error('Conexão rejeitada pelo usuário');
+      }
+      throw new Error(err.message || 'Falha ao conectar via WalletConnect');
+    } finally {
+      setShowQRCode(false);
+    }
+  };
+
   const connectMetaMask = async () => {
-    // Se estiver no mobile e MetaMask não detectado, abrir deep link
     if (isMobile() && !checkMetaMask()) {
-      const currentUrl = encodeURIComponent(window.location.href);
       window.location.href = `https://metamask.app.link/dapp/${window.location.host}${window.location.pathname}`;
       return;
     }
 
-    // Se MetaMask não instalado no desktop, redirecionar para download
     if (!checkMetaMask()) {
       window.open("https://metamask.io/download/", "_blank");
       throw new Error("MetaMask não detectado. Por favor, instale a extensão.");
     }
 
     try {
-      // Solicitar conexão - isso abre o popup da MetaMask
       const accounts = await (window as any).ethereum.request({
         method: "eth_requestAccounts",
       });
       
       if (accounts && accounts.length > 0) {
-        // Verificar e adicionar rede Arc
         const currentChainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
         
         if (currentChainId.toLowerCase() !== ARC_TESTNET.chainId.toLowerCase()) {
@@ -176,7 +237,6 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
       return;
     }
     
-    // No desktop, verificar se Trust Wallet está instalado
     if (typeof window !== "undefined" && (window as any).trustwallet) {
       try {
         const accounts = await (window as any).trustwallet.request({
@@ -190,8 +250,8 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
         throw new Error(err.message || "Falha ao conectar Trust Wallet");
       }
     } else {
-      window.open("https://trustwallet.com/download", "_blank");
-      throw new Error("Trust Wallet não detectado. Por favor, instale a extensão.");
+      // Usar WalletConnect como fallback
+      await connectWalletConnect();
     }
   };
 
@@ -220,6 +280,36 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
     }
   };
 
+  const connectRainbow = async () => {
+    if (isMobile()) {
+      // Rainbow deep link
+      const currentUrl = encodeURIComponent(window.location.href);
+      window.location.href = `https://rnbwapp.com/wc?uri=${currentUrl}`;
+      return;
+    }
+    // No desktop, usar WalletConnect
+    await connectWalletConnect();
+  };
+
+  const connectPhantom = async () => {
+    if (typeof window !== "undefined" && (window as any).phantom?.ethereum) {
+      try {
+        const accounts = await (window as any).phantom.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        if (accounts && accounts.length > 0) {
+          onConnect(accounts[0], "phantom");
+          onOpenChange(false);
+        }
+      } catch (err: any) {
+        throw new Error(err.message || "Falha ao conectar Phantom");
+      }
+    } else {
+      window.open("https://phantom.app/download", "_blank");
+      throw new Error("Phantom não detectado. Por favor, instale a extensão.");
+    }
+  };
+
   const handleConnect = async (walletId: string) => {
     setConnecting(walletId);
     setError(null);
@@ -229,16 +319,20 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
         case "metamask":
           await connectMetaMask();
           break;
+        case "walletconnect":
+          await connectWalletConnect();
+          break;
         case "trust":
           await connectTrustWallet();
           break;
         case "coinbase":
           await connectCoinbase();
           break;
-        case "walletconnect":
         case "rainbow":
+          await connectRainbow();
+          break;
         case "phantom":
-          setError("WalletConnect integration coming soon. Please use MetaMask for now.");
+          await connectPhantom();
           break;
         default:
           throw new Error("Wallet desconhecida");
@@ -249,6 +343,15 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
       setConnecting(null);
     }
   };
+
+  // Cleanup WalletConnect on unmount
+  useEffect(() => {
+    return () => {
+      if (wcProvider) {
+        wcProvider.disconnect();
+      }
+    };
+  }, [wcProvider]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -275,7 +378,6 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
                   alt={wallet.name}
                   className="w-7 h-7 object-contain"
                   onError={(e) => {
-                    // Fallback para emoji se imagem falhar
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
                     target.parentElement!.innerHTML = wallet.id === 'metamask' ? '🦊' : 
@@ -294,6 +396,9 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
               </div>
               {connecting === wallet.id && (
                 <Loader2 className="h-4 w-4 animate-spin text-[var(--color-neon-cyan)]" />
+              )}
+              {wallet.id === "walletconnect" && (
+                <QrCode className="h-4 w-4 text-muted-foreground" />
               )}
               {wallet.id === "metamask" && checkMetaMask() && (
                 <span className="text-xs text-[var(--color-neon-green)] bg-[var(--color-neon-green)]/10 px-2 py-0.5 rounded">

@@ -1,4 +1,4 @@
-import { eq, and, desc, sql } from "drizzle-orm";
+import { eq, and, desc, sql, or, like, gte, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, users, 
@@ -290,6 +290,132 @@ export async function getPendingTransactions(): Promise<Transaction[]> {
   if (!db) return [];
   
   return db.select().from(transactions).where(eq(transactions.status, "pending"));
+}
+
+// Histórico de transações com filtros e paginação
+export async function getTransactionHistory(
+  userId: number,
+  options: {
+    page: number;
+    limit: number;
+    chainId?: number;
+    status?: "pending" | "confirmed" | "failed";
+    txType?: "deploy" | "call" | "transfer" | "approve" | "other";
+    search?: string;
+    startDate?: Date;
+    endDate?: Date;
+  }
+): Promise<{ transactions: Transaction[]; total: number; page: number; totalPages: number }> {
+  const db = await getDb();
+  if (!db) return { transactions: [], total: 0, page: 1, totalPages: 0 };
+
+  const conditions = [eq(transactions.userId, userId)];
+  
+  if (options.chainId) {
+    conditions.push(eq(transactions.chainId, options.chainId));
+  }
+  if (options.status) {
+    conditions.push(eq(transactions.status, options.status));
+  }
+  if (options.txType) {
+    conditions.push(eq(transactions.txType, options.txType));
+  }
+  if (options.search) {
+    conditions.push(
+      or(
+        like(transactions.txHash, `%${options.search}%`),
+        like(transactions.fromAddress, `%${options.search}%`),
+        like(transactions.toAddress, `%${options.search}%`)
+      )!
+    );
+  }
+  if (options.startDate) {
+    conditions.push(gte(transactions.createdAt, options.startDate));
+  }
+  if (options.endDate) {
+    conditions.push(lte(transactions.createdAt, options.endDate));
+  }
+
+  const whereClause = and(...conditions);
+  
+  // Count total
+  const [countResult] = await db.select({ count: sql<number>`count(*)` })
+    .from(transactions)
+    .where(whereClause);
+  const total = countResult?.count || 0;
+  
+  // Get paginated results
+  const offset = (options.page - 1) * options.limit;
+  const results = await db.select().from(transactions)
+    .where(whereClause)
+    .orderBy(desc(transactions.createdAt))
+    .limit(options.limit)
+    .offset(offset);
+
+  return {
+    transactions: results,
+    total,
+    page: options.page,
+    totalPages: Math.ceil(total / options.limit),
+  };
+}
+
+// Estatísticas de transações do usuário
+export async function getTransactionStats(userId: number): Promise<{
+  total: number;
+  pending: number;
+  confirmed: number;
+  failed: number;
+  byChain: { chainId: number; count: number }[];
+  byType: { txType: string; count: number }[];
+}> {
+  const db = await getDb();
+  if (!db) return { total: 0, pending: 0, confirmed: 0, failed: 0, byChain: [], byType: [] };
+
+  // Total count
+  const [totalResult] = await db.select({ count: sql<number>`count(*)` })
+    .from(transactions)
+    .where(eq(transactions.userId, userId));
+  
+  // By status
+  const [pendingResult] = await db.select({ count: sql<number>`count(*)` })
+    .from(transactions)
+    .where(and(eq(transactions.userId, userId), eq(transactions.status, "pending")));
+  
+  const [confirmedResult] = await db.select({ count: sql<number>`count(*)` })
+    .from(transactions)
+    .where(and(eq(transactions.userId, userId), eq(transactions.status, "confirmed")));
+  
+  const [failedResult] = await db.select({ count: sql<number>`count(*)` })
+    .from(transactions)
+    .where(and(eq(transactions.userId, userId), eq(transactions.status, "failed")));
+
+  // By chain
+  const byChainResults = await db.select({
+    chainId: transactions.chainId,
+    count: sql<number>`count(*)`,
+  })
+    .from(transactions)
+    .where(eq(transactions.userId, userId))
+    .groupBy(transactions.chainId);
+
+  // By type
+  const byTypeResults = await db.select({
+    txType: transactions.txType,
+    count: sql<number>`count(*)`,
+  })
+    .from(transactions)
+    .where(eq(transactions.userId, userId))
+    .groupBy(transactions.txType);
+
+  return {
+    total: totalResult?.count || 0,
+    pending: pendingResult?.count || 0,
+    confirmed: confirmedResult?.count || 0,
+    failed: failedResult?.count || 0,
+    byChain: byChainResults,
+    byType: byTypeResults,
+  };
 }
 
 // ==================== CONTRACT TEMPLATE QUERIES ====================

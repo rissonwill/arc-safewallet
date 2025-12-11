@@ -463,6 +463,36 @@ Format the output in Markdown.`
         return db.getTransactionsByUserId(ctx.user.id, input?.limit);
       }),
 
+    // Histórico com filtros avançados e paginação
+    history: protectedProcedure
+      .input(z.object({
+        page: z.number().default(1),
+        limit: z.number().default(20),
+        chainId: z.number().optional(),
+        status: z.enum(["pending", "confirmed", "failed"]).optional(),
+        txType: z.enum(["deploy", "call", "transfer", "approve", "other"]).optional(),
+        search: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }))
+      .query(async ({ ctx, input }) => {
+        return db.getTransactionHistory(ctx.user.id, {
+          page: input.page,
+          limit: input.limit,
+          chainId: input.chainId,
+          status: input.status,
+          txType: input.txType,
+          search: input.search,
+          startDate: input.startDate ? new Date(input.startDate) : undefined,
+          endDate: input.endDate ? new Date(input.endDate) : undefined,
+        });
+      }),
+
+    // Estatísticas de transações do usuário
+    stats: protectedProcedure.query(async ({ ctx }) => {
+      return db.getTransactionStats(ctx.user.id);
+    }),
+
     get: protectedProcedure
       .input(z.object({ txHash: z.string() }))
       .query(async ({ ctx, input }) => {
