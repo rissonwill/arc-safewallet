@@ -28,6 +28,8 @@ import {
 } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useI18n } from '@/i18n';
+import { useGovernance, ProposalStateLabels } from '@/hooks/useGovernance';
+import { SEPOLIA_CONTRACTS, getEtherscanLink } from '@/lib/contractAddresses';
 
 // Tipos
 interface Proposal {
@@ -116,7 +118,10 @@ const STATS = {
 
 export default function Governance() {
   const { t } = useI18n();
+  const governance = useGovernance();
   const [proposals] = useState<Proposal[]>(MOCK_PROPOSALS);
+  const [votingPower, setVotingPower] = useState<string>('0');
+  const [isDelegating, setIsDelegating] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newProposal, setNewProposal] = useState({

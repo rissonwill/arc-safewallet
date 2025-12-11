@@ -190,7 +190,7 @@
 
 ## Próximos Passos Finais (v12)
 - [ ] Tentar deploy na Arc Testnet
-- [ ] Verificar contratos no Etherscan (Sepolia)
+- [x] Verificar contratos no Etherscan (ArcGovernance e ArcTimelock verificados) (Sepolia)
 - [x] Testar integração MetaMask via browser
 - [ ] Validar conexão de carteira
 - [ ] Testar troca de rede
@@ -261,3 +261,9 @@
 - [x] Executar deploy na Sepolia
 - [x] Registrar endereços dos contratos deployados
 - [x] Atualizar frontend com endereços dos contratos
+
+## Melhorias v18
+- [x] Integrar WalletConnect para suporte multi-carteira
+- [x] Conectar página de Governança aos contratos on-chain
+- [x] Verificar contratos no Etherscan (ArcGovernance e ArcTimelock verificados)
+- [x] Testar integração completa
