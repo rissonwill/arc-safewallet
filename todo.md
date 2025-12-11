@@ -336,3 +336,7 @@
 - [x] Auto-adicionar rede Arc ao conectar wallet
 - [x] Chamada de contrato para contabilidade de transferências
 - [x] Registrar cada transferência na rede
+
+## Bug Fix v29
+- [x] Corrigir header duplicado/sobreposto no mobile
+- [x] Ajustar layout responsivo do header para telas pequenas

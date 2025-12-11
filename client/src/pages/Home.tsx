@@ -153,7 +153,7 @@ export default function Home() {
       </div>
       
       {/* Navigation */}
-      <nav className="relative z-10 border-b border-[var(--color-neon-cyan)]/20 bg-background/80 backdrop-blur-xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-[var(--color-neon-cyan)]/20 bg-background/95 backdrop-blur-xl">
         <div className="container flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] flex items-center justify-center neon-glow-cyan">
@@ -247,7 +247,7 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative z-10 py-20 md:py-32 hero-cyber-bg">
+      <section className="relative z-10 pt-24 pb-20 md:pt-32 md:pb-32 hero-cyber-bg">
         {/* Hero Banner Background */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <img 
