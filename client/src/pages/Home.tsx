@@ -401,12 +401,7 @@ export default function Home() {
             <div>
               <h4 className="font-semibold mb-4 text-[var(--color-neon-magenta)]">{t('footer.contact')}</h4>
               <ul className="space-y-3 text-sm">
-                <li>
-                  <a href="mailto:smartstoreimports@gmail.com" className="flex items-center gap-2 text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
-                    <Mail className="h-4 w-4" />
-                    smartstoreimports@gmail.com
-                  </a>
-                </li>
+
                 <li>
                   <a href="https://github.com/rissonwill/arc-safewallet" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
                     <Github className="h-4 w-4" />
@@ -441,9 +436,7 @@ export default function Home() {
               © 2024 Arc SafeWallet. Powered by Arc Network.
             </p>
             <div className="flex items-center gap-4">
-              <a href="mailto:smartstoreimports@gmail.com" className="text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
-                <Mail className="h-5 w-5" />
-              </a>
+
               <a href="https://github.com/rissonwill/arc-safewallet" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
                 <Github className="h-5 w-5" />
               </a>

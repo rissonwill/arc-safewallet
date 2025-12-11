@@ -298,3 +298,20 @@
 - [x] Suporte MetaMask, WalletConnect, Coinbase, Trust Wallet
 - [x] Otimizar responsividade mobile
 - [x] Otimizar responsividade desktop
+
+## Profissionalização GitHub v24
+- [x] Reescrever README sem menções de IA
+- [x] Limpar histórico de commits
+- [x] Criar commits profissionais semânticos
+- [x] Atualizar DOCS.md profissional
+- [x] Adicionar CONTRIBUTING.md
+- [x] Adicionar LICENSE
+
+## CI/CD e Release v25
+- [x] Criar workflow GitHub Actions
+- [x] Revisar projeto completo
+- [x] Recriar ícones de função cyber punk (adicionados governance, security, gas)
+- [x] Criar release v1.0.0
+- [x] Adicionar CHANGELOG.md
+- [x] Adicionar badges no README
+- [x] Remover email do footer
