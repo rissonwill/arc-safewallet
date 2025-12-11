@@ -31,6 +31,7 @@ import { getLoginUrl } from "@/const";
 import { useEffect, useState, useRef } from "react";
 import { useI18n, LanguageSelector } from "@/i18n";
 import { WalletConnectModal } from "@/components/WalletConnectModal";
+import { VideoModal } from "@/components/VideoModal";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -43,6 +44,7 @@ export default function Home() {
   const [animatedStats, setAnimatedStats] = useState<{[key: string]: number}>({});
   const [heroVisible, setHeroVisible] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
 
   // Scroll to top button visibility
@@ -348,7 +350,7 @@ export default function Home() {
               <Button 
                 size="lg" 
                 variant="outline"
-                onClick={() => setLocation("/docs")}
+                onClick={() => setVideoModalOpen(true)}
                 className="border-[var(--color-neon-cyan)]/50 text-[var(--color-neon-cyan)] hover:bg-[var(--color-neon-cyan)]/10"
               >
                 <Terminal className="h-5 w-5 mr-2" />
@@ -590,6 +592,12 @@ export default function Home() {
         open={walletModalOpen}
         onOpenChange={setWalletModalOpen}
         onConnect={handleWalletConnect}
+      />
+
+      {/* Video Demo Modal */}
+      <VideoModal
+        open={videoModalOpen}
+        onOpenChange={setVideoModalOpen}
       />
 
       {/* Scroll to Top Button */}

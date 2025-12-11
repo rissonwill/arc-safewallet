@@ -423,3 +423,20 @@
 
 ### Performance
 - [x] Implementar lazy loading nas imagens (nativo do browser)
+
+## Próximos Passos v34
+
+### Funcionalidades
+- [ ] Implementar modal de vídeo demo
+- [ ] Criar tour guiado para novos usuários
+- [ ] Página de status das redes em tempo real
+
+### Preparação para GitHub
+- [x] Remover indícios de IA do código
+- [x] Limpar comentários e metadados
+- [ ] Preparar backup completo para download
+
+## Correção Wallet Modal v35
+- [x] Atualizar logos das wallets para padrão oficial
+- [x] Implementar conexão real com MetaMask (abrir chamado na wallet)
+- [x] Funcionar tanto no celular quanto no PC (deep links)

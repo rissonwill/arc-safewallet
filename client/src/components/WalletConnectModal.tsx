@@ -6,46 +6,59 @@ import { Loader2, AlertCircle } from "lucide-react";
 interface WalletOption {
   id: string;
   name: string;
-  icon: string;
+  logo: string;
   description: string;
-  installed?: boolean;
+  deepLink?: string;
 }
+
+// Logos oficiais das wallets em SVG/base64
+const WALLET_LOGOS = {
+  metamask: "https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg",
+  walletconnect: "https://avatars.githubusercontent.com/u/37784886?s=200&v=4",
+  coinbase: "https://avatars.githubusercontent.com/u/18060234?s=200&v=4",
+  trust: "https://trustwallet.com/assets/images/media/assets/TWT.svg",
+  rainbow: "https://avatars.githubusercontent.com/u/48327834?s=200&v=4",
+  phantom: "https://avatars.githubusercontent.com/u/78782331?s=200&v=4",
+};
 
 const walletOptions: WalletOption[] = [
   {
     id: "metamask",
     name: "MetaMask",
-    icon: "🦊",
+    logo: WALLET_LOGOS.metamask,
     description: "Popular browser extension wallet",
+    deepLink: "https://metamask.app.link/dapp/",
   },
   {
     id: "walletconnect",
     name: "WalletConnect",
-    icon: "🔗",
+    logo: WALLET_LOGOS.walletconnect,
     description: "Connect with mobile wallets",
   },
   {
     id: "coinbase",
     name: "Coinbase Wallet",
-    icon: "🔵",
+    logo: WALLET_LOGOS.coinbase,
     description: "Coinbase's self-custody wallet",
+    deepLink: "https://go.cb-w.com/dapp?cb_url=",
   },
   {
     id: "trust",
     name: "Trust Wallet",
-    icon: "🛡️",
+    logo: WALLET_LOGOS.trust,
     description: "Multi-chain mobile wallet",
+    deepLink: "https://link.trustwallet.com/open_url?coin_id=60&url=",
   },
   {
     id: "rainbow",
     name: "Rainbow",
-    icon: "🌈",
+    logo: WALLET_LOGOS.rainbow,
     description: "Fun & easy Ethereum wallet",
   },
   {
     id: "phantom",
     name: "Phantom",
-    icon: "👻",
+    logo: WALLET_LOGOS.phantom,
     description: "Multi-chain crypto wallet",
   },
 ];
@@ -59,15 +72,17 @@ interface WalletConnectModalProps {
 export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConnectModalProps) {
   const [connecting, setConnecting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  
+
+  const isMobile = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  };
 
   const checkMetaMask = () => {
     return typeof window !== "undefined" && typeof (window as any).ethereum !== "undefined";
   };
 
-  // Configuração da rede Arc Testnet
   const ARC_TESTNET = {
-    chainId: '0x4CEF52', // 5042002
+    chainId: '0x4CEF52',
     chainName: 'Arc Testnet',
     nativeCurrency: {
       name: 'USDC',
@@ -78,24 +93,21 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
     blockExplorerUrls: ['https://testnet.arcscan.app']
   };
 
-  // Função para adicionar rede Arc automaticamente
   const addArcNetwork = async () => {
     try {
       await (window as any).ethereum.request({
         method: 'wallet_addEthereumChain',
         params: [ARC_TESTNET]
       });
-      console.log('✅ Rede Arc Testnet adicionada!');
       return true;
     } catch (err: any) {
-      if (err.code !== 4001) { // 4001 = user rejected
-        console.log('ℹ️ Rede Arc já pode estar adicionada');
+      if (err.code !== 4001) {
+        console.log('Rede Arc pode estar adicionada');
       }
       return false;
     }
   };
 
-  // Função para trocar para rede Arc
   const switchToArc = async () => {
     try {
       await (window as any).ethereum.request({
@@ -105,7 +117,6 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
       return true;
     } catch (err: any) {
       if (err.code === 4902) {
-        // Rede não existe, adicionar primeiro
         await addArcNetwork();
         return switchToArc();
       }
@@ -114,26 +125,33 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
   };
 
   const connectMetaMask = async () => {
-    if (!checkMetaMask()) {
-      window.open("https://metamask.io/download/", "_blank");
+    // Se estiver no mobile e MetaMask não detectado, abrir deep link
+    if (isMobile() && !checkMetaMask()) {
+      const currentUrl = encodeURIComponent(window.location.href);
+      window.location.href = `https://metamask.app.link/dapp/${window.location.host}${window.location.pathname}`;
       return;
     }
 
+    // Se MetaMask não instalado no desktop, redirecionar para download
+    if (!checkMetaMask()) {
+      window.open("https://metamask.io/download/", "_blank");
+      throw new Error("MetaMask não detectado. Por favor, instale a extensão.");
+    }
+
     try {
+      // Solicitar conexão - isso abre o popup da MetaMask
       const accounts = await (window as any).ethereum.request({
         method: "eth_requestAccounts",
       });
       
       if (accounts && accounts.length > 0) {
-        // AUTO-ADICIONAR REDE ARC
-        console.log('🔄 Verificando rede Arc Testnet...');
+        // Verificar e adicionar rede Arc
         const currentChainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
         
-        // Se não estiver na Arc, adicionar e perguntar se quer trocar
         if (currentChainId.toLowerCase() !== ARC_TESTNET.chainId.toLowerCase()) {
           await addArcNetwork();
           const shouldSwitch = window.confirm(
-            'Rede Arc Testnet foi adicionada à sua carteira!\n\nDeseja trocar para a rede Arc Testnet agora?'
+            'Rede Arc Testnet foi adicionada!\n\nDeseja trocar para a rede Arc Testnet agora?'
           );
           if (shouldSwitch) {
             await switchToArc();
@@ -141,24 +159,49 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
         }
         
         onConnect(accounts[0], "metamask");
-        alert(`Conectado: ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`);
         onOpenChange(false);
       }
     } catch (err: any) {
-      throw new Error(err.message || "Failed to connect MetaMask");
+      if (err.code === 4001) {
+        throw new Error("Conexão rejeitada pelo usuário");
+      }
+      throw new Error(err.message || "Falha ao conectar MetaMask");
     }
   };
 
-  const connectWalletConnect = async () => {
-    // WalletConnect v2 integration
+  const connectTrustWallet = async () => {
+    if (isMobile()) {
+      const currentUrl = encodeURIComponent(window.location.href);
+      window.location.href = `https://link.trustwallet.com/open_url?coin_id=60&url=${currentUrl}`;
+      return;
+    }
     
-    
-    // For now, show coming soon - full WalletConnect requires project ID
-    throw new Error("WalletConnect integration coming soon. Please use MetaMask for now.");
+    // No desktop, verificar se Trust Wallet está instalado
+    if (typeof window !== "undefined" && (window as any).trustwallet) {
+      try {
+        const accounts = await (window as any).trustwallet.request({
+          method: "eth_requestAccounts",
+        });
+        if (accounts && accounts.length > 0) {
+          onConnect(accounts[0], "trust");
+          onOpenChange(false);
+        }
+      } catch (err: any) {
+        throw new Error(err.message || "Falha ao conectar Trust Wallet");
+      }
+    } else {
+      window.open("https://trustwallet.com/download", "_blank");
+      throw new Error("Trust Wallet não detectado. Por favor, instale a extensão.");
+    }
   };
 
   const connectCoinbase = async () => {
-    // Check if Coinbase Wallet is installed
+    if (isMobile()) {
+      const currentUrl = encodeURIComponent(window.location.href);
+      window.location.href = `https://go.cb-w.com/dapp?cb_url=${currentUrl}`;
+      return;
+    }
+
     if (typeof window !== "undefined" && (window as any).coinbaseWalletExtension) {
       try {
         const accounts = await (window as any).coinbaseWalletExtension.request({
@@ -166,15 +209,14 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
         });
         if (accounts && accounts.length > 0) {
           onConnect(accounts[0], "coinbase");
-          
           onOpenChange(false);
         }
       } catch (err: any) {
-        throw new Error(err.message || "Failed to connect Coinbase Wallet");
+        throw new Error(err.message || "Falha ao conectar Coinbase Wallet");
       }
     } else {
       window.open("https://www.coinbase.com/wallet", "_blank");
-      throw new Error("Coinbase Wallet not detected. Please install the extension.");
+      throw new Error("Coinbase Wallet não detectado. Por favor, instale a extensão.");
     }
   };
 
@@ -187,23 +229,22 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
         case "metamask":
           await connectMetaMask();
           break;
-        case "walletconnect":
-          await connectWalletConnect();
+        case "trust":
+          await connectTrustWallet();
           break;
         case "coinbase":
           await connectCoinbase();
           break;
-        case "trust":
+        case "walletconnect":
         case "rainbow":
         case "phantom":
-          alert(`${walletOptions.find(w => w.id === walletId)?.name} integration coming soon!`);
+          setError("WalletConnect integration coming soon. Please use MetaMask for now.");
           break;
         default:
-          throw new Error("Unknown wallet type");
+          throw new Error("Wallet desconhecida");
       }
     } catch (err: any) {
       setError(err.message);
-      
     } finally {
       setConnecting(null);
     }
@@ -228,9 +269,23 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
               onClick={() => handleConnect(wallet.id)}
               disabled={connecting !== null}
             >
-              <span className="text-2xl group-hover:scale-110 transition-transform">
-                {wallet.icon}
-              </span>
+              <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform">
+                <img 
+                  src={wallet.logo} 
+                  alt={wallet.name}
+                  className="w-7 h-7 object-contain"
+                  onError={(e) => {
+                    // Fallback para emoji se imagem falhar
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    target.parentElement!.innerHTML = wallet.id === 'metamask' ? '🦊' : 
+                      wallet.id === 'walletconnect' ? '🔗' :
+                      wallet.id === 'coinbase' ? '🔵' :
+                      wallet.id === 'trust' ? '🛡️' :
+                      wallet.id === 'rainbow' ? '🌈' : '👻';
+                  }}
+                />
+              </div>
               <div className="flex flex-col items-start text-left flex-1">
                 <span className="font-medium">{wallet.name}</span>
                 <span className="text-xs text-muted-foreground">
@@ -241,7 +296,7 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
                 <Loader2 className="h-4 w-4 animate-spin text-[var(--color-neon-cyan)]" />
               )}
               {wallet.id === "metamask" && checkMetaMask() && (
-                <span className="text-xs text-[var(--color-neon-cyan)] bg-[var(--color-neon-cyan)]/10 px-2 py-0.5 rounded">
+                <span className="text-xs text-[var(--color-neon-green)] bg-[var(--color-neon-green)]/10 px-2 py-0.5 rounded">
                   Detected
                 </span>
               )}
@@ -251,8 +306,8 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
 
         {error && (
           <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-lg">
-            <AlertCircle className="h-4 w-4" />
-            {error}
+            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+            <span>{error}</span>
           </div>
         )}
 

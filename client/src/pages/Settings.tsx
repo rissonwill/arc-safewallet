@@ -86,7 +86,7 @@ export default function Settings() {
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              As informações do perfil são gerenciadas através do Manus OAuth.
+              As informações do perfil são gerenciadas através do sistema de autenticação.
             </p>
           </CardContent>
         </Card>
@@ -287,7 +287,7 @@ export default function Settings() {
                 <div>
                   <p className="font-medium text-sm">Autenticação Segura</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Sua conta está protegida através do Manus OAuth. Suas chaves privadas de carteira 
+                    Sua conta está protegida através do sistema OAuth. Suas chaves privadas de carteira 
                     nunca são armazenadas em nossos servidores - apenas os endereços públicos são salvos para referência.
                   </p>
                 </div>

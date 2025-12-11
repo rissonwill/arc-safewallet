@@ -1,13 +1,11 @@
 // ============================================
 // ARC SAFEWALLET - WALLET API SERVICE
-// CONFIGURAÇÃO CUSTOM PARA MANUS
-// Arc Testnet + Sepolia (Redes não nativas)
+// Arc Testnet + Sepolia Networks
 // ============================================
 
 import { ethers, formatUnits as ethersFormatUnits, parseUnits as ethersParseUnits, BigNumberish } from 'ethers';
 
-// IMPORTANTE: Na Manus, selecione "Ethereum Mainnet" como rede base
-// Este código vai sobrescrever e adicionar Arc + Sepolia
+// Selecione "Ethereum Mainnet" como rede base para compatibilidade
 
 // Tipos para TypeScript - usando any para compatibilidade
 interface EthereumProvider {
@@ -21,7 +19,7 @@ interface EthereumProvider {
 declare global {
   interface Window {
     ethereum?: EthereumProvider;
-    ManusCustomNetworks?: typeof ManusCustomNetworks;
+    CustomNetworks?: typeof CustomNetworks;
     ethers?: any;
     Web3?: any;
   }
@@ -601,10 +599,10 @@ function getTransactionHistory(): TransactionRecord[] {
 }
 
 // ============================================
-// INTERFACE SIMPLIFICADA PARA MANUS
+// INTERFACE SIMPLIFICADA
 // ============================================
 
-export const ManusCustomNetworks = {
+export const CustomNetworks = {
   // Redes disponíveis
   networks: NETWORKS,
   
@@ -673,20 +671,20 @@ export const WalletAPI = {
 // Executar setup quando a página carregar
 if (typeof window !== 'undefined') {
   // Registrar interface global
-  window.ManusCustomNetworks = ManusCustomNetworks;
+  window.CustomNetworks = CustomNetworks;
   
   // Auto-setup quando DOM estiver pronto
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', async () => {
       await setupCustomNetworks();
       console.log('✅ Redes customizadas prontas!');
-      console.log('📖 Use: ManusCustomNetworks.switchToArc() ou ManusCustomNetworks.switchToSepolia()');
+      console.log('📖 Use: CustomNetworks.switchToArc() ou CustomNetworks.switchToSepolia()');
     });
   } else {
     // DOM já carregado
     setupCustomNetworks().then(() => {
       console.log('✅ Redes customizadas prontas!');
-      console.log('📖 Use: ManusCustomNetworks.switchToArc() ou ManusCustomNetworks.switchToSepolia()');
+      console.log('📖 Use: CustomNetworks.switchToArc() ou CustomNetworks.switchToSepolia()');
     });
   }
 }
