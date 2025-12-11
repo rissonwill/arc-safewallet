@@ -21,6 +21,7 @@ import Settings from "./pages/Settings";
 import Deploy from "./pages/Deploy";
 import Staking from "./pages/Staking";
 import NFTMarketplace from "./pages/NFTMarketplace";
+import Governance from "./pages/Governance";
 
 function Router() {
   return (
@@ -42,6 +43,7 @@ function Router() {
       <Route path="/deploy" component={Deploy} />
       <Route path="/staking" component={Staking} />
       <Route path="/nft-marketplace" component={NFTMarketplace} />
+      <Route path="/governance" component={Governance} />
       
       {/* Fallback */}
       <Route path="/404" component={NotFound} />

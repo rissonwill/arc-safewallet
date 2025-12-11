@@ -37,7 +37,8 @@ import {
   Settings,
   Rocket,
   Vault,
-  Image
+  Image,
+  Vote
 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
@@ -55,6 +56,7 @@ const getMenuItems = (t: (key: string) => string) => [
   { icon: Rocket, label: t('nav.deploy'), path: "/deploy" },
   { icon: Vault, label: t('nav.staking'), path: "/staking" },
   { icon: Image, label: t('nav.nftMarketplace'), path: "/nft-marketplace" },
+  { icon: Vote, label: t('nav.governance'), path: "/governance" },
   { icon: Send, label: t('nav.transactions'), path: "/transactions" },
   { icon: Fuel, label: t('nav.gasTracker'), path: "/gas" },
   { icon: Wallet, label: t('nav.wallets'), path: "/wallets" },
