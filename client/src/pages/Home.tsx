@@ -169,7 +169,7 @@ export default function Home() {
   ];
 
   const networks = [
-    { name: "Axiom Network Testnet", color: "#00FFFF", primary: true },
+    { name: "SmartVault Network Testnet", color: "#00FFFF", primary: true },
     { name: "Sepolia Testnet", color: "#627EEA", primary: true },
     { name: "Ethereum Mainnet", color: "#627EEA", primary: false },
     { name: "Polygon", color: "#8247E5", primary: false },
@@ -214,9 +214,9 @@ export default function Home() {
         <div className="container flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] flex items-center justify-center neon-glow-cyan">
-              <img src="/axiom-labs-logo.png" alt="Axiom Labs" className="h-6 w-6" />
+              <img src="/smartvault-logo.png" alt="SmartVault" className="h-6 w-6" />
             </div>
-            <span className="font-bold text-xl uppercase tracking-wider gradient-neon-text hidden sm:inline" style={{ fontFamily: 'var(--font-cyber)' }}>Axiom Labs</span>
+            <span className="font-bold text-xl uppercase tracking-wider gradient-neon-text hidden sm:inline" style={{ fontFamily: 'var(--font-cyber)' }}>SmartVault</span>
           </div>
           
           <div className="flex items-center gap-4">
@@ -494,9 +494,9 @@ export default function Home() {
             <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] flex items-center justify-center neon-glow-cyan">
-                  <img src="/axiom-labs-logo.png" alt="Axiom Labs" className="h-6 w-6" />
+                  <img src="/smartvault-logo.png" alt="SmartVault" className="h-6 w-6" />
                 </div>
-                <span className="font-bold text-xl uppercase tracking-wider gradient-neon-text hidden sm:inline" style={{ fontFamily: 'var(--font-cyber)' }}>Axiom Labs</span>
+                <span className="font-bold text-xl uppercase tracking-wider gradient-neon-text hidden sm:inline" style={{ fontFamily: 'var(--font-cyber)' }}>SmartVault</span>
               </div>
               <p className="text-sm text-muted-foreground mb-4 max-w-md">
                 {t('home.subtitle')}
@@ -522,7 +522,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a href="https://arcnetwork.io" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
-                    Axiom Network
+                    SmartVault Network
                   </a>
                 </li>
                 <li>
@@ -569,7 +569,7 @@ export default function Home() {
           {/* Bottom bar */}
           <div className="border-t border-[var(--color-neon-cyan)]/10 mt-8 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © 2024 Axiom Labs. Powered by Axiom Network.
+              © 2024 SmartVault. Powered by SmartVault Network.
             </p>
             <div className="flex items-center gap-4">
 

@@ -33,7 +33,7 @@ interface NetworkInfo {
 
 const initialNetworks: NetworkInfo[] = [
   {
-    name: "Axiom Network Testnet",
+    name: "SmartVault Network Testnet",
     chainId: 1516,
     color: "#00FFFF",
     rpcUrl: "https://rpc-testnet.arcnetwork.io",

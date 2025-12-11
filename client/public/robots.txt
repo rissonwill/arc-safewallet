@@ -1,11 +1,11 @@
 # robots.txt for Arc SafeWallet
-# https://axiomlabs.manus.space/
+# https://smartvault.manus.space/
 
 User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://axiomlabs.manus.space/sitemap.xml
+Sitemap: https://smartvault.manus.space/sitemap.xml
 
 # Crawl-delay for polite crawling
 Crawl-delay: 1

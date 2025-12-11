@@ -491,3 +491,29 @@
 - [x] Atualizar manifest.json e PWA
 - [x] Atualizar sitemap.xml
 - [x] Gerar novo logo profissional
+
+## Próximos Passos v39
+
+### Página de Preços
+- [x] Criar página /pricing com planos Free, Pro, Enterprise
+- [x] Design moderno com cards comparativos
+- [x] Botões de CTA para cada plano
+- [x] Destacar plano recomendado (Pro)
+
+### Analytics Avançado
+- [x] Implementar eventos de conversão (wallet connect, deploy)
+- [x] Rastrear cliques em CTAs principais
+- [x] Configurar funil de conversão
+
+### Dashboard Analytics
+- [ ] Criar gráficos de volume de transações
+- [ ] Criar gráfico de gas gasto por período
+- [ ] Implementar filtros de data
+
+## Rebranding v40 - SmartVault
+
+- [x] Gerar novo logo profissional para SmartVault
+- [x] Atualizar nome em index.html e meta tags
+- [x] Atualizar manifest.json e PWA
+- [x] Atualizar todas as páginas e componentes
+- [x] Atualizar sitemap.xml e robots.txt

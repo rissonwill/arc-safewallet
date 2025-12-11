@@ -1,5 +1,5 @@
 // ============================================
-// AXIOM LABS - WALLET API SERVICE
+// SMARTVAULT - WALLET API SERVICE
 // Arc Testnet + Sepolia Networks
 // ============================================
 

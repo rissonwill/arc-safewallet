@@ -94,9 +94,9 @@ export default function Security() {
         <div className="container flex items-center justify-between h-16">
           <Link href="/">
             <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-              <img src="/logo.png" alt="Axiom Labs" className="w-10 h-10" />
+              <img src="/logo.png" alt="SmartVault" className="w-10 h-10" />
               <span className="text-xl font-bold gradient-neon-text" style={{ fontFamily: 'var(--font-cyber)' }}>
-                AXIOM LABS
+                SMARTVAULT
               </span>
             </div>
           </Link>

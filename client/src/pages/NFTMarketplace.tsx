@@ -457,7 +457,7 @@ export default function NFTMarketplace() {
               NFT Marketplace
             </h1>
             <p className="text-muted-foreground mt-1">
-              Mint, compre e venda NFTs na Axiom Network
+              Mint, compre e venda NFTs na SmartVault Network
             </p>
           </div>
           

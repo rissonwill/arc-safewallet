@@ -80,7 +80,7 @@ const MOCK_PROPOSALS: Proposal[] = [
   {
     id: 3,
     title: 'Adicionar suporte à rede Avalanche',
-    description: 'Integrar a rede Avalanche à plataforma Axiom Labs, permitindo deploy e interação com contratos na AVAX.',
+    description: 'Integrar a rede Avalanche à plataforma SmartVault, permitindo deploy e interação com contratos na AVAX.',
     category: 'protocol',
     proposer: '0x9876...5432',
     status: 'queued',
@@ -211,7 +211,7 @@ export default function Governance() {
               Governança DAO
             </h1>
             <p className="text-muted-foreground mt-1">
-              Participe das decisões do protocolo Axiom Labs
+              Participe das decisões do protocolo SmartVault
             </p>
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>

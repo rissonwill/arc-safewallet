@@ -31,6 +31,7 @@ import Roadmap from "./pages/Roadmap";
 import Blog from "./pages/Blog";
 import Playground from "./pages/Playground";
 import TransactionHistory from "./pages/TransactionHistory";
+import Pricing from "./pages/Pricing";
 
 function Router() {
   return (
@@ -44,6 +45,7 @@ function Router() {
       <Route path="/playground" component={Playground} />
       <Route path="/faq" component={FAQ} />
       <Route path="/docs" component={Docs} />
+      <Route path="/pricing" component={Pricing} />
       
       {/* Protected - Dashboard */}
       <Route path="/dashboard" component={Dashboard} />

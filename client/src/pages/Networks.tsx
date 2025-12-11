@@ -14,12 +14,12 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Default networks - Axiom Network and Sepolia as primary
+// Default networks - SmartVault Network and Sepolia as primary
 const DEFAULT_NETWORKS = [
   // PRIMARY NETWORKS
   {
     chainId: 5042002, // 0x4CEF52
-    name: "Axiom Network Testnet",
+    name: "SmartVault Network Testnet",
     symbol: "USDC",
     decimals: 6,
     rpcUrl: "https://rpc.testnet.arc.network",
@@ -149,7 +149,7 @@ export default function Networks() {
         <div>
           <h1 className="headline-massive text-2xl md:text-3xl">Redes Blockchain</h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Redes EVM-compatíveis suportadas pela Axiom Labs
+            Redes EVM-compatíveis suportadas pela SmartVault
           </p>
         </div>
 
@@ -212,11 +212,11 @@ export default function Networks() {
           </Card>
         </div>
 
-        {/* Primary Networks - Axiom Network & Sepolia */}
+        {/* Primary Networks - SmartVault Network & Sepolia */}
         <div>
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Star className="h-5 w-5 text-primary" />
-            Redes Principais (Axiom Network & Sepolia)
+            Redes Principais (SmartVault Network & Sepolia)
           </h2>
           
           <div className="grid md:grid-cols-2 gap-4">
@@ -452,17 +452,17 @@ export default function Networks() {
           </CardContent>
         </Card>
 
-        {/* Axiom Network Info */}
+        {/* SmartVault Network Info */}
         <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-[var(--color-cyan)]/5">
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <div className="h-14 w-14 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
-                <img src="/logo.png" alt="Axiom Labs" className="h-10 w-10" />
+                <img src="/logo.png" alt="SmartVault" className="h-10 w-10" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">Axiom Network Testnet</h3>
+                <h3 className="font-semibold text-lg mb-2">SmartVault Network Testnet</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  A Axiom Network é uma blockchain de alta performance focada em escalabilidade e baixas taxas. 
+                  A SmartVault Network é uma blockchain de alta performance focada em escalabilidade e baixas taxas. 
                   Use a testnet para desenvolver e testar seus contratos inteligentes antes do deploy em produção.
                   Integração nativa com Circle USDC para taxas previsíveis.
                 </p>

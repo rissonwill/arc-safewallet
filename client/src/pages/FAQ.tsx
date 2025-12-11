@@ -87,12 +87,12 @@ export default function FAQ() {
     {
       category: "network",
       question: "Quais redes blockchain são suportadas?",
-      answer: "Suportamos Axiom Network Testnet, Ethereum Mainnet, Sepolia Testnet, Polygon, BSC, Arbitrum, Optimism, Base e Avalanche. Novas redes são adicionadas regularmente."
+      answer: "Suportamos SmartVault Network Testnet, Ethereum Mainnet, Sepolia Testnet, Polygon, BSC, Arbitrum, Optimism, Base e Avalanche. Novas redes são adicionadas regularmente."
     },
     {
       category: "network",
-      question: "O que é a Axiom Network?",
-      answer: "Axiom Network é uma blockchain Layer 2 focada em finalidade determinística sub-segundo e baixas taxas. Usa USDC como token de gas, facilitando a previsibilidade de custos para desenvolvedores."
+      question: "O que é a SmartVault Network?",
+      answer: "SmartVault Network é uma blockchain Layer 2 focada em finalidade determinística sub-segundo e baixas taxas. Usa USDC como token de gas, facilitando a previsibilidade de custos para desenvolvedores."
     },
     {
       category: "network",
@@ -101,8 +101,8 @@ export default function FAQ() {
     },
     {
       category: "network",
-      question: "Qual é o gas fee na Axiom Network?",
-      answer: "A Axiom Network usa um gas price mínimo de 160 Gwei com USDC como token de gas. Isso resulta em taxas previsíveis e estáveis, diferente de redes que usam tokens voláteis."
+      question: "Qual é o gas fee na SmartVault Network?",
+      answer: "A SmartVault Network usa um gas price mínimo de 160 Gwei com USDC como token de gas. Isso resulta em taxas previsíveis e estáveis, diferente de redes que usam tokens voláteis."
     },
   ] : [
     // Wallet
@@ -167,12 +167,12 @@ export default function FAQ() {
     {
       category: "network",
       question: "Which blockchain networks are supported?",
-      answer: "We support Axiom Network Testnet, Ethereum Mainnet, Sepolia Testnet, Polygon, BSC, Arbitrum, Optimism, Base, and Avalanche. New networks are added regularly."
+      answer: "We support SmartVault Network Testnet, Ethereum Mainnet, Sepolia Testnet, Polygon, BSC, Arbitrum, Optimism, Base, and Avalanche. New networks are added regularly."
     },
     {
       category: "network",
-      question: "What is Axiom Network?",
-      answer: "Axiom Network is a Layer 2 blockchain focused on sub-second deterministic finality and low fees. It uses USDC as the gas token, making cost predictability easier for developers."
+      question: "What is SmartVault Network?",
+      answer: "SmartVault Network is a Layer 2 blockchain focused on sub-second deterministic finality and low fees. It uses USDC as the gas token, making cost predictability easier for developers."
     },
     {
       category: "network",
@@ -181,8 +181,8 @@ export default function FAQ() {
     },
     {
       category: "network",
-      question: "What is the gas fee on Axiom Network?",
-      answer: "Axiom Network uses a minimum gas price of 160 Gwei with USDC as the gas token. This results in predictable and stable fees, unlike networks that use volatile tokens."
+      question: "What is the gas fee on SmartVault Network?",
+      answer: "SmartVault Network uses a minimum gas price of 160 Gwei with USDC as the gas token. This results in predictable and stable fees, unlike networks that use volatile tokens."
     },
   ];
 
@@ -197,9 +197,9 @@ export default function FAQ() {
         <div className="container flex items-center justify-between h-16">
           <Link href="/">
             <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-              <img src="/logo.png" alt="Axiom Labs" className="w-10 h-10" />
+              <img src="/logo.png" alt="SmartVault" className="w-10 h-10" />
               <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                AXIOM LABS
+                SMARTVAULT
               </span>
             </div>
           </Link>
@@ -220,8 +220,8 @@ export default function FAQ() {
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {language === "pt" 
-              ? "Encontre respostas para as dúvidas mais comuns sobre a plataforma Axiom Labs."
-              : "Find answers to the most common questions about the Axiom Labs platform."}
+              ? "Encontre respostas para as dúvidas mais comuns sobre a plataforma SmartVault."
+              : "Find answers to the most common questions about the SmartVault platform."}
           </p>
         </div>
       </section>

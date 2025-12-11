@@ -6,7 +6,7 @@ const projectId = 'arc-safewallet-demo';
 
 // Metadata do projeto
 const metadata = {
-  name: 'Axiom Labs',
+  name: 'SmartVault',
   description: 'Plataforma Web3 para gerenciamento de smart contracts e governança DAO',
   url: 'https://arc-safewallet.manus.space',
   icons: ['https://arc-safewallet.manus.space/logo.png']

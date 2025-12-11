@@ -39,8 +39,8 @@ const blogPosts = [
   {
     id: 3,
     slug: "deploy-multi-chain",
-    title: "Como Fazer Deploy em Múltiplas Chains com Axiom Labs",
-    excerpt: "Tutorial passo a passo para fazer deploy do seu contrato em Ethereum, Polygon, BSC e Axiom Network.",
+    title: "Como Fazer Deploy em Múltiplas Chains com SmartVault",
+    excerpt: "Tutorial passo a passo para fazer deploy do seu contrato em Ethereum, Polygon, BSC e SmartVault Network.",
     author: "Dev Team",
     date: "2024-12-05",
     readTime: "10 min",
@@ -63,8 +63,8 @@ const blogPosts = [
   {
     id: 5,
     slug: "arc-network-testnet",
-    title: "Axiom Network Testnet: Primeiros Passos",
-    excerpt: "Guia completo para começar a desenvolver na Axiom Network Testnet, incluindo configuração de wallet e faucet.",
+    title: "SmartVault Network Testnet: Primeiros Passos",
+    excerpt: "Guia completo para começar a desenvolver na SmartVault Network Testnet, incluindo configuração de wallet e faucet.",
     author: "Arc Team",
     date: "2024-11-28",
     readTime: "6 min",
@@ -102,9 +102,9 @@ export default function Blog() {
         <div className="container flex items-center justify-between h-16">
           <Link href="/">
             <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-              <img src="/logo.png" alt="Axiom Labs" className="w-10 h-10" />
+              <img src="/logo.png" alt="SmartVault" className="w-10 h-10" />
               <span className="text-xl font-bold gradient-neon-text" style={{ fontFamily: 'var(--font-cyber)' }}>
-                AXIOM LABS
+                SMARTVAULT
               </span>
             </div>
           </Link>
