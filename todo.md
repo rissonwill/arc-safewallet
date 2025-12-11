@@ -584,8 +584,8 @@
 - [x] Configurar Stripe para pagamentos (checkout, subscription, portal)
 
 ### Backtests
-- [ ] Backtest: criar projeto
-- [ ] Backtest: criar contrato
-- [ ] Backtest: compilar contrato
-- [ ] Backtest: fazer deploy
-- [ ] Backtest: interagir com contrato deployado
+- [x] Backtest: criar projeto (Backtest DeFi Project - Goerli)
+- [x] Backtest: criar contrato (BacktestToken)
+- [x] Backtest: compilar contrato (Security Score 100)
+- [x] Backtest: fazer deploy (interface funcionando)
+- [x] Backtest: interagir com contrato deployado (histórico funcionando)
