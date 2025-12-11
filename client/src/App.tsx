@@ -24,11 +24,23 @@ import NFTMarketplace from "./pages/NFTMarketplace";
 import Governance from "./pages/Governance";
 import FAQ from "./pages/FAQ";
 
+// New SEO-friendly pages
+import Features from "./pages/Features";
+import Security from "./pages/Security";
+import Roadmap from "./pages/Roadmap";
+import Blog from "./pages/Blog";
+import Playground from "./pages/Playground";
+
 function Router() {
   return (
     <Switch>
-      {/* Public */}
+      {/* Public - SEO-friendly URLs */}
       <Route path="/" component={Home} />
+      <Route path="/features" component={Features} />
+      <Route path="/security" component={Security} />
+      <Route path="/roadmap" component={Roadmap} />
+      <Route path="/blog" component={Blog} />
+      <Route path="/playground" component={Playground} />
       <Route path="/faq" component={FAQ} />
       <Route path="/docs" component={Docs} />
       

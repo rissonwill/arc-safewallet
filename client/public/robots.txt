@@ -1,0 +1,25 @@
+# robots.txt for Arc SafeWallet
+# https://arcsafewallet.manus.space/
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://arcsafewallet.manus.space/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
+
+# Disallow admin and API routes
+Disallow: /api/
+Disallow: /admin/
+
+# Allow important pages
+Allow: /
+Allow: /docs
+Allow: /faq
+Allow: /features
+Allow: /networks
+Allow: /security
+Allow: /blog
+Allow: /roadmap

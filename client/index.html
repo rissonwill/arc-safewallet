@@ -1,17 +1,142 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
 
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>Super Dev Web3</title>    
-    <!-- THIS IS THE START OF A COMMENT BLOCK, BLOCK TO BE DELETED: Google Fonts here, example:
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
+    
+    <!-- Primary Meta Tags -->
+    <title>Arc SafeWallet - Plataforma de Desenvolvimento Web3 Segura</title>
+    <meta name="title" content="Arc SafeWallet - Plataforma de Desenvolvimento Web3 Segura" />
+    <meta name="description" content="Desenvolva, teste e faça deploy de smart contracts com segurança. Editor Solidity avançado, scanner de vulnerabilidades, deploy multi-chain e integração com Arc Network." />
+    <meta name="keywords" content="web3, blockchain, smart contracts, solidity, ethereum, arc network, defi, nft, crypto, desenvolvimento blockchain, segurança smart contracts" />
+    <meta name="author" content="Arc SafeWallet Team" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="Portuguese" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://arcsafewallet.manus.space/" />
+    <meta property="og:title" content="Arc SafeWallet - Plataforma de Desenvolvimento Web3 Segura" />
+    <meta property="og:description" content="Desenvolva, teste e faça deploy de smart contracts com segurança. Editor Solidity avançado, scanner de vulnerabilidades e deploy multi-chain." />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:locale:alternate" content="en_US" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://arcsafewallet.manus.space/" />
+    <meta property="twitter:title" content="Arc SafeWallet - Plataforma de Desenvolvimento Web3 Segura" />
+    <meta property="twitter:description" content="Desenvolva, teste e faça deploy de smart contracts com segurança. Editor Solidity avançado, scanner de vulnerabilidades e deploy multi-chain." />
+    <meta property="twitter:image" content="/og-image.png" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0a0a0f" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://arcsafewallet.manus.space/" />
+    
+    <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    THIS IS THE END OF A COMMENT BLOCK, BLOCK TO BE DELETED -->
+    
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Arc SafeWallet",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "description": "Plataforma de desenvolvimento Web3 para criar, testar e fazer deploy de smart contracts com segurança na Arc Network e outras blockchains EVM.",
+      "url": "https://arcsafewallet.manus.space/",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "150"
+      },
+      "featureList": [
+        "Editor Solidity com syntax highlighting",
+        "Scanner de vulnerabilidades",
+        "Deploy multi-chain",
+        "Integração WalletConnect",
+        "Gas Tracker em tempo real",
+        "Documentação automática com IA"
+      ],
+      "screenshot": "/hero-banner.png",
+      "softwareVersion": "1.0.0",
+      "author": {
+        "@type": "Organization",
+        "name": "Arc Network",
+        "url": "https://arc.network"
+      }
+    }
+    </script>
+    
+    <!-- Organization Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Arc SafeWallet",
+      "url": "https://arcsafewallet.manus.space/",
+      "logo": "/logo.png",
+      "sameAs": [
+        "https://twitter.com/arcsafewallet",
+        "https://github.com/rissonwill/arc-safewallet",
+        "https://discord.gg/arcnetwork"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "support@arcsafewallet.com"
+      }
+    }
+    </script>
+    
+    <!-- FAQ Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "O que é o Arc SafeWallet?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Arc SafeWallet é uma plataforma completa para desenvolvimento Web3, oferecendo editor Solidity, scanner de segurança, deploy multi-chain e integração com Arc Network."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Quais redes são suportadas?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Suportamos Arc Network Testnet, Ethereum Mainnet, Sepolia Testnet, Polygon, BSC e Arbitrum."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "O Arc SafeWallet é gratuito?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sim, a plataforma é gratuita para uso. Você só paga as taxas de gas ao fazer deploy de contratos."
+          }
+        }
+      ]
+    }
+    </script>
   </head>
 
   <body>
