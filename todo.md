@@ -397,3 +397,9 @@
 - [x] A/B testing setup (pode ser configurado via Umami)
 - [x] Performance monitoring (Umami + browser DevTools)
 - [x] Error tracking (ErrorBoundary + console logging)
+
+## Animações Hero Section v32
+- [x] Animação fade-in no título e subtítulo
+- [x] Animação pulse/glow no badge "Powered by Arc Network"
+- [x] Animação de contagem nos números (6+, 10+, 15+)
+- [x] Efeito de transição suave nos elementos

@@ -1019,6 +1019,16 @@
   animation: spin 1s linear infinite;
 }
 
+/* Pulse glow animation for badge */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--color-neon-cyan), 0 0 10px var(--color-neon-cyan);
+  }
+  50% {
+    box-shadow: 0 0 15px var(--color-neon-cyan), 0 0 25px var(--color-neon-cyan), 0 0 35px var(--color-neon-cyan);
+  }
+}
+
 /* Fade in animation */
 @keyframes fade-in {
   from {

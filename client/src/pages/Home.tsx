@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useI18n, LanguageSelector } from "@/i18n";
 import { WalletConnectModal } from "@/components/WalletConnectModal";
 
@@ -40,6 +40,9 @@ export default function Home() {
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [animatedStats, setAnimatedStats] = useState<{[key: string]: number}>({});
+  const [heroVisible, setHeroVisible] = useState(false);
+  const heroRef = useRef<HTMLDivElement>(null);
 
   const handleWalletConnect = (address: string, walletType: string) => {
     setConnectedWallet(address);
@@ -52,6 +55,32 @@ export default function Home() {
       setGlowIndex((prev) => (prev + 1) % 4);
     }, 2000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Hero animation on mount
+  useEffect(() => {
+    setHeroVisible(true);
+    
+    // Animate stats counting
+    const animateCount = (target: number, key: string) => {
+      let current = 0;
+      const increment = target / 30;
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          setAnimatedStats(prev => ({ ...prev, [key]: target }));
+          clearInterval(timer);
+        } else {
+          setAnimatedStats(prev => ({ ...prev, [key]: Math.floor(current) }));
+        }
+      }, 50);
+    };
+    
+    setTimeout(() => {
+      animateCount(6, 'networks');
+      animateCount(10, 'templates');
+      animateCount(15, 'vulnerabilities');
+    }, 500);
   }, []);
 
   const features = [
@@ -121,9 +150,9 @@ export default function Home() {
   ];
 
   const stats = [
-    { label: t('home.networksSupported'), value: "6+" },
-    { label: t('home.templates'), value: "10+" },
-    { label: t('home.vulnerabilities'), value: "15+" },
+    { label: t('home.networksSupported'), value: "6+", key: "networks" },
+    { label: t('home.templates'), value: "10+", key: "templates" },
+    { label: t('home.vulnerabilities'), value: "15+", key: "vulnerabilities" },
   ];
 
   // Remover redirecionamento automático para permitir voltar à Home
@@ -257,22 +286,22 @@ export default function Home() {
         </div>
         <div className="container">
           <div className="max-w-4xl mx-auto text-center">
-            <Badge className="mb-6 bg-[var(--color-neon-cyan)]/10 text-[var(--color-neon-cyan)] border-[var(--color-neon-cyan)]/30 px-4 py-1.5">
-              <Zap className="h-3 w-3 mr-1" />
+            <Badge className={`mb-6 bg-[var(--color-neon-cyan)]/10 text-[var(--color-neon-cyan)] border-[var(--color-neon-cyan)]/30 px-4 py-1.5 transition-all duration-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`} style={{ animation: heroVisible ? 'pulse-glow 2s ease-in-out infinite' : 'none' }}>
+              <Zap className="h-3 w-3 mr-1 animate-pulse" />
               {t('home.poweredBy')}
             </Badge>
             
-            <h1 className="headline-cyber text-4xl md:text-6xl lg:text-7xl mb-6">
+            <h1 className={`headline-cyber text-4xl md:text-6xl lg:text-7xl mb-6 transition-all duration-1000 delay-200 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               <span className="gradient-neon-text">{t('home.title')}</span>
               <br />
               <span className="text-foreground">{t('home.subtitle')}</span>
             </h1>
             
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+            <p className={`text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 transition-all duration-1000 delay-400 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               {t('home.description')}
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className={`flex flex-col sm:flex-row items-center justify-center gap-4 transition-all duration-1000 delay-500 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               <Button 
                 size="lg"
                 onClick={() => window.location.href = getLoginUrl()}
@@ -302,10 +331,15 @@ export default function Home() {
             </div>
 
             {/* Stats */}
-            <div className="flex items-center justify-center gap-8 mt-12">
+            <div className={`flex items-center justify-center gap-8 mt-12 transition-all duration-1000 delay-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
               {stats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  <p className="text-2xl md:text-3xl font-bold neon-text-cyan">{stat.value}</p>
+                <div key={index} className="text-center group">
+                  <p className="text-2xl md:text-3xl font-bold neon-text-cyan transition-transform group-hover:scale-110">
+                    {stat.value.includes('+') 
+                      ? `${animatedStats[stat.key] || 0}+`
+                      : stat.value
+                    }
+                  </p>
                   <p className="text-xs text-muted-foreground">{stat.label}</p>
                 </div>
               ))}
