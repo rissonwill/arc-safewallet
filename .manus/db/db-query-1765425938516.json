@@ -1,0 +1,18 @@
+{
+  "query": "SELECT 'templates' as type, COUNT(*) as count FROM contractTemplates UNION ALL SELECT 'networks', COUNT(*) FROM networks;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3y26Mj8Erk6uTAj.77c4e6e1f670 --database CUHF4Y8fMjSbtetRcg3EQn --execute SELECT 'templates' as type, COUNT(*) as count FROM contractTemplates UNION ALL SELECT 'networks', COUNT(*) FROM networks;",
+  "rows": [
+    {
+      "type": "templates",
+      "count": "5"
+    },
+    {
+      "type": "networks",
+      "count": "10"
+    }
+  ],
+  "messages": [],
+  "stdout": "type\tcount\ntemplates\t5\nnetworks\t10\n",
+  "stderr": "",
+  "execution_time_ms": 104
+}

@@ -11,6 +11,7 @@ import { storagePut, storageGet } from "./storage";
 import { nanoid } from "nanoid";
 import { fetchAllGasPrices } from "./gasService";
 import { generateTypeScriptInterface, validateSoliditySyntax, extractContractNames, estimateDeploymentGas } from "./solidityCompiler";
+import { compileSimpleContract, extractContractNamesFromSource, generateTypesFromABI } from "./solcCompiler";
 import { submitVerification, checkVerificationStatus, isContractVerified, getSupportedCompilerVersions, VERIFICATION_ENDPOINTS } from "./contractVerification";
 
 // ==================== ROUTERS ====================
@@ -185,60 +186,82 @@ export const appRouter = router({
         return db.deleteContract(input.id, ctx.user.id);
       }),
 
-    // Compile contract (validation and TypeScript generation)
+    // Compile contract using solc-js
     compile: protectedProcedure
       .input(z.object({
         id: z.number().optional(),
         sourceCode: z.string(),
       }))
       .mutation(async ({ ctx, input }) => {
-        // Validate syntax
+        // Quick syntax validation first
         const validation = validateSoliditySyntax(input.sourceCode);
         if (!validation.valid) {
           return {
             success: false,
             errors: validation.errors.map(e => ({ severity: "error" as const, message: e })),
+            warnings: [],
           };
         }
 
-        // Extract contract names
-        const contractNames = extractContractNames(input.sourceCode);
-        if (contractNames.length === 0) {
+        // Try real compilation with solc-js
+        const compilationResult = compileSimpleContract(input.sourceCode);
+        
+        if (!compilationResult.success) {
+          // If solc fails (e.g., due to imports), fall back to basic extraction
+          const contractNames = extractContractNamesFromSource(input.sourceCode);
+          
+          if (contractNames.length === 0) {
+            return {
+              success: false,
+              errors: compilationResult.errors.map(e => ({ severity: e.severity, message: e.message })),
+              warnings: compilationResult.warnings.map(w => ({ severity: w.severity, message: w.message })),
+            };
+          }
+          
+          // Return partial success with contract names but no bytecode
           return {
             success: false,
-            errors: [{ severity: "error" as const, message: "No contracts found in source code" }],
+            contractNames,
+            errors: compilationResult.errors.map(e => ({ severity: e.severity, message: e.message })),
+            warnings: [
+              ...compilationResult.warnings.map(w => ({ severity: w.severity, message: w.message })),
+              { severity: "warning" as const, message: "Para contratos com imports OpenZeppelin, use: npx hardhat compile" }
+            ],
           };
         }
 
-        // Generate mock ABI for demonstration (in production, use solc-js)
-        const mockAbi = [
-          {
-            "type": "constructor",
-            "inputs": [],
-            "stateMutability": "nonpayable"
-          },
-          {
-            "type": "function",
-            "name": "balanceOf",
-            "inputs": [{ "name": "account", "type": "address" }],
-            "outputs": [{ "name": "", "type": "uint256" }],
-            "stateMutability": "view"
-          }
-        ];
-
+        // Successful compilation
+        const mainContract = compilationResult.contracts[0];
+        const contractNames = compilationResult.contracts.map(c => c.contractName);
+        
         // Generate TypeScript interface
-        const tsInterface = generateTypeScriptInterface(contractNames[0], mockAbi);
+        const tsInterface = generateTypesFromABI(mainContract.contractName, mainContract.abi);
+        
+        // Estimate deployment gas from bytecode
+        const estimatedGas = estimateDeploymentGas(mainContract.bytecode);
 
-        // Estimate deployment gas
-        const estimatedGas = estimateDeploymentGas("0x" + "00".repeat(1000));
+        // Update contract in database if id provided
+        if (input.id) {
+          await db.updateContract(input.id, ctx.user.id, {
+            abi: mainContract.abi,
+            bytecode: mainContract.bytecode,
+            status: "compiled",
+          });
+        }
 
         return {
           success: true,
           contractNames,
-          abi: mockAbi,
+          abi: mainContract.abi,
+          bytecode: mainContract.bytecode,
           typescriptInterface: tsInterface,
           estimatedDeploymentGas: estimatedGas,
-          warnings: ["Using simplified compilation. For full compilation, integrate solc-js."],
+          warnings: compilationResult.warnings.map(w => ({ severity: w.severity, message: w.message })),
+          allContracts: compilationResult.contracts.map(c => ({
+            name: c.contractName,
+            abi: c.abi,
+            bytecode: c.bytecode,
+          })),
         };
       }),
 

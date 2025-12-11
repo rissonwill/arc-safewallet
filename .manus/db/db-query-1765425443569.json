@@ -1,0 +1,38 @@
+{
+  "query": "SELECT 'users' as tbl, COUNT(*) as cnt FROM users UNION ALL SELECT 'wallets', COUNT(*) FROM wallets UNION ALL SELECT 'projects', COUNT(*) FROM projects UNION ALL SELECT 'contracts', COUNT(*) FROM contracts UNION ALL SELECT 'transactions', COUNT(*) FROM transactions UNION ALL SELECT 'networks', COUNT(*) FROM networks UNION ALL SELECT 'contractTemplates', COUNT(*) FROM contractTemplates;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3y26Mj8Erk6uTAj.77c4e6e1f670 --database CUHF4Y8fMjSbtetRcg3EQn --execute SELECT 'users' as tbl, COUNT(*) as cnt FROM users UNION ALL SELECT 'wallets', COUNT(*) FROM wallets UNION ALL SELECT 'projects', COUNT(*) FROM projects UNION ALL SELECT 'contracts', COUNT(*) FROM contracts UNION ALL SELECT 'transactions', COUNT(*) FROM transactions UNION ALL SELECT 'networks', COUNT(*) FROM networks UNION ALL SELECT 'contractTemplates', COUNT(*) FROM contractTemplates;",
+  "rows": [
+    {
+      "tbl": "transactions",
+      "cnt": "0"
+    },
+    {
+      "tbl": "contracts",
+      "cnt": "3"
+    },
+    {
+      "tbl": "wallets",
+      "cnt": "3"
+    },
+    {
+      "tbl": "projects",
+      "cnt": "2"
+    },
+    {
+      "tbl": "users",
+      "cnt": "6"
+    },
+    {
+      "tbl": "contractTemplates",
+      "cnt": "0"
+    },
+    {
+      "tbl": "networks",
+      "cnt": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "tbl\tcnt\ntransactions\t0\ncontracts\t3\nwallets\t3\nprojects\t2\nusers\t6\ncontractTemplates\t0\nnetworks\t0\n",
+  "stderr": "",
+  "execution_time_ms": 63
+}

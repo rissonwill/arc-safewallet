@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { WalletAPI, NETWORKS } from '@/lib/walletApi';
 import DashboardLayout from '@/components/DashboardLayout';
+import { CONTRACT_ARTIFACTS, getContractArtifact } from '@/lib/contractBytecodes';
 
 // ABIs simplificados para deploy
 const CONTRACT_BYTECODES = {
@@ -199,23 +200,18 @@ export default function Deploy() {
     try {
       // Obter provider e signer
       const provider = await WalletAPI.getProvider();
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       
       setDeployProgress(20);
       toast.info('Preparando deploy...');
 
-      // Nota: Em produção, você carregaria o bytecode compilado do servidor
-      // Por enquanto, vamos simular o processo de deploy
+      // Obter bytecode real do artefato compilado
+      const artifact = getContractArtifact(selectedContract as keyof typeof CONTRACT_ARTIFACTS);
+      if (!artifact || !artifact.bytecode) {
+        throw new Error('Bytecode não encontrado. Compile o contrato primeiro.');
+      }
       
-      setDeployProgress(40);
-      toast.info('Aguardando confirmação na carteira...');
-
-      // Simular deploy (em produção, usaria ContractFactory com bytecode real)
-      // const factory = new ethers.ContractFactory(contract.abi, bytecode, signer);
-      // const deployedContract = await factory.deploy(...args);
-      // await deployedContract.deployed();
-
-      // Para demonstração, vamos criar uma transação de teste
+      setDeployProgress(30);
       const network = NETWORKS[selectedNetwork];
       
       // Verificar saldo
@@ -226,28 +222,37 @@ export default function Deploy() {
         throw new Error(`Saldo insuficiente. Você precisa de pelo menos 0.01 ${network.nativeCurrency.symbol} para deploy. Use o faucet: ${network.faucetUrl}`);
       }
 
+      setDeployProgress(40);
+      toast.info('Aguardando confirmação na carteira...');
+
+      // Deploy real usando ContractFactory
+      const factory = new ethers.ContractFactory(artifact.abi, artifact.bytecode, signer);
+      
+      let deployedContract;
+      if (selectedContract === 'ArcVault') {
+        // Vault precisa de parâmetros
+        deployedContract = await factory.deploy(vaultParams.stakingToken, vaultParams.rewardToken);
+      } else {
+        // Outros contratos não precisam de parâmetros
+        deployedContract = await factory.deploy();
+      }
+
       setDeployProgress(60);
+      toast.info('Aguardando confirmação na blockchain...');
 
-      // Simular endereço de contrato deployado (em produção seria o endereço real)
-      const simulatedAddress = getCreateAddress({
-        from: account,
-        nonce: await provider.getTransactionCount(account),
-      });
-
-      setDeployProgress(80);
-      toast.info('Confirmando transação...');
-
-      // Simular delay de confirmação
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Aguardar confirmação
+      await deployedContract.waitForDeployment();
+      const contractAddress = await deployedContract.getAddress();
+      const deployTx = deployedContract.deploymentTransaction();
 
       setDeployProgress(100);
 
       // Salvar contrato deployado
       const newContract: DeployedContract = {
         name: contract.name,
-        address: simulatedAddress,
+        address: contractAddress,
         network: selectedNetwork,
-        txHash: '0x' + Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join(''),
+        txHash: deployTx?.hash || '',
         timestamp: Date.now(),
       };
 
@@ -255,7 +260,7 @@ export default function Deploy() {
       setDeployedContracts(updatedContracts);
       localStorage.setItem('deployedContracts', JSON.stringify(updatedContracts));
 
-      toast.success(`${contract.name} deployado com sucesso!`);
+      toast.success(`${contract.name} deployado com sucesso em ${contractAddress.slice(0, 10)}...`);
       
     } catch (error: any) {
       console.error('Deploy error:', error);

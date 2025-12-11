@@ -20,7 +20,7 @@ const config = {
       url: "https://rpc.testnet.arc.network",
       chainId: 5042002,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      gasPrice: 1000000000, // 1 gwei
+      gasPrice: 165000000000, // 165 gwei (current network price)
     },
     
     // Ethereum Sepolia

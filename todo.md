@@ -227,3 +227,16 @@
 - [x] Traduzir tutorial interativo
 - [x] Traduzir Security Scanner (parcial - mensagens traduzidas)
 - [x] Traduzir Contract Debugger (parcial - mensagens traduzidas)
+
+## Deploy Arc Network (v15)
+- [ ] Verificar status da Arc Network Testnet
+- [ ] Tentar deploy dos contratos na Arc Network
+- [ ] Registrar endereços dos contratos deployados
+
+## Prioridade Extrema P0 (v14)
+- [x] Criar seed de templates de contratos (ERC-20, ERC-721, ERC-1155)
+- [x] Criar seed de redes suportadas (Arc, Sepolia, Ethereum, Polygon)
+- [x] Implementar compilação real com solc-js
+- [x] Ativar deploy funcional via interface
+- [x] Executar seeds no banco de dados
+- [x] Testar compilação e deploy
