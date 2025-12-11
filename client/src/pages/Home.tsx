@@ -18,7 +18,10 @@ import {
   Bug,
   Sparkles,
   Lock,
-  Terminal
+  Terminal,
+  Github,
+  Twitter,
+  Mail
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
@@ -335,29 +338,88 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-[var(--color-neon-cyan)]/10 py-8">
+      <footer className="relative z-10 border-t border-[var(--color-neon-cyan)]/10 py-12">
         <div className="container">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] flex items-center justify-center">
-                <img src="/logo.png" alt="Arc SafeWallet" className="h-5 w-5" />
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Logo & Description */}
+            <div className="md:col-span-2">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] flex items-center justify-center neon-glow-cyan">
+                  <img src="/logo.png" alt="Arc SafeWallet" className="h-6 w-6" />
+                </div>
+                <span className="headline-cyber text-xl gradient-neon-text">Arc SafeWallet</span>
               </div>
-              <span className="font-semibold">Arc SafeWallet</span>
+              <p className="text-sm text-muted-foreground mb-4 max-w-md">
+                {t('home.subtitle')}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {t('footer.createdBy')} <a href="https://twitter.com/smartcript" target="_blank" rel="noopener noreferrer" className="text-[var(--color-neon-cyan)] hover:underline">@smartcript</a>
+              </p>
             </div>
             
+            {/* Links */}
+            <div>
+              <h4 className="font-semibold mb-4 text-[var(--color-neon-cyan)]">{t('footer.links')}</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-[var(--color-neon-cyan)]" onClick={() => setLocation("/docs")}>
+                    {t('nav.docs')}
+                  </Button>
+                </li>
+                <li>
+                  <a href="https://arcnetwork.io" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
+                    Arc Network
+                  </a>
+                </li>
+                <li>
+                  <a href="https://sepolia.etherscan.io" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
+                    Etherscan
+                  </a>
+                </li>
+              </ul>
+            </div>
+            
+            {/* Contact */}
+            <div>
+              <h4 className="font-semibold mb-4 text-[var(--color-neon-magenta)]">{t('footer.contact')}</h4>
+              <ul className="space-y-3 text-sm">
+                <li>
+                  <a href="mailto:smartstoreimports@gmail.com" className="flex items-center gap-2 text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
+                    <Mail className="h-4 w-4" />
+                    smartstoreimports@gmail.com
+                  </a>
+                </li>
+                <li>
+                  <a href="https://github.com/rissonwill/arc-safewallet" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
+                    <Github className="h-4 w-4" />
+                    GitHub
+                  </a>
+                </li>
+                <li>
+                  <a href="https://twitter.com/smartcript" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
+                    <Twitter className="h-4 w-4" />
+                    @smartcript
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          {/* Bottom bar */}
+          <div className="border-t border-[var(--color-neon-cyan)]/10 mt-8 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
               © 2024 Arc SafeWallet. Powered by Arc Network.
             </p>
-            
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={() => setLocation("/docs")}>
-                {t('nav.docs')}
-              </Button>
-              <Button variant="ghost" size="sm" asChild>
-                <a href="https://arcnetwork.io" target="_blank" rel="noopener noreferrer">
-                  Arc Network
-                </a>
-              </Button>
+              <a href="mailto:smartstoreimports@gmail.com" className="text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
+                <Mail className="h-5 w-5" />
+              </a>
+              <a href="https://github.com/rissonwill/arc-safewallet" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
+                <Github className="h-5 w-5" />
+              </a>
+              <a href="https://twitter.com/smartcript" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
+                <Twitter className="h-5 w-5" />
+              </a>
             </div>
           </div>
         </div>

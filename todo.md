@@ -284,3 +284,9 @@
 - [x] Aplicar ícones neon nos cards da Home
 - [x] Adicionar animações hover com glow pulsante
 - [x] Criar banner hero animado cyber punk
+
+## Conexão Email e GitHub v22
+- [x] Identificar links de contato no site
+- [x] Atualizar email de contato
+- [x] Atualizar link do GitHub
+- [x] Adicionar links sociais no footer

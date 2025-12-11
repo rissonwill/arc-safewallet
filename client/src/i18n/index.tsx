@@ -49,6 +49,11 @@ const translations: Record<Language, Record<string, string>> = {
     'home.createFreeAccount': 'Criar Conta Gratuita',
     'home.principal': 'Principal',
     
+    // Footer
+    'footer.createdBy': 'Criado por',
+    'footer.links': 'Links',
+    'footer.contact': 'Contato',
+    
     // Features da Home
     'home.feature.editor': 'Editor Solidity',
     'home.feature.editorDesc': 'Editor avançado com syntax highlighting, autocompletion e validação em tempo real',
@@ -430,6 +435,11 @@ const translations: Record<Language, Record<string, string>> = {
     'home.readyToBuildDesc': 'Join developers who are building the future of Web3 with security and efficiency on Arc Network.',
     'home.createFreeAccount': 'Create Free Account',
     'home.principal': 'Primary',
+    
+    // Footer
+    'footer.createdBy': 'Created by',
+    'footer.links': 'Links',
+    'footer.contact': 'Contact',
     
     // Home Features
     'home.feature.editor': 'Solidity Editor',
