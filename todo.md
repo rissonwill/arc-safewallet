@@ -107,8 +107,8 @@
 
 
 ## Ajustes de Configuração de Rede (v6)
-- [x] Atualizar walletApi.ts com código customizado ManusCustomNetworks
-- [x] Implementar interface window.ManusCustomNetworks
+- [x] Atualizar walletApi.ts com código customizado CustomNetworks
+- [x] Implementar interface window.CustomNetworks
 - [x] Adicionar auto-inicialização de redes customizadas
 - [x] Adicionar listener para mudanças de rede (chainChanged)
 - [x] Implementar funções switchToArc() e switchToSepolia()

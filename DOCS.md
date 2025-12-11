@@ -183,7 +183,7 @@ Timelock para execução segura:
 #### Autenticação
 
 ```typescript
-// Login via OAuth Manus
+// Authentication
 auth.me.useQuery()           // Obter usuário atual
 auth.logout.useMutation()    // Fazer logout
 ```
