@@ -19,7 +19,11 @@ import { submitVerification, checkVerificationStatus, isContractVerified, getSup
 import Stripe from "stripe";
 import { STRIPE_PRODUCTS, getProductByPlan } from "./stripe/products";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
+// Stripe is optional - only initialize if key is provided
+const stripeKey = process.env.STRIPE_SECRET_KEY;
+const stripe = stripeKey ? new Stripe(stripeKey) : null;
+const isStripeEnabled = !!stripe;
+console.log("[Stripe] Status:", isStripeEnabled ? "enabled" : "disabled (no API key)");
 
 // ==================== ROUTERS ====================
 
@@ -881,6 +885,9 @@ Format the output in Markdown.`
         interval: z.enum(["month", "year"]),
       }))
       .mutation(async ({ ctx, input }) => {
+        if (!stripe) {
+          throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Stripe is not configured" });
+        }
         const product = getProductByPlan(input.plan, input.interval);
         const origin = ctx.req.headers.origin || "https://smartvault.manus.space";
         
@@ -921,6 +928,9 @@ Format the output in Markdown.`
       }),
 
     getSubscription: protectedProcedure.query(async ({ ctx }) => {
+      if (!stripe) {
+        return { subscription: null, plan: "free" };
+      }
       // Get user's subscription from database
       const user = await db.getUserById(ctx.user.id);
       if (!user?.stripeCustomerId) {
@@ -956,6 +966,9 @@ Format the output in Markdown.`
     }),
 
     cancelSubscription: protectedProcedure.mutation(async ({ ctx }) => {
+      if (!stripe) {
+        throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Stripe is not configured" });
+      }
       const user = await db.getUserById(ctx.user.id);
       if (!user?.stripeCustomerId) {
         throw new TRPCError({ code: "NOT_FOUND", message: "No subscription found" });
@@ -979,6 +992,9 @@ Format the output in Markdown.`
     }),
 
     createPortalSession: protectedProcedure.mutation(async ({ ctx }) => {
+      if (!stripe) {
+        throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Stripe is not configured" });
+      }
       const user = await db.getUserById(ctx.user.id);
       if (!user?.stripeCustomerId) {
         throw new TRPCError({ code: "NOT_FOUND", message: "No customer found" });
