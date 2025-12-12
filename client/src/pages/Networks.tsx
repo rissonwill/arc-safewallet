@@ -19,7 +19,7 @@ const DEFAULT_NETWORKS = [
   // PRIMARY NETWORKS
   {
     chainId: 5042002, // 0x4CEF52
-    name: "SmartVault Network Testnet",
+    name: "Arc Testnet",
     symbol: "USDC",
     decimals: 6,
     rpcUrl: "https://rpc.testnet.arc.network",
@@ -460,7 +460,7 @@ export default function Networks() {
                 <img src="/logo.png" alt="SmartVault" className="h-10 w-10" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">SmartVault Network Testnet</h3>
+                <h3 className="font-semibold text-lg mb-2">Arc Testnet</h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   A SmartVault Network é uma blockchain de alta performance focada em escalabilidade e baixas taxas. 
                   Use a testnet para desenvolver e testar seus contratos inteligentes antes do deploy em produção.

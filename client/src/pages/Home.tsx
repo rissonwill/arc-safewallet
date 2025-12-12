@@ -168,7 +168,7 @@ export default function Home() {
   ];
 
   const networks = [
-    { name: "SmartVault Network Testnet", color: "#00FFFF", primary: true },
+    { name: "Arc Testnet", color: "#00FFFF", primary: true },
     { name: "Sepolia Testnet", color: "#627EEA", primary: true },
     { name: "Ethereum Mainnet", color: "#627EEA", primary: false },
     { name: "Polygon", color: "#8247E5", primary: false },
