@@ -632,3 +632,16 @@
 - [x] Adicionar persistência de conexão no localStorage
 - [x] Adicionar listeners para accountsChanged
 - [ ] Testar conexão no mobile (requer teste do usuário)
+
+## Apresentação para X e Discord (v35)
+- [ ] Coletar informações do projeto e contrato
+- [ ] Criar thread para X (Twitter)
+- [ ] Criar apresentação para Discord
+- [ ] Criar imagens promocionais
+
+
+## Apresentação para X e Discord (v35)
+- [x] Coletar informações do projeto e contrato
+- [x] Criar thread para X (Twitter) - 10 tweets + posts individuais
+- [x] Criar apresentação completa para Discord com ASCII art
+- [x] Criar imagens promocionais (banner Twitter, banner Discord, logo quadrado)
