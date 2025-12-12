@@ -585,7 +585,7 @@ export default function Home() {
           {/* Bottom bar */}
           <div className="border-t border-[var(--color-neon-cyan)]/10 mt-8 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © 2024 SmartVault. Powered by SmartVault Network.
+              © 2025 SmartVault. Powered by SmartVault Network.
             </p>
             <div className="flex items-center gap-4">
 
