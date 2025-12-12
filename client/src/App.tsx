@@ -34,6 +34,7 @@ import TransactionHistory from "./pages/TransactionHistory";
 import Pricing from "./pages/Pricing";
 import Analytics from "./pages/Analytics";
 import Profile from "./pages/Profile";
+import Changelog from "./pages/Changelog";
 
 function Router() {
   return (
@@ -48,6 +49,7 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/docs" component={Docs} />
       <Route path="/pricing" component={Pricing} />
+      <Route path="/changelog" component={Changelog} />
       
       {/* Protected - Dashboard */}
       <Route path="/dashboard" component={Dashboard} />

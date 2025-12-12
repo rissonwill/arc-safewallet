@@ -532,6 +532,11 @@ export default function Home() {
                   </Button>
                 </li>
                 <li>
+                  <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-[var(--color-neon-green)]" onClick={() => setLocation("/changelog")}>
+                    Changelog
+                  </Button>
+                </li>
+                <li>
                   <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-[var(--color-neon-cyan)]" onClick={() => setLocation("/pricing")}>
                     Pricing
                   </Button>

@@ -611,3 +611,8 @@
 - [x] Ajustar badge "Powered by" para não ficar cortado no mobile
 - [x] Adicionar link do Roadmap no footer
 - [x] Adicionar link do Pricing no footer
+
+## Página de Changelog (v32)
+- [x] Criar página de Changelog com histórico de versões
+- [x] Adicionar traduções PT/EN para o Changelog
+- [x] Adicionar link do Changelog no footer
