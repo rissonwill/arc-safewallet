@@ -319,9 +319,10 @@ export default function Home() {
         </div>
         <div className="container">
           <div className="max-w-4xl mx-auto text-center">
-            <Badge className={`mb-6 bg-[var(--color-neon-cyan)]/10 text-[var(--color-neon-cyan)] border-[var(--color-neon-cyan)]/30 px-4 py-1.5 transition-all duration-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`} style={{ animation: heroVisible ? 'pulse-glow 2s ease-in-out infinite' : 'none' }}>
+            <Badge className={`mb-4 sm:mb-6 bg-[var(--color-neon-cyan)]/20 text-[var(--color-neon-cyan)] border-[var(--color-neon-cyan)]/50 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm transition-all duration-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`} style={{ animation: heroVisible ? 'pulse-glow 2s ease-in-out infinite' : 'none' }}>
               <Zap className="h-3 w-3 mr-1 animate-pulse" />
-              {t('home.poweredBy')}
+              <span className="hidden sm:inline">{t('home.poweredBy')}</span>
+              <span className="sm:hidden">SmartVault Network</span>
             </Badge>
             
             <h1 className={`headline-cyber text-4xl md:text-6xl lg:text-7xl mb-6 transition-all duration-1000 delay-200 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
@@ -523,6 +524,16 @@ export default function Home() {
                 <li>
                   <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-[var(--color-neon-cyan)]" onClick={() => setLocation("/faq")}>
                     FAQ
+                  </Button>
+                </li>
+                <li>
+                  <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-[var(--color-neon-purple)]" onClick={() => setLocation("/roadmap")}>
+                    Roadmap
+                  </Button>
+                </li>
+                <li>
+                  <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-[var(--color-neon-cyan)]" onClick={() => setLocation("/pricing")}>
+                    Pricing
                   </Button>
                 </li>
                 <li>

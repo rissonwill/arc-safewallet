@@ -606,3 +606,8 @@
 - [x] Corrigir visibilidade do cabeçalho na versão mobile
 - [x] Ajustar espaçamento e background do header para mobile
 - [x] Garantir que o logo e menu hamburger fiquem bem visíveis
+
+## Melhorias Finais (v30)
+- [x] Ajustar badge "Powered by" para não ficar cortado no mobile
+- [x] Adicionar link do Roadmap no footer
+- [x] Adicionar link do Pricing no footer
