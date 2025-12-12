@@ -616,3 +616,11 @@
 - [x] Criar página de Changelog com histórico de versões
 - [x] Adicionar traduções PT/EN para o Changelog
 - [x] Adicionar link do Changelog no footer
+
+## Correção WalletConnect Mobile (v33)
+- [x] Corrigir problema de conexão WalletConnect no mobile
+- [x] Garantir que callback de conexão funcione corretamente
+- [x] Adicionar event listeners para connect, session_update, disconnect
+- [x] Persistir conexão no localStorage
+- [x] Adicionar UI de aguardando aprovação no mobile
+- [ ] Testar conexão MetaMask e WalletConnect no mobile (requer teste do usuário)

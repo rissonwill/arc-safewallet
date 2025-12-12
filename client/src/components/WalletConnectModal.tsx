@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, AlertCircle, QrCode } from "lucide-react";
+import { Loader2, AlertCircle, QrCode, CheckCircle, RefreshCw } from "lucide-react";
 
 interface WalletOption {
   id: string;
@@ -71,11 +71,15 @@ interface WalletConnectModalProps {
 // WalletConnect Project ID - pode ser obtido em https://cloud.walletconnect.com
 const WALLETCONNECT_PROJECT_ID = "3a8170812b534d0ff9d794f19a901d64";
 
+// Storage keys
+const WALLET_STORAGE_KEY = "smartvault_wallet_connection";
+
 export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConnectModalProps) {
   const [connecting, setConnecting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [wcProvider, setWcProvider] = useState<any>(null);
-  const [showQRCode, setShowQRCode] = useState(false);
+  const [waitingForMobile, setWaitingForMobile] = useState(false);
+  const [connectionSuccess, setConnectionSuccess] = useState(false);
 
   const isMobile = () => {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -130,7 +134,58 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
     }
   };
 
-  // Inicializar WalletConnect
+  // Salvar conexão no localStorage
+  const saveConnection = (address: string, walletType: string) => {
+    try {
+      localStorage.setItem(WALLET_STORAGE_KEY, JSON.stringify({
+        address,
+        walletType,
+        timestamp: Date.now()
+      }));
+    } catch (e) {
+      console.error('Erro ao salvar conexão:', e);
+    }
+  };
+
+  // Recuperar conexão do localStorage
+  const getStoredConnection = () => {
+    try {
+      const stored = localStorage.getItem(WALLET_STORAGE_KEY);
+      if (stored) {
+        const data = JSON.parse(stored);
+        // Conexão válida por 24 horas
+        if (Date.now() - data.timestamp < 24 * 60 * 60 * 1000) {
+          return data;
+        }
+      }
+    } catch (e) {
+      console.error('Erro ao recuperar conexão:', e);
+    }
+    return null;
+  };
+
+  // Verificar conexão existente ao montar
+  useEffect(() => {
+    const checkExistingConnection = async () => {
+      const stored = getStoredConnection();
+      if (stored) {
+        // Verificar se a carteira ainda está conectada
+        if (stored.walletType === 'metamask' && checkMetaMask()) {
+          try {
+            const accounts = await (window as any).ethereum.request({ method: 'eth_accounts' });
+            if (accounts && accounts.length > 0 && accounts[0].toLowerCase() === stored.address.toLowerCase()) {
+              onConnect(stored.address, stored.walletType);
+            }
+          } catch (e) {
+            // Conexão não está mais ativa
+          }
+        }
+      }
+    };
+    checkExistingConnection();
+  }, []);
+
+  // Inicializar WalletConnect com event listeners
   const initWalletConnect = async () => {
     try {
       const { EthereumProvider } = await import('@walletconnect/ethereum-provider');
@@ -144,7 +199,36 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
           name: 'SmartVault',
           description: 'Smart Contracts with Security',
           url: window.location.origin,
-          icons: [`${window.location.origin}/logo.png`]
+          icons: [`${window.location.origin}/smartvault-logo.png`]
+        }
+      });
+
+      // Event listeners para conexão
+      provider.on('connect', (info: any) => {
+        console.log('WalletConnect connected:', info);
+        const accounts = provider.accounts;
+        if (accounts && accounts.length > 0) {
+          handleSuccessfulConnection(accounts[0], 'walletconnect');
+        }
+      });
+
+      provider.on('session_update', ({ params }: any) => {
+        console.log('WalletConnect session updated:', params);
+        const accounts = provider.accounts;
+        if (accounts && accounts.length > 0) {
+          handleSuccessfulConnection(accounts[0], 'walletconnect');
+        }
+      });
+
+      provider.on('disconnect', () => {
+        console.log('WalletConnect disconnected');
+        localStorage.removeItem(WALLET_STORAGE_KEY);
+      });
+
+      provider.on('accountsChanged', (accounts: string[]) => {
+        console.log('WalletConnect accounts changed:', accounts);
+        if (accounts && accounts.length > 0) {
+          handleSuccessfulConnection(accounts[0], 'walletconnect');
         }
       });
 
@@ -156,16 +240,33 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
     }
   };
 
+  const handleSuccessfulConnection = useCallback((address: string, walletType: string) => {
+    setConnectionSuccess(true);
+    setWaitingForMobile(false);
+    setConnecting(null);
+    saveConnection(address, walletType);
+    onConnect(address, walletType);
+    
+    // Fechar modal após mostrar sucesso
+    setTimeout(() => {
+      setConnectionSuccess(false);
+      onOpenChange(false);
+    }, 1500);
+  }, [onConnect, onOpenChange]);
+
   const connectWalletConnect = async () => {
     try {
-      setShowQRCode(true);
-      
       let provider = wcProvider;
       if (!provider) {
         provider = await initWalletConnect();
       }
 
-      // Conectar - isso abre o modal QR Code
+      // No mobile, mostrar mensagem de aguardando
+      if (isMobile()) {
+        setWaitingForMobile(true);
+      }
+
+      // Conectar - isso abre o modal QR Code ou deep link no mobile
       await provider.connect();
       
       const accounts = provider.accounts;
@@ -177,21 +278,21 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
           // Could not add Arc network via WalletConnect
         }
         
-        onConnect(accounts[0], "walletconnect");
-        onOpenChange(false);
+        handleSuccessfulConnection(accounts[0], "walletconnect");
       }
     } catch (err: any) {
-      if (err.message?.includes('User rejected')) {
+      setWaitingForMobile(false);
+      if (err.message?.includes('User rejected') || err.message?.includes('user rejected')) {
         throw new Error('Conexão rejeitada pelo usuário');
       }
       throw new Error(err.message || 'Falha ao conectar via WalletConnect');
-    } finally {
-      setShowQRCode(false);
     }
   };
 
   const connectMetaMask = async () => {
     if (isMobile() && !checkMetaMask()) {
+      // No mobile sem MetaMask, redirecionar para o app
+      const currentUrl = encodeURIComponent(window.location.href);
       window.location.href = `https://metamask.app.link/dapp/${window.location.host}${window.location.pathname}`;
       return;
     }
@@ -219,8 +320,7 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
           }
         }
         
-        onConnect(accounts[0], "metamask");
-        onOpenChange(false);
+        handleSuccessfulConnection(accounts[0], "metamask");
       }
     } catch (err: any) {
       if (err.code === 4001) {
@@ -243,8 +343,7 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
           method: "eth_requestAccounts",
         });
         if (accounts && accounts.length > 0) {
-          onConnect(accounts[0], "trust");
-          onOpenChange(false);
+          handleSuccessfulConnection(accounts[0], "trust");
         }
       } catch (err: any) {
         throw new Error(err.message || "Falha ao conectar Trust Wallet");
@@ -268,8 +367,7 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
           method: "eth_requestAccounts",
         });
         if (accounts && accounts.length > 0) {
-          onConnect(accounts[0], "coinbase");
-          onOpenChange(false);
+          handleSuccessfulConnection(accounts[0], "coinbase");
         }
       } catch (err: any) {
         throw new Error(err.message || "Falha ao conectar Coinbase Wallet");
@@ -298,8 +396,7 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
           method: "eth_requestAccounts",
         });
         if (accounts && accounts.length > 0) {
-          onConnect(accounts[0], "phantom");
-          onOpenChange(false);
+          handleSuccessfulConnection(accounts[0], "phantom");
         }
       } catch (err: any) {
         throw new Error(err.message || "Falha ao conectar Phantom");
@@ -313,6 +410,7 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
   const handleConnect = async (walletId: string) => {
     setConnecting(walletId);
     setError(null);
+    setConnectionSuccess(false);
 
     try {
       switch (walletId) {
@@ -339,19 +437,32 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
       }
     } catch (err: any) {
       setError(err.message);
+      setWaitingForMobile(false);
     } finally {
-      setConnecting(null);
+      if (!waitingForMobile) {
+        setConnecting(null);
+      }
     }
   };
 
   // Cleanup WalletConnect on unmount
   useEffect(() => {
     return () => {
-      if (wcProvider) {
-        wcProvider.disconnect();
+      if (wcProvider && !wcProvider.connected) {
+        // Não desconectar se estiver conectado
       }
     };
   }, [wcProvider]);
+
+  // Resetar estados quando modal fecha
+  useEffect(() => {
+    if (!open) {
+      setError(null);
+      setWaitingForMobile(false);
+      setConnectionSuccess(false);
+      setConnecting(null);
+    }
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -363,51 +474,89 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-3 py-4">
-          {walletOptions.map((wallet) => (
-            <Button
-              key={wallet.id}
-              variant="outline"
-              className="w-full justify-start gap-3 h-auto py-3 px-4 border-border/50 hover:border-[var(--color-neon-cyan)]/50 hover:bg-[var(--color-neon-cyan)]/5 transition-all group"
-              onClick={() => handleConnect(wallet.id)}
-              disabled={connecting !== null}
-            >
-              <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform">
-                <img 
-                  src={wallet.logo} 
-                  alt={wallet.name}
-                  className="w-7 h-7 object-contain"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    target.parentElement!.innerHTML = wallet.id === 'metamask' ? '🦊' : 
-                      wallet.id === 'walletconnect' ? '🔗' :
-                      wallet.id === 'coinbase' ? '🔵' :
-                      wallet.id === 'trust' ? '🛡️' :
-                      wallet.id === 'rainbow' ? '🌈' : '👻';
-                  }}
-                />
-              </div>
-              <div className="flex flex-col items-start text-left flex-1">
-                <span className="font-medium">{wallet.name}</span>
-                <span className="text-xs text-muted-foreground">
-                  {wallet.description}
-                </span>
-              </div>
-              {connecting === wallet.id && (
-                <Loader2 className="h-4 w-4 animate-spin text-[var(--color-neon-cyan)]" />
-              )}
-              {wallet.id === "walletconnect" && (
-                <QrCode className="h-4 w-4 text-muted-foreground" />
-              )}
-              {wallet.id === "metamask" && checkMetaMask() && (
-                <span className="text-xs text-[var(--color-neon-green)] bg-[var(--color-neon-green)]/10 px-2 py-0.5 rounded">
-                  Detected
-                </span>
-              )}
-            </Button>
-          ))}
-        </div>
+        {/* Mensagem de sucesso */}
+        {connectionSuccess && (
+          <div className="flex items-center justify-center gap-3 py-6">
+            <CheckCircle className="h-12 w-12 text-[var(--color-neon-green)] animate-pulse" />
+            <div>
+              <p className="text-lg font-semibold text-[var(--color-neon-green)]">Conectado!</p>
+              <p className="text-sm text-muted-foreground">Redirecionando...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Mensagem de aguardando mobile */}
+        {waitingForMobile && !connectionSuccess && (
+          <div className="flex flex-col items-center justify-center gap-4 py-6">
+            <RefreshCw className="h-10 w-10 text-[var(--color-neon-cyan)] animate-spin" />
+            <div className="text-center">
+              <p className="text-lg font-semibold">Aguardando aprovação...</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Aprove a conexão na sua carteira e volte para esta página
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-4"
+                onClick={() => {
+                  setWaitingForMobile(false);
+                  setConnecting(null);
+                }}
+              >
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Lista de carteiras */}
+        {!connectionSuccess && !waitingForMobile && (
+          <div className="grid gap-3 py-4">
+            {walletOptions.map((wallet) => (
+              <Button
+                key={wallet.id}
+                variant="outline"
+                className="w-full justify-start gap-3 h-auto py-3 px-4 border-border/50 hover:border-[var(--color-neon-cyan)]/50 hover:bg-[var(--color-neon-cyan)]/5 transition-all group"
+                onClick={() => handleConnect(wallet.id)}
+                disabled={connecting !== null}
+              >
+                <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform">
+                  <img 
+                    src={wallet.logo} 
+                    alt={wallet.name}
+                    className="w-7 h-7 object-contain"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      target.parentElement!.innerHTML = wallet.id === 'metamask' ? '🦊' : 
+                        wallet.id === 'walletconnect' ? '🔗' :
+                        wallet.id === 'coinbase' ? '🔵' :
+                        wallet.id === 'trust' ? '🛡️' :
+                        wallet.id === 'rainbow' ? '🌈' : '👻';
+                    }}
+                  />
+                </div>
+                <div className="flex flex-col items-start text-left flex-1">
+                  <span className="font-medium">{wallet.name}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {wallet.description}
+                  </span>
+                </div>
+                {connecting === wallet.id && (
+                  <Loader2 className="h-4 w-4 animate-spin text-[var(--color-neon-cyan)]" />
+                )}
+                {wallet.id === "walletconnect" && (
+                  <QrCode className="h-4 w-4 text-muted-foreground" />
+                )}
+                {wallet.id === "metamask" && checkMetaMask() && (
+                  <span className="text-xs text-[var(--color-neon-green)] bg-[var(--color-neon-green)]/10 px-2 py-0.5 rounded">
+                    Detected
+                  </span>
+                )}
+              </Button>
+            ))}
+          </div>
+        )}
 
         {error && (
           <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-lg">
@@ -416,9 +565,11 @@ export function WalletConnectModal({ open, onOpenChange, onConnect }: WalletConn
           </div>
         )}
 
-        <p className="text-xs text-center text-muted-foreground">
-          By connecting, you agree to our Terms of Service and Privacy Policy
-        </p>
+        {!connectionSuccess && !waitingForMobile && (
+          <p className="text-xs text-center text-muted-foreground">
+            By connecting, you agree to our Terms of Service and Privacy Policy
+          </p>
+        )}
       </DialogContent>
     </Dialog>
   );
