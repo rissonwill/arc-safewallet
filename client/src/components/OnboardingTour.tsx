@@ -38,7 +38,7 @@ const tourSteps = [
   },
   {
     title: "Deploy Multi-Chain",
-    description: "Faça deploy em múltiplas redes simultaneamente: SmartVault Network, Ethereum, Polygon, BSC e outras redes EVM compatíveis.",
+    description: "Faça deploy em múltiplas redes simultaneamente: Arc Network, Ethereum, Polygon, BSC e outras redes EVM compatíveis.",
     icon: Rocket,
     color: "var(--color-neon-magenta)",
   },

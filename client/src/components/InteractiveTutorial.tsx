@@ -59,7 +59,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     code: `// Exemplo de estrutura de projeto
 {
   "name": "Meu Token",
-  "network": "SmartVault Network Testnet",
+  "network": "Arc Network Testnet",
   "contracts": ["Token.sol", "Staking.sol"]
 }`,
   },
@@ -97,8 +97,8 @@ contract MyToken {
     icon: <Rocket className="h-8 w-8" />,
     targetSelector: "[data-tutorial='deploy']",
     position: "bottom",
-    code: `// Deploy para SmartVault Network Testnet
-Network: SmartVault Network Testnet
+    code: `// Deploy para Arc Network Testnet
+Network: Arc Network Testnet
 Chain ID: 1516
 RPC: https://rpc-testnet.arcnetwork.io
 Explorer: https://testnet.arcscan.io`,

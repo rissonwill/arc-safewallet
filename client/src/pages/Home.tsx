@@ -168,7 +168,7 @@ export default function Home() {
   ];
 
   const networks = [
-    { name: "SmartVault Network Testnet", color: "#00FFFF", primary: true },
+    { name: "Arc Network Testnet", color: "#00FFFF", primary: true },
     { name: "Sepolia Testnet", color: "#627EEA", primary: true },
     { name: "Ethereum Mainnet", color: "#627EEA", primary: false },
     { name: "Polygon", color: "#8247E5", primary: false },
@@ -322,7 +322,7 @@ export default function Home() {
             <Badge className={`mb-4 sm:mb-6 bg-[var(--color-neon-cyan)]/20 text-[var(--color-neon-cyan)] border-[var(--color-neon-cyan)]/50 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm transition-all duration-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`} style={{ animation: heroVisible ? 'pulse-glow 2s ease-in-out infinite' : 'none' }}>
               <Zap className="h-3 w-3 mr-1 animate-pulse" />
               <span className="hidden sm:inline">{t('home.poweredBy')}</span>
-              <span className="sm:hidden">SmartVault Network</span>
+              <span className="sm:hidden">Arc Network</span>
             </Badge>
             
             <h1 className={`headline-cyber text-4xl md:text-6xl lg:text-7xl mb-6 transition-all duration-1000 delay-200 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
@@ -543,7 +543,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a href="https://arcnetwork.io" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[var(--color-neon-cyan)] transition-colors">
-                    SmartVault Network
+                    Arc Network
                   </a>
                 </li>
                 <li>
@@ -590,7 +590,7 @@ export default function Home() {
           {/* Bottom bar */}
           <div className="border-t border-[var(--color-neon-cyan)]/10 mt-8 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © 2025 SmartVault. Powered by SmartVault Network.
+              © 2025 SmartVault. Powered by Arc Network.
             </p>
             <div className="flex items-center gap-4">
 
