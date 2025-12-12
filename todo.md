@@ -624,3 +624,11 @@
 - [x] Persistir conexão no localStorage
 - [x] Adicionar UI de aguardando aprovação no mobile
 - [ ] Testar conexão MetaMask e WalletConnect no mobile (requer teste do usuário)
+
+## Correção WalletConnect Mobile v2 (v34)
+- [x] Implementar deep links diretos para carteiras no mobile (MetaMask, Trust, Coinbase, Rainbow)
+- [x] Remover dependência do Web3Modal/WalletConnect que causa erro de CSP
+- [x] Adicionar detecção automática de carteiras instaladas
+- [x] Adicionar persistência de conexão no localStorage
+- [x] Adicionar listeners para accountsChanged
+- [ ] Testar conexão no mobile (requer teste do usuário)
