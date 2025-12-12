@@ -14,7 +14,19 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Default networks - SmartVault Network and Sepolia as primary
+// Logo mapping for networks
+const NETWORK_LOGOS: Record<number, string> = {
+  5042002: "/logos/arc-network.png",
+  11155111: "/logos/sepolia.png",
+  1: "/logos/ethereum.png",
+  137: "/logos/polygon.png",
+  56: "/logos/bsc.png",
+  42161: "/logos/arbitrum.png",
+  10: "/logos/ethereum.png", // Optimism uses ETH
+  80001: "/logos/polygon.png", // Mumbai uses MATIC
+};
+
+// Default networks - Arc Network and Sepolia as primary
 const DEFAULT_NETWORKS = [
   // PRIMARY NETWORKS
   {
@@ -216,7 +228,7 @@ export default function Networks() {
         <div>
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Star className="h-5 w-5 text-primary" />
-            Redes Principais (SmartVault Network & Sepolia)
+            Redes Principais (Arc Network & Sepolia)
           </h2>
           
           <div className="grid md:grid-cols-2 gap-4">
@@ -226,15 +238,23 @@ export default function Networks() {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-4">
                       <div 
-                        className="h-14 w-14 rounded-xl flex items-center justify-center"
-                        style={{ backgroundColor: `${network.color}30` }}
+                        className="h-14 w-14 rounded-xl flex items-center justify-center overflow-hidden"
+                        style={{ backgroundColor: `${network.color}20` }}
                       >
-                        <span 
-                          className="font-bold text-xl"
-                          style={{ color: network.color }}
-                        >
-                          {network.symbol.charAt(0)}
-                        </span>
+                        {NETWORK_LOGOS[network.chainId] ? (
+                          <img 
+                            src={NETWORK_LOGOS[network.chainId]} 
+                            alt={network.name}
+                            className="h-12 w-12 object-contain"
+                          />
+                        ) : (
+                          <span 
+                            className="font-bold text-xl"
+                            style={{ color: network.color }}
+                          >
+                            {network.symbol.charAt(0)}
+                          </span>
+                        )}
                       </div>
                       <div>
                         <h3 className="font-semibold text-lg">{network.name}</h3>
@@ -306,15 +326,23 @@ export default function Networks() {
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
                         <div 
-                          className="h-10 w-10 rounded-lg flex items-center justify-center"
+                          className="h-10 w-10 rounded-lg flex items-center justify-center overflow-hidden"
                           style={{ backgroundColor: `${network.color}20` }}
                         >
-                          <span 
-                            className="font-bold text-sm"
-                            style={{ color: network.color }}
-                          >
-                            {network.symbol.charAt(0)}
-                          </span>
+                          {NETWORK_LOGOS[network.chainId] ? (
+                            <img 
+                              src={NETWORK_LOGOS[network.chainId]} 
+                              alt={network.name}
+                              className="h-8 w-8 object-contain"
+                            />
+                          ) : (
+                            <span 
+                              className="font-bold text-sm"
+                              style={{ color: network.color }}
+                            >
+                              {network.symbol.charAt(0)}
+                            </span>
+                          )}
                         </div>
                         <div>
                           <h3 className="font-medium">{network.name}</h3>
@@ -371,15 +399,23 @@ export default function Networks() {
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
                         <div 
-                          className="h-10 w-10 rounded-lg flex items-center justify-center border-2 border-dashed"
+                          className="h-10 w-10 rounded-lg flex items-center justify-center border-2 border-dashed overflow-hidden"
                           style={{ borderColor: network.color }}
                         >
-                          <span 
-                            className="font-bold text-sm"
-                            style={{ color: network.color }}
-                          >
-                            {network.symbol.charAt(0)}
-                          </span>
+                          {NETWORK_LOGOS[network.chainId] ? (
+                            <img 
+                              src={NETWORK_LOGOS[network.chainId]} 
+                              alt={network.name}
+                              className="h-8 w-8 object-contain"
+                            />
+                          ) : (
+                            <span 
+                              className="font-bold text-sm"
+                              style={{ color: network.color }}
+                            >
+                              {network.symbol.charAt(0)}
+                            </span>
+                          )}
                         </div>
                         <div>
                           <h3 className="font-medium">{network.name}</h3>

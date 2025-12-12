@@ -662,3 +662,12 @@
 - [x] Substituir "SmartVault Network" por "Arc Network" em todas as traduções i18n (PT/EN)
 - [x] Atualizar Roadmap para 2025 focando em interação com Arc Network
 - [x] Remover referências a mainnet, token Arc, supply, tokenomics
+
+
+## Emblemas de Tokens e Testes (v41)
+- [ ] Gerar emblemas/logos para Arc Network, Ethereum, USDC, Polygon, BSC, Arbitrum
+- [ ] Aplicar logos na página de Redes
+- [ ] Aplicar logos no GasTracker
+- [ ] Aplicar logos em outros componentes
+- [ ] Realizar testes completos
+- [ ] Salvar checkpoint e push para GitHub
