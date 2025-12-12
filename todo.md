@@ -601,3 +601,8 @@
 - [x] Atualizar página de Roadmap com timeline visual profissional
 - [x] Adicionar traduções PT/EN para o Roadmap
 - [x] Atualizar itens do roadmap com funcionalidades reais implementadas
+
+## Correção Header Mobile (v29)
+- [x] Corrigir visibilidade do cabeçalho na versão mobile
+- [x] Ajustar espaçamento e background do header para mobile
+- [x] Garantir que o logo e menu hamburger fiquem bem visíveis

@@ -209,18 +209,18 @@ export default function Home() {
       </div>
       
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-[var(--color-neon-cyan)]/20 bg-background/95 backdrop-blur-xl">
-        <div className="container flex items-center justify-between h-16">
-          <div className="flex items-center gap-3">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b-2 border-[var(--color-neon-cyan)]/40 bg-background backdrop-blur-xl shadow-lg shadow-black/50">
+        <div className="container flex items-center justify-between h-16 px-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-[var(--color-neon-cyan)] via-[var(--color-neon-magenta)] to-[var(--color-neon-purple)] rounded-xl blur-md opacity-75 group-hover:opacity-100 transition-opacity animate-pulse" />
-              <div className="relative h-12 w-12 rounded-xl bg-gradient-to-br from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] flex items-center justify-center shadow-lg shadow-[var(--color-neon-cyan)]/50">
-                <img src="/smartvault-logo.png" alt="SmartVault" className="h-8 w-8 drop-shadow-[0_0_8px_var(--color-neon-cyan)]" />
+              <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-gradient-to-br from-[var(--color-neon-cyan)] to-[var(--color-neon-magenta)] flex items-center justify-center shadow-lg shadow-[var(--color-neon-cyan)]/50">
+                <img src="/smartvault-logo.png" alt="SmartVault" className="h-6 w-6 sm:h-8 sm:w-8 drop-shadow-[0_0_8px_var(--color-neon-cyan)]" />
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-2xl uppercase tracking-wider gradient-neon-text hidden sm:inline drop-shadow-[0_0_10px_var(--color-neon-cyan)]" style={{ fontFamily: 'var(--font-cyber)' }}>SmartVault</span>
-              <span className="text-[10px] text-[var(--color-neon-cyan)]/70 uppercase tracking-[0.2em] hidden sm:inline">Web3 Development</span>
+              <span className="font-bold text-lg sm:text-2xl uppercase tracking-wider gradient-neon-text drop-shadow-[0_0_10px_var(--color-neon-cyan)]" style={{ fontFamily: 'var(--font-cyber)' }}>SmartVault</span>
+              <span className="text-[8px] sm:text-[10px] text-[var(--color-neon-cyan)]/70 uppercase tracking-[0.15em] sm:tracking-[0.2em] hidden sm:inline">Web3 Development</span>
             </div>
           </div>
           
@@ -307,7 +307,7 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative z-10 pt-24 pb-20 md:pt-32 md:pb-32 hero-cyber-bg">
+      <section className="relative z-10 pt-28 pb-20 sm:pt-32 md:pt-36 md:pb-32 hero-cyber-bg">
         {/* Hero Banner Background */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <img 
