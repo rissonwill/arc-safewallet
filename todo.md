@@ -645,3 +645,20 @@
 - [x] Criar thread para X (Twitter) - 10 tweets + posts individuais
 - [x] Criar apresentação completa para Discord com ASCII art
 - [x] Criar imagens promocionais (banner Twitter, banner Discord, logo quadrado)
+
+
+## Atualização Roadmap 2025 (v39)
+- [ ] Atualizar datas do Roadmap para 2025
+- [ ] Remover referências a token Arc/supply/tokenomics
+- [ ] Remover referências a mainnet
+- [ ] Focar na interação com a rede Arc
+
+
+## Substituição SmartVault Network por Arc Network (v40)
+- [x] Substituir "SmartVault Network" por "Arc Network" em DashboardLayout
+- [x] Substituir "SmartVault Network" por "Arc Network" em OnboardingTour
+- [x] Substituir "SmartVault Network" por "Arc Network" em Home.tsx (badge, footer)
+- [x] Substituir "SmartVault Network" por "Arc Network" em GasTracker
+- [x] Substituir "SmartVault Network" por "Arc Network" em todas as traduções i18n (PT/EN)
+- [x] Atualizar Roadmap para 2025 focando em interação com Arc Network
+- [x] Remover referências a mainnet, token Arc, supply, tokenomics

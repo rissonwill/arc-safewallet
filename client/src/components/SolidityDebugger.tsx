@@ -87,8 +87,8 @@ export default function SolidityDebugger({ sourceCode, contractName, onClose }: 
     setVariables([
       { name: "owner", type: "address", value: "0x742d...F3c2", scope: "state" },
       { name: "totalSupply", type: "uint256", value: "1000000", scope: "state" },
-      { name: "name", type: "string", value: '"Arc Token"', scope: "state" },
-      { name: "symbol", type: "string", value: '"ARC"', scope: "state" },
+      { name: "name", type: "string", value: '"My Token"', scope: "state" },
+      { name: "symbol", type: "string", value: '"MTK"', scope: "state" },
     ]);
 
     setCallStack([
