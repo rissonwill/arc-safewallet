@@ -18,7 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
 
 const NETWORKS = [
-  { chainId: 1516, name: "Arc Network", symbol: "ARC", color: "#00D4FF", isPrimary: true },
+  { chainId: 1516, name: "SmartVault Network", symbol: "ARC", color: "#00D4FF", isPrimary: true },
   { chainId: 11155111, name: "Sepolia", symbol: "ETH", color: "#627EEA", isPrimary: true },
   { chainId: 1, name: "Ethereum", symbol: "ETH", color: "#627EEA", isPrimary: false },
   { chainId: 137, name: "Polygon", symbol: "MATIC", color: "#8247E5", isPrimary: false },
@@ -112,7 +112,7 @@ export default function GasTracker() {
           </div>
         </div>
 
-        {/* Primary Networks - Arc Network & Sepolia */}
+        {/* Primary Networks - SmartVault Network & Sepolia */}
         <div>
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Star className="h-5 w-5 text-primary" />
@@ -339,7 +339,7 @@ export default function GasTracker() {
                 <p className="text-sm text-muted-foreground">
                   Os preços de gas são obtidos diretamente das APIs públicas do Etherscan, Polygon Gas Station 
                   e RPCs das redes. Os dados são atualizados automaticamente a cada 30 segundos. 
-                  Para Arc Network e Sepolia (testnets), os custos são significativamente menores.
+                  Para SmartVault Network e Sepolia (testnets), os custos são significativamente menores.
                 </p>
               </div>
             </div>

@@ -240,7 +240,7 @@ function WalletLoginScreen() {
             <h1 className="headline-massive text-3xl">SmartVault</h1>
           </div>
           <p className="tech-label text-center">
-            Secure Wallet for Arc Network & Ethereum
+            Secure Wallet for SmartVault Network & Ethereum
           </p>
         </div>
         
