@@ -52,7 +52,7 @@ const MOCK_PROPOSALS: Proposal[] = [
   {
     id: 1,
     title: 'Aumentar recompensas de staking para 15% APY',
-    description: 'Proposta para aumentar as recompensas de staking de 12% para 15% APY, incentivando mais holders a fazer stake de seus tokens ARC.',
+    description: 'Proposta para aumentar as recompensas de staking de 12% para 15% APY, incentivando mais participação na rede.',
     category: 'protocol',
     proposer: '0x1234...5678',
     status: 'active',
@@ -65,8 +65,8 @@ const MOCK_PROPOSALS: Proposal[] = [
   },
   {
     id: 2,
-    title: 'Alocar 50.000 ARC para marketing',
-    description: 'Proposta para alocar 50.000 tokens ARC do treasury para campanhas de marketing e parcerias estratégicas.',
+    title: 'Alocar fundos para marketing',
+    description: 'Proposta para alocar fundos do treasury para campanhas de marketing e parcerias estratégicas.',
     category: 'treasury',
     proposer: '0xabcd...efgh',
     status: 'succeeded',
@@ -111,7 +111,7 @@ const STATS = {
   totalProposals: 24,
   activeProposals: 3,
   totalVoters: 1250,
-  treasuryBalance: '2,500,000 ARC',
+  treasuryBalance: '$2,500,000 USDC',
   quorumPercentage: 4,
   votingPeriod: '7 dias',
 };
@@ -225,7 +225,7 @@ export default function Governance() {
               <DialogHeader>
                 <DialogTitle>Criar Nova Proposta</DialogTitle>
                 <DialogDescription>
-                  Você precisa de pelo menos 1.000 ARC para criar uma proposta.
+                  Conecte sua carteira para criar uma proposta de governança.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 mt-4">
@@ -548,9 +548,9 @@ export default function Governance() {
               <div>
                 <h3 className="font-semibold text-lg mb-2">Como funciona a Governança?</h3>
                 <ul className="space-y-1 text-sm text-muted-foreground">
-                  <li>• Holders com 1.000+ ARC podem criar propostas</li>
+                  <li>• Usuários conectados podem criar propostas</li>
                   <li>• Votação dura 7 dias após período de discussão de 1 dia</li>
-                  <li>• Quorum mínimo de 4% do supply total para aprovação</li>
+                  <li>• Quorum mínimo de 4% dos votos para aprovação</li>
                   <li>• Propostas aprovadas passam por timelock de 24h antes da execução</li>
                   <li>• Delegue seus votos se não puder participar ativamente</li>
                 </ul>

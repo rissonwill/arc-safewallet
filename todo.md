@@ -671,3 +671,18 @@
 - [ ] Aplicar logos em outros componentes
 - [ ] Realizar testes completos
 - [ ] Salvar checkpoint e push para GitHub
+
+
+## Atualização Roadmap 2025 e Revisão Arc (v41)
+- [ ] Pesquisar informações atualizadas da rede Arc
+- [ ] Atualizar Roadmap com datas de 2025 (Q1-Q4 2025)
+- [ ] Revisar e corrigir informações da rede Arc em todo o site
+- [ ] Remover referências incorretas a token/supply/mainnet
+
+
+## Correções Finais v42
+- [ ] Corrigir Arc Network para Arc Testnet no GasTracker e Analytics
+- [ ] Atualizar Chain ID de 1516 para 5042002
+- [ ] Adicionar logos no GasTracker
+- [ ] Remover referências a token Arc na Governança
+- [ ] Fazer Governança funcionar sem tokens

@@ -18,12 +18,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
 
 const NETWORKS = [
-  { chainId: 1516, name: "Arc Network", symbol: "ARC", color: "#00D4FF", isPrimary: true },
-  { chainId: 11155111, name: "Sepolia", symbol: "ETH", color: "#627EEA", isPrimary: true },
-  { chainId: 1, name: "Ethereum", symbol: "ETH", color: "#627EEA", isPrimary: false },
-  { chainId: 137, name: "Polygon", symbol: "MATIC", color: "#8247E5", isPrimary: false },
-  { chainId: 56, name: "BSC", symbol: "BNB", color: "#F3BA2F", isPrimary: false },
-  { chainId: 42161, name: "Arbitrum", symbol: "ETH", color: "#28A0F0", isPrimary: false },
+  { chainId: 5042002, name: "Arc Network", symbol: "USDC", color: "#00D4FF", isPrimary: true, logo: "/logos/arc-network.png" },
+  { chainId: 11155111, name: "Sepolia", symbol: "ETH", color: "#627EEA", isPrimary: true, logo: "/logos/sepolia.png" },
+  { chainId: 1, name: "Ethereum", symbol: "ETH", color: "#627EEA", isPrimary: false, logo: "/logos/ethereum.png" },
+  { chainId: 137, name: "Polygon", symbol: "MATIC", color: "#8247E5", isPrimary: false, logo: "/logos/polygon.png" },
+  { chainId: 56, name: "BSC", symbol: "BNB", color: "#F3BA2F", isPrimary: false, logo: "/logos/bsc.png" },
+  { chainId: 42161, name: "Arbitrum", symbol: "ETH", color: "#28A0F0", isPrimary: false, logo: "/logos/arbitrum.png" },
 ];
 
 export default function GasTracker() {
@@ -130,15 +130,16 @@ export default function GasTracker() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div 
-                          className="h-12 w-12 rounded-xl flex items-center justify-center"
+                          className="h-12 w-12 rounded-xl flex items-center justify-center overflow-hidden"
                           style={{ backgroundColor: `${network.color}30` }}
                         >
-                          <span 
-                            className="font-bold text-lg"
-                            style={{ color: network.color }}
-                          >
-                            {network.symbol.charAt(0)}
-                          </span>
+                          {network.logo ? (
+                            <img src={network.logo} alt={network.name} className="h-8 w-8 object-contain" />
+                          ) : (
+                            <span className="font-bold text-lg" style={{ color: network.color }}>
+                              {network.symbol.charAt(0)}
+                            </span>
+                          )}
                         </div>
                         <div>
                           <CardTitle className="text-lg">{network.name}</CardTitle>
@@ -215,15 +216,16 @@ export default function GasTracker() {
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
                         <div 
-                          className="h-8 w-8 rounded-lg flex items-center justify-center"
+                          className="h-8 w-8 rounded-lg flex items-center justify-center overflow-hidden"
                           style={{ backgroundColor: `${network.color}20` }}
                         >
-                          <span 
-                            className="font-bold text-sm"
-                            style={{ color: network.color }}
-                          >
-                            {network.symbol.charAt(0)}
-                          </span>
+                          {network.logo ? (
+                            <img src={network.logo} alt={network.name} className="h-6 w-6 object-contain" />
+                          ) : (
+                            <span className="font-bold text-sm" style={{ color: network.color }}>
+                              {network.symbol.charAt(0)}
+                            </span>
+                          )}
                         </div>
                         <div>
                           <p className="font-medium text-sm">{network.name}</p>
